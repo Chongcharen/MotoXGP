@@ -52,7 +52,8 @@ public class PhotonNetworkConsole : MonoBehaviourPunCallbacks
     private void Init()
     {
         PhotonNetwork.GameVersion = gameVersion;
-        PhotonNetwork.KeepAliveInBackground = 600000;
+        PhotonNetwork.AutomaticallySyncScene = true;
+        //PhotonNetwork.KeepAliveInBackground = 600000;
         lobbyController = instance.gameObject.GetComponent<LobbyController>();
 
 
@@ -65,7 +66,7 @@ public class PhotonNetworkConsole : MonoBehaviourPunCallbacks
         //Debug.Log("Connect "+_nickName+"user id "+userid);
         AuthenticationValues authValue = new AuthenticationValues(userid);
         //authValue.Token = RestAPI.GetToken();
-        PhotonNetwork.KeepAliveInBackground = 60000;
+        //PhotonNetwork.KeepAliveInBackground = 60000;
         PhotonNetwork.AuthValues = authValue;
         PhotonNetwork.NickName = _nickName;
         PhotonNetwork.SendRate = 10;

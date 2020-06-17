@@ -86,11 +86,11 @@ public class LobbyController : MonoBehaviourPunCallbacks
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
         base.OnRoomPropertiesUpdate(propertiesThatChanged);
-        Debug.Log("onroomPropertiesupdate ");
-        foreach (var item in propertiesThatChanged)
-        {
-            Debug.Log("item "+item.Key + "value "+item.Value);
-        }
+        // Debug.Log("onroomPropertiesupdate ");
+        // foreach (var item in propertiesThatChanged)
+        // {
+        //     Debug.Log("item "+item.Key + "value "+item.Value);
+        // }
     }
     public void CreateRoom(ExitGames.Client.Photon.Hashtable _customProperty = null) //trying to create our own room
     {

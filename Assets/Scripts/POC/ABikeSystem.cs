@@ -363,7 +363,7 @@ public class ABikeSystem : MonoBehaviour
             if(w.collider.GetGroundHit(out hit)){
                 isGround[indexWhell] = true;
                 lp.y -= Vector3.Dot(w.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (w.collider.radius);
-                lp.y = Mathf.Clamp(lp.y,w.startPos.y - bikeWheels.setting.Distance, w.startPos.y +  bikeWheels.setting.Distance);
+                lp.y = Mathf.Clamp(lp.y,w.startPos.y - bikeWheels.setting.SuspensionDistance, w.startPos.y +  bikeWheels.setting.SuspensionDistance);
                     //lp.y = Mathf.Clamp(lp.y, w.startPos.y - bikeWheels.setting.Distance, w.startPos.y + bikeWheels.setting.Distance);
                     //Debug.Log("total "+lp.y);
             }else{
@@ -371,7 +371,7 @@ public class ABikeSystem : MonoBehaviour
             }
             w.axle.localPosition = lp;
             lp.y -= Vector3.Dot(w.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (col.radius);
-            lp.y = Mathf.Clamp(lp.y, w.startPos.y - bikeWheels.setting.Distance, w.startPos.y + bikeWheels.setting.Distance);
+            lp.y = Mathf.Clamp(lp.y, w.startPos.y - bikeWheels.setting.SuspensionDistance, w.startPos.y + bikeWheels.setting.SuspensionDistance);
             indexWhell++;
         }
 
@@ -534,8 +534,9 @@ public class ABikeSystem : MonoBehaviour
 
         public float Radius = 0.3f; // the radius of the wheels
         public float Weight = 1000.0f; // the weight of a wheel
-        public float Distance = 0.2f;
+        public float SuspensionDistance = 0.2f;
         public float ForceAppointDistance =0;
+        public float DampingRate = 0.5f;
 
         public Vector3 WheelCenter;
 

@@ -15,52 +15,52 @@ public class KeyboardController : MonoBehaviour
 
 
 
-   void UpdateInputControll(){
-       if(Input.GetKeyDown(KeyCode.D)){
-           isRight = true;
-       }
-       else if(Input.GetKeyUp(KeyCode.D)){
-           isRight = false;
-       }
+//    void UpdateInputControll(){
+//        if(Input.GetKeyDown(KeyCode.D)){
+//            isRight = true;
+//        }
+//        else if(Input.GetKeyUp(KeyCode.D)){
+//            isRight = false;
+//        }
 
-       if(Input.GetKeyDown(KeyCode.S)){
-           isLeft = true;
-       }
-       else if(Input.GetKeyUp(KeyCode.S)){
-           isLeft = false;
-       }
+//        if(Input.GetKeyDown(KeyCode.S)){
+//            isLeft = true;
+//        }
+//        else if(Input.GetKeyUp(KeyCode.S)){
+//            isLeft = false;
+//        }
 
-       if(Input.GetKeyDown(KeyCode.Space)){
-           isJump = true;
-            mcc.Jump();
-       }
-       else if(Input.GetKeyUp(KeyCode.Space)){
-           isJump = false;
-       }
+//        if(Input.GetKeyDown(KeyCode.Space)){
+//            isJump = true;
+//             mcc.Jump();
+//        }
+//        else if(Input.GetKeyUp(KeyCode.Space)){
+//            isJump = false;
+//        }
 
-       if(Input.GetKeyDown(KeyCode.J)){
-           isAccelerate = true;
+//        if(Input.GetKeyDown(KeyCode.J)){
+//            isAccelerate = true;
           
-       }
-       else if(Input.GetKeyUp(KeyCode.J)){
-           isAccelerate = false;
-       }
-       if(Input.GetKeyDown(KeyCode.K)){
-           isBreak = true;
-       }
-       else if(Input.GetKeyUp(KeyCode.K)){
-           isBreak = false;
-       }
-   }
-   void UpdateMotorControll(){
-        mcc.accelerate = isAccelerate;
-        mcc.MyBreak = isBreak;
-        mcc.left = isLeft;
-        mcc.right = isRight;
+//        }
+//        else if(Input.GetKeyUp(KeyCode.J)){
+//            isAccelerate = false;
+//        }
+//        if(Input.GetKeyDown(KeyCode.K)){
+//            isBreak = true;
+//        }
+//        else if(Input.GetKeyUp(KeyCode.K)){
+//            isBreak = false;
+//        }
+//    }
+//    void UpdateMotorControll(){
+//         mcc.accelerate = isAccelerate;
+//         mcc.MyBreak = isBreak;
+//         mcc.left = isLeft;
+//         mcc.right = isRight;
         
-   }
-   void Update(){
-       UpdateInputControll();
-       UpdateMotorControll();
-   }
+//    }
+//    void Update(){
+//        UpdateInputControll();
+//        UpdateMotorControll();
+//    }
 }

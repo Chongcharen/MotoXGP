@@ -7,7 +7,9 @@ using TMPro;
 public class PlayerInRoom_Prefab : MonoBehaviour
 {
     [SerializeField]TextMeshProUGUI playername_text;
-    public void SetData(string playername){
+    [SerializeField]Image bg_image;
+    public void SetData(string playername,Color color){
         playername_text.text = playername;
+        bg_image.color = color;
     }
 }

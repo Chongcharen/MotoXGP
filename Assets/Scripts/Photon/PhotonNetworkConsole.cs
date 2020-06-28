@@ -22,6 +22,7 @@ public class PhotonNetworkConsole : MonoBehaviourPunCallbacks
     public static Subject<Unit> OnJoinLobby = new Subject<Unit>();
     public bool isConnected = false;
     public LobbyController lobbyController;
+    public ChatManager chatManager;
     PhotonVoiceView playerVoiceView;
     Recorder recorder;
     public ClientState state;
@@ -52,26 +53,32 @@ public class PhotonNetworkConsole : MonoBehaviourPunCallbacks
     private void Init()
     {
         PhotonNetwork.GameVersion = gameVersion;
-        PhotonNetwork.AutomaticallySyncScene = true;
-        //PhotonNetwork.KeepAliveInBackground = 600000;
-        lobbyController = instance.gameObject.GetComponent<LobbyController>();
-
-
-    }
-    public void Connect(string _nickName,string userid = "")
-    {
-        nickName = _nickName;
-        if(string.IsNullOrEmpty(userid))
-            userid = _nickName;
-        //Debug.Log("Connect "+_nickName+"user id "+userid);
-        AuthenticationValues authValue = new AuthenticationValues(userid);
-        //authValue.Token = RestAPI.GetToken();
-        //PhotonNetwork.KeepAliveInBackground = 60000;
-        PhotonNetwork.AuthValues = authValue;
-        PhotonNetwork.NickName = _nickName;
         PhotonNetwork.SendRate = 10;
         PhotonNetwork.SerializationRate = 5;
         PhotonNetwork.AutomaticallySyncScene = true;
+        //PhotonNetwork.KeepAliveInBackground = 600000;
+        lobbyController = instance.gameObject.GetComponent<LobbyController>();
+        //chatManager = ChatManager.Instance;
+    }
+    //Connect with photon authentication
+    public void Connect(){
+        Debug.Log("Connect ");
+        Debug.Log("Nickname "+PhotonNetwork.NickName);
+        PhotonNetwork.ConnectUsingSettings();
+    }
+    //Connect without photon authentication ( login with inputname)
+    public void Connect(string _nickName,string userid = "")
+    {
+        nickName = _nickName;
+        Debug.Log("PhotonNetwork.AuthValues.UserId"+PhotonNetwork.AuthValues.UserId);
+        if(string.IsNullOrEmpty(userid) && string.IsNullOrEmpty(PhotonNetwork.AuthValues.UserId)){
+            userid = _nickName;
+            AuthenticationValues authValue = new AuthenticationValues(userid);
+            PhotonNetwork.AuthValues = authValue;
+        }
+        //Debug.Log("Connect "+_nickName+"user id "+userid);
+       
+        PhotonNetwork.NickName = _nickName;
         PhotonNetwork.ConnectUsingSettings();
     
     }
@@ -101,7 +108,11 @@ public class PhotonNetworkConsole : MonoBehaviourPunCallbacks
         base.OnFriendListUpdate(friendList);
     }
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps){
-       // Debug.Log("Player Properties Update !!!!!!");
+        Debug.Log("Player Properties Update !!!!!!");
+        if(targetPlayer == PhotonNetwork.LocalPlayer){
+            Debug.Log("localplayer update ");
+
+        }
     }
     public override void OnConnectedToMaster()
     {
@@ -109,14 +120,28 @@ public class PhotonNetworkConsole : MonoBehaviourPunCallbacks
         Debug.LogWarning("on OnConnectedToMaster");
         isConnected = true;
         OnConnectedServer.OnNext(true);
-        PhotonNetwork.NickName = nickName;
         PhotonNetwork.JoinLobby();
-        
-        // Debug.Log("USERID "+PhotonNetwork.AuthValues.UserId);
+        ChatManager.Instance.Init();
+        PlayFabController.Instance.UpdateDataToPhotonPlayer();
+        StartCoroutine(TestPlayer());
         // Debug.Log("Currenly room "+PhotonNetwork.CountOfRooms);
        // PhotonNetwork.LeaveRoom(false);
 //        PhotonNetwork.FindFriends(friends_uid);
         //StartCoroutine(RejoinLastRoom());
+    }
+    IEnumerator TestPlayer(){
+        yield return new WaitForSeconds(1);
+        TestPlayerProfile();
+    }
+    void TestPlayerProfile(){
+        foreach (var item in PhotonNetwork.LocalPlayer.CustomProperties)
+        {
+            Debug.Log(string.Format("key {0} vale {1}",item.Key,item.Value));
+
+        }
+    }
+    public override void OnLeftRoom(){
+        Debug.Log("PhotonNetworkConsole OnLeftRoom");
     }
     IEnumerator RejoinLastRoom(){
         yield return new WaitForSeconds(3);
@@ -149,6 +174,9 @@ public class PhotonNetworkConsole : MonoBehaviourPunCallbacks
     }
     public void RejoinRoom(){
         PhotonNetwork.ReconnectAndRejoin();
+    }
+    public void LeaveRoom(){
+        PhotonNetwork.LeaveRoom(false);
     }
     #region  VoiceSetting
     public void SetUpPhotonVoiceView(PhotonVoiceView voiceView){

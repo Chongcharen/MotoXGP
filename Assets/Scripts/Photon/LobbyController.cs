@@ -39,11 +39,20 @@ public class LobbyController : MonoBehaviourPunCallbacks
     }
     public override void OnJoinedRoom() //Callback function for when we successfully create or join a room.
     {
-        
+        Debug.Log("Lobbycontroller onjoinedroom ");
         PhotonNetworkConsole.Instance.lastRoomName = PhotonNetwork.CurrentRoom.Name;
+        ChatManager.Instance.UnsubscribeChannel(ChatManager.Instance.currentRoomChannel);
+        ChatManager.Instance.SubScribeChannel(PhotonNetwork.CurrentRoom.Name);
+        ChatManager.Instance.currentRoomChannel = PhotonNetwork.CurrentRoom.Name;
+        Debug.Log("1");
         //RoomManager.Instance.lastRoomName = RoomManager.Instance.currentRoom.Name;
         //StartGame();
         
+    }
+    public override void OnLeftRoom(){
+         Debug.Log("Lobbycontroller OnLeftRoom ");
+        ChatManager.Instance.UnsubscribeChannel(ChatManager.Instance.currentRoomChannel);
+        ChatManager.Instance.currentRoomChannel = "";
     }
     public override void OnJoinRoomFailed(short returnCode, string message){
         Debug.LogError("Joinroomfailed "+message);
@@ -72,9 +81,10 @@ public class LobbyController : MonoBehaviourPunCallbacks
     }
     public void JoinRandom()
     {
-        var roomName = "name 888";
+        var roomName = "name"+UnityEngine.Random.Range(0,999);
         RoomOptions roomOption = new RoomOptions();
         roomOption.MaxPlayers = 10;
+        roomOption.PublishUserId = true;
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOption,TypedLobby.Default);
     }
 
@@ -97,6 +107,7 @@ public class LobbyController : MonoBehaviourPunCallbacks
         RoomOptions roomOps = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = (byte)maxPlayer };
         roomOps.PlayerTtl = -1;
         roomOps.EmptyRoomTtl = 6000000;
+        roomOps.CleanupCacheOnLeave = true;
         //roomOps.Plugins = new string[] {"MyFirstPlugin"}; // call plugin on create game
         // _customProperty.Add(RoomOptionKey.HostID,UserManager.Instance.userData.Value.uid);
         // if(_customProperty != null){

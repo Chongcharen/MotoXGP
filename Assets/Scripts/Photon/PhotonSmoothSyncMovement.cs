@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UniRx;
 public class PhotonSmoothSyncMovement : Photon.Pun.MonoBehaviourPun, IPunObservable
 {
     // Start is called before the first frame update
@@ -37,7 +38,12 @@ public class PhotonSmoothSyncMovement : Photon.Pun.MonoBehaviourPun, IPunObserva
             playerData = PhotonNetwork.CurrentRoom.CustomProperties[RoomPropertyKeys.PLAYER_DATA] as ExitGames.Client.Photon.Hashtable;
             newData = new ExitGames.Client.Photon.Hashtable();
             
-            
+           
+        }
+        void Start(){
+             GameplayManager.OnGameEnd.Subscribe(_=>{
+                this.enabled = false;
+            }).AddTo(this);
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -71,7 +77,7 @@ public class PhotonSmoothSyncMovement : Photon.Pun.MonoBehaviourPun, IPunObserva
                 transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * this.SmoothingDelay);
             }
             else{
-                newData.Add(photonView.Owner.NickName,transform.position.x);
+                newData.Add(photonView.Owner.UserId,transform.position.x);
                 roomData[RoomPropertyKeys.PLAYER_DATA] = newData;
                 PhotonNetwork.CurrentRoom.SetCustomProperties(roomData);
             }

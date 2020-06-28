@@ -6,6 +6,9 @@ using Photon.Pun;
 using ExitGames.Client.Photon;
 using UniRx;
 using System.Linq;
+using TMPro;
+using DG.Tweening;
+using Newtonsoft.Json;
 public class UI_PlayersDistance : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
@@ -13,6 +16,7 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
     [SerializeField]Transform transformParent;
     [SerializeField]GameObject playerSliderPrefab;
     [SerializeField]Slider playerSlider;
+    [SerializeField]TextMeshProUGUI round_txt;
     [SerializeField]Color[] colorRank;
     [SerializeField]Image[] bgImageRank;
     [SerializeField]Text[] textRank;
@@ -26,42 +30,69 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
     float startPoint,finishPoint;
     //List<PlayerDistanceData> playerDistanceList = new List<PlayerDistanceData>();
     string localUserId;
-    void Awake()
-    {
-        GameNetwork.OnSetDirection.Subscribe(pos =>{
-            startPoint = pos.x;
-            finishPoint = pos.y;
-            CreateSlider();
-        });
-    }
-    void CreateSlider(){
+    void Start(){
         dic_playerSlider = new Dictionary<string, PlayerSliderPrefab>();
         dic_playerDistance = new Dictionary<string, PlayerDistanceData>();
+        startPoint = MapManager.Instance.startPoint;
+        finishPoint = MapManager.Instance.finishPoint;
+        CreateSlider();
+        // MapManager.OnSetDirection.Subscribe(pos =>{
+        //     startPoint = pos.x;
+        //     finishPoint = pos.y;
+        //     CreateSlider();
+        // });
+        GameplayManager.Instance.round.ObserveEveryValueChanged(r => r.Value).Subscribe(_=>{
+            Debug.Log("Round change "+_);
+            if(_<= 0 || _> GameplayManager.Instance.totalRound.Value)return;
+            round_txt.text = "Round "+_+"/"+GameplayManager.Instance.totalRound.Value;
+            var sequence = DOTween.Sequence();
+            sequence.Append(round_txt.DOFade(1,0.5f))
+            .AppendInterval(5)
+            .Append(round_txt.DOFade(0,0.5f)).SetAutoKill();
+        }).AddTo(this);
+    }
+    void CreateSlider(){
+        Debug.Log("createSlider ");
+       
         Hashtable property = PhotonNetwork.CurrentRoom.CustomProperties;
         Hashtable playerData = property[RoomPropertyKeys.PLAYER_DATA] as Hashtable;
         Hashtable playerIndexData = property[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
-        //Debug.Log("player index conatin >"+property.ContainsKey(RoomPropertyKeys.PLAYER_INDEX));
-        //Debug.Log("playerIndexData conatin >"+property.ContainsKey(RoomPropertyKeys.PLAYER_DATA));
         foreach (var playerIndex in playerIndexData)
         {
             Debug.Log(string.Format("index key {0} vale {1}",playerIndex.Key,playerIndex.Value));
             var slider = Instantiate(playerSliderPrefab,Vector3.zero,Quaternion.identity,transformParent);
+            Debug.Log("transformParent "+transformParent);
+            Debug.Log("Slider "+slider);
             slider.name = playerIndex.Key.ToString();
             slider.transform.localPosition = Vector3.zero;
             PlayerSliderPrefab sliderPrefab = slider.GetComponent<PlayerSliderPrefab>();
             sliderPrefab.GetSlider().minValue = startPoint;
             sliderPrefab.GetSlider().maxValue = finishPoint;
-            
+            Debug.Assert(!dic_playerSlider.ContainsKey(playerIndex.Key.ToString()));
+            if(dic_playerSlider.ContainsKey(playerIndex.Key.ToString())){
+                Debug.Log("Destroy dic_playerslider");
+                Destroy(dic_playerSlider[playerIndex.Key.ToString()].gameObject);
+                dic_playerSlider.Remove(playerIndex.Key.ToString());
+            }
             dic_playerSlider.Add(playerIndex.Key.ToString(),sliderPrefab);
+            var playerIndexProfileData = JsonConvert.DeserializeObject<PlayerIndexProfileData>(playerIndex.Value.ToString());
+            var playerProfileModel = GameUtil.ConvertToPlayFabPlayerProfilemodel(playerIndexProfileData.profileModel);
+            
+
             var playerDistanceData = new PlayerDistanceData{
-                playerIndex = int.Parse(playerIndex.Value.ToString()),
-                userID = playerIndex.Key.ToString(),
-                playerName = playerIndex.Key.ToString(),
+                playerIndex = playerIndexProfileData.index,
+                userID = playerIndexProfileData.userId,
+                playerName = playerProfileModel.DisplayName,
                 distance = startPoint
             };
+            if(dic_playerDistance.ContainsKey(playerIndex.Key.ToString())){
+                Debug.Log("remove dic_playerslider");
+                dic_playerDistance[playerIndex.Key.ToString()] = null;
+                dic_playerDistance.Remove(playerIndex.Key.ToString());
+            }
             dic_playerDistance.Add(playerIndex.Key.ToString(),playerDistanceData);
-            if(playerIndex.Key.ToString() == PhotonNetwork.LocalPlayer.NickName){
-                localUserId = PhotonNetwork.LocalPlayer.NickName;
+            if(playerIndex.Key.ToString() == PhotonNetwork.LocalPlayer.UserId){
+                localUserId = PhotonNetwork.LocalPlayer.UserId;
                 myDistanceData = playerDistanceData;
                 mySliderPrefab = sliderPrefab;
             }
@@ -73,19 +104,15 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
 
     // Update is called once per frame
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged){
-        //Debug.Log("OnRoomPropertiesUpdate "+propertiesThatChanged.Count);
-
         //Foreach ซ้อนกันเยอะ เอาออกไป อยุ่ hash roomproperty ดีมั้ย?
         foreach (var property in propertiesThatChanged)
         {
-            
             if(property.Key.ToString() == RoomPropertyKeys.PLAYER_DATA){
-                //Debug.Log(string.Format("property key {0} vale {1}",property.Key,property.Value));
                 var playerData = property.Value as Hashtable;
                 foreach (var data in playerData)
                 {
-                    //Debug.Log(string.Format("data key {0} vale {1}",data.Key,data.Value));
                     var keyName = data.Key.ToString();
+                    if(dic_playerSlider == null)return;
                     if(dic_playerSlider.ContainsKey(keyName)){
                         var distance = System.Convert.ToSingle(data.Value.ToString());
                         dic_playerSlider[keyName].SetValue(distance);
@@ -109,7 +136,7 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
             if(!bgImageRank[i].gameObject.activeSelf)  
                 bgImageRank[i].gameObject.SetActive(true);
             bgImageRank[i].color = colorRank[playerDistanceData.playerIndex];
-            textRank[i].text = (i+1)+". "+playerDistanceData.playerName;
+            textRank[i].text = playerDistanceData.playerName;
             if(playerDistanceData.playerName == localUserId){
                 myranking = i;
                 if(i>0)
@@ -137,11 +164,21 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps){
         //targetPlayer.CustomProperties
     }
-    
+    void OnDestroy(){
+        //Dictionary<string,PlayerSliderPrefab> dic_playerSlider;
+        //Dictionary<string,PlayerDistanceData> dic_playerDistance;
+        foreach (var item in dic_playerSlider.Values)
+        {
+            if(item != null && item.gameObject != null)
+                Destroy(item.gameObject);
+        }
+        foreach (var itemData in dic_playerDistance.ToDictionary(k =>k.Key , v =>v.Value))
+        {
+            if(dic_playerDistance[itemData.Key] != null)
+                dic_playerDistance[itemData.Key] = null;
+        }
+        dic_playerSlider.Clear();
+        dic_playerDistance.Clear();
+    }
 }
-public class PlayerDistanceData{
-    public int playerIndex;
-    public string userID;
-    public string playerName;
-    public float distance;
-}
+

@@ -9,8 +9,7 @@ public class PageManager : MonoBehaviour
     public static PageManager Instance;
     void Awake(){
         Instance = this;
-        Application.targetFrameRate = 60;
-        PhotonVoiceConsole.Instance.Init();
+        SceneFlow.Instance.StartScene();
     }
     public void OpenLobby(){
         display_lobby.SetActive(true);

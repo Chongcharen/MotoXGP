@@ -18,12 +18,20 @@ public class GameHUD : MonoBehaviourPunCallbacks
     [SerializeField]Image image_nos,image_timeNod;
     public float deltaTime;
     
+    ///TestGame
+    [Header("GameDebug")]
+    [SerializeField]Button b_restartGame;
 
     void Start(){
-        b_reset.OnClickAsObservable().Subscribe(_=>{
-            OnResetPosition.OnNext(default);
-        });
+        // b_restartGame.OnClickAsObservable().Subscribe(_=>{
+           
+        //     GameplayManager.Instance.ResetGame();
+        // });
+        // b_reset.OnClickAsObservable().Subscribe(_=>{
+        //     OnResetPosition.OnNext(default);
+        // });
         b_restart.OnClickAsObservable().Subscribe(_=>{
+             Debug.Log("restart Click");
             OnRestartPosition.OnNext(default);
         });
         GameController.OnMicActive.Subscribe(active =>{

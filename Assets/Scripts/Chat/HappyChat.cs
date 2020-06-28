@@ -10,10 +10,6 @@ using TMPro;
 using UniRx;
 public class HappyChat : MonoBehaviour, IChatClientListener
 {
-    [SerializeField] TextMeshProUGUI chat_txt;
-    [SerializeField] TMP_InputField InputFieldChat;
-    [SerializeField] GameObject chatObject;
-    [SerializeField] Button b_close,b_sendMessage;
     string UserName;
     protected internal AppSettings chatAppSettings;
     public ChatClient chatClient;
@@ -23,19 +19,19 @@ public class HappyChat : MonoBehaviour, IChatClientListener
                 this.chatAppSettings = PhotonNetwork.PhotonServerSettings.AppSettings;
         #endif
         Connect();
-        b_close.OnClickAsObservable().Subscribe(_=>{
-            chatObject.gameObject.SetActive(false);
-        });
-        b_sendMessage.OnClickAsObservable().Subscribe(_=>{
-            SendMessageFromInput();
-        });
+        // b_close.OnClickAsObservable().Subscribe(_=>{
+        //     chatObject.gameObject.SetActive(false);
+        // });
+        // b_sendMessage.OnClickAsObservable().Subscribe(_=>{
+        //     SendMessageFromInput();
+        // });
     }
-    public void DebugReturn(DebugLevel level, string message)
+    void IChatClientListener.DebugReturn(DebugLevel level, string message)
     {
        
     }
 
-    public void OnChatStateChange(ChatState state)
+    void IChatClientListener.OnChatStateChange(ChatState state)
     {
        
     }
@@ -44,22 +40,20 @@ public class HappyChat : MonoBehaviour, IChatClientListener
         this.chatClient = new ChatClient(this);
         #if !UNITY_WEBGL
                 this.chatClient.UseBackgroundWorkerForSending = true;
-#endif
+        #endif
         Debug.Log("this.chatAppSettings.AppIdChat "+ this.chatAppSettings.AppIdChat);
         UserName = PhotonNetwork.NickName;
         this.chatClient.Connect(this.chatAppSettings.AppIdChat, "1.0", new Photon.Chat.AuthenticationValues(UserName));
 
     }
-    public void OnConnected()
+    void IChatClientListener.OnConnected()
     {
-        Debug.Log("Chat Onconnected");
-        chatClient.Subscribe(new string[] { "channelA", "channelB" });
-        //this.SendChatMessage("HI");
+        Debug.Log("4488");
+        //throw new System.NotImplementedException();
     }
-
     public void SendMessageFromInput(){
-        SendChatMessage(InputFieldChat.text);
-        InputFieldChat.text = "";
+        // SendChatMessage(InputFieldChat.text);
+        // InputFieldChat.text = "";
     }
     public void OnEnterSend()
     {
@@ -73,7 +67,7 @@ public class HappyChat : MonoBehaviour, IChatClientListener
         if(string.IsNullOrEmpty(inputMessage))return;
         chatClient.PublishMessage("channelA", inputMessage);
     }
-        public void Update()
+    public void Update()
     {
         if (this.chatClient != null)
         {
@@ -90,12 +84,12 @@ public class HappyChat : MonoBehaviour, IChatClientListener
         this.StateText.gameObject.SetActive(this.ShowState); // this could be handled more elegantly, but for the demo it's ok.*/
     }
 
-    public void OnDisconnected()
+    void IChatClientListener.OnDisconnected()
     {
        
     }
 
-    public void OnGetMessages(string channelName, string[] senders, object[] messages)
+    void IChatClientListener.OnGetMessages(string channelName, string[] senders, object[] messages)
     {
         string msgs = "";
         string username ="";
@@ -104,41 +98,41 @@ public class HappyChat : MonoBehaviour, IChatClientListener
             username = string.Format("<color=#35ADF8>{0}</color> : ", senders[i]);
             msgs = string.Format("{0}{1}\n", username, messages[i]);
         }
-        chat_txt.text += msgs;
+        //chat_txt.text += msgs;
     }
 
-    public void OnPrivateMessage(string sender, object message, string channelName)
+    void IChatClientListener.OnPrivateMessage(string sender, object message, string channelName)
     {
        
     }
 
-    public void OnStatusUpdate(string user, int status, bool gotMessage, object message)
+    void IChatClientListener.OnStatusUpdate(string user, int status, bool gotMessage, object message)
     {
       
     }
 
-    public void OnSubscribed(string[] channels, bool[] results)
+    void IChatClientListener.OnSubscribed(string[] channels, bool[] results)
     {
        
     }
 
-    public void OnUnsubscribed(string[] channels)
+    void IChatClientListener.OnUnsubscribed(string[] channels)
     {
       
     }
 
-    public void OnUserSubscribed(string channel, string user)
+    void IChatClientListener.OnUserSubscribed(string channel, string user)
     {
        
     }
 
-    public void OnUserUnsubscribed(string channel, string user)
+    void IChatClientListener.OnUserUnsubscribed(string channel, string user)
     {
       
     }
     public void OpenChat()
     {
-        chatObject.SetActive(!chatObject.activeSelf);
+       // chatObject.SetActive(!chatObject.activeSelf);
     }
     //Chat input
   
@@ -149,8 +143,10 @@ public class HappyChat : MonoBehaviour, IChatClientListener
             this.chatClient.Disconnect();
         }
     }
-    void OnDisable()
-    {
-        this.chatClient.Disconnect();
-    }
+    // void OnDisable()
+    // {
+    //     this.chatClient.Disconnect();
+    // }
+
+    
 }

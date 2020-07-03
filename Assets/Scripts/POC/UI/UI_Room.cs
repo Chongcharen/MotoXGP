@@ -1,4 +1,5 @@
-﻿
+﻿using System.Linq.Expressions;
+
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
@@ -8,6 +9,8 @@ using ExitGames.Client.Photon;
 using UniRx;
 using System.Linq;
 using ExitGames.Client.Photon;
+using PlayFab.ClientModels;
+using Newtonsoft.Json;
 
 // ตอนนี้ Userid ยังใช้ไมไ่ด้เพราะ ยังไมไ่ด้มีการเซ็ต user เลยต้องใช้ nickname ไปก่อน
 public class UI_Room : MonoBehaviourPunCallbacks
@@ -16,6 +19,7 @@ public class UI_Room : MonoBehaviourPunCallbacks
     [SerializeField]Button b_leave,b_playGame;
     [SerializeField]GameObject playerinroomPrefab;
     [SerializeField]Transform content;
+    [SerializeField]PlayerInRoom_Prefab[] playersData;
     [SerializeField]Color[] playerColor;
     
     // Start is called before the first frame update
@@ -23,8 +27,7 @@ public class UI_Room : MonoBehaviourPunCallbacks
     {
         Debug.Log("UI Room start");
         b_leave.OnClickAsObservable().Subscribe(_=>{
-            PhotonNetwork.LeaveRoom();
-            
+            PhotonNetwork.LeaveRoom(); 
         });
         b_playGame.OnClickAsObservable().Subscribe(_=>{
             PrepareTostartGame();
@@ -34,50 +37,71 @@ public class UI_Room : MonoBehaviourPunCallbacks
             Debug.Log("UI_Room Active "+active);
         });
     }
+    /*
+        sample Node =>   RoomHashtable
+                            playerHashtable
+                            playerindexHashtable
+    */
+    public void UpdatePlayerInroom(){
+        ClearData();
+        Debug.Log("Updatepayerinroom ");
+        //get playerIndex data 
+        Hashtable roomPropertyData = new Hashtable();
+        Hashtable playerIndexHashTable = PhotonNetwork.CurrentRoom.CustomProperties[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
+        if(playerIndexHashTable ==  null)
+            playerIndexHashTable = new Hashtable();
+            
+        var index = 0;
+        var playerIndex =  PhotonNetwork.CurrentRoom.Players.OrderBy(key => key.Key).ToDictionary(k =>k.Key , v =>v.Value);
+        foreach (var item in PhotonNetwork.CurrentRoom.Players)
+        {
+            Debug.Log(string.Format("Player {0} vale {1} id {2}",item.Key,item.Value,item.Value.UserId));
+        }
+        foreach (var player in playerIndex)
+        {
+            playersData[index].SetData(player.Value,playerColor[index]);
+            playersData[index].gameObject.SetActive(true);
+            PlayerIndexProfileData playerIndexProfileData;
+            if(!playerIndexHashTable.ContainsKey(player.Value.UserId)){
+                var playerProfileJson = player.Value.CustomProperties[PlayerPropertiesKey.PLAYFAB_PROFILE] as string;
+                Debug.Log("playerProfileJson "+playerProfileJson);
+                Debug.Assert(!string.IsNullOrEmpty(playerProfileJson));
+                playerIndexProfileData = new PlayerIndexProfileData{
+                    index = index,
+                    nickName = player.Value.NickName,
+                    profileModel = playerProfileJson,
+                    userId = player.Value.UserId,
+                    nation = "thai",
+                    colorCode = ColorUtility.ToHtmlStringRGBA(playerColor[index])
+                };
+                playerIndexHashTable.Add(player.Value.UserId,playerProfileJson);
+            }else{
+                var profileJson =  playerIndexHashTable[player.Value.UserId] as string;
+                playerIndexProfileData = JsonConvert.DeserializeObject<PlayerIndexProfileData>(profileJson);
+            }
+            playerIndexProfileData.index = index;
+            playerIndexProfileData.colorCode = ColorUtility.ToHtmlStringRGBA(playerColor[index]);
+            playerIndexHashTable[player.Value.UserId] = JsonConvert.SerializeObject(playerIndexProfileData);
+            GameUtil.SetHashTableProperty(roomPropertyData,RoomPropertyKeys.PLAYER_INDEX,playerIndexHashTable);
+            index ++;
+        }
+        PhotonNetwork.CurrentRoom.SetCustomProperties(roomPropertyData);
+        b_playGame.gameObject.SetActive(PhotonNetwork.CurrentRoom.masterClientId == PhotonNetwork.LocalPlayer.ActorNumber);
+    }
     void PrepareTostartGame(){
-        Hashtable data = new Hashtable(); // data Hash in customproperty
+        Hashtable data = new Hashtable(); // data Hash in customproperty (RoomHashtableData)
         Hashtable playerDatas = new Hashtable(); 
         Hashtable playerIndex = new Hashtable();
-        Debug.Log("data "+data.Count);
-        Debug.Log("PlayerData "+playerDatas.Count);
-        Debug.Log("playerIndex "+playerIndex);
-        var index = 0;
         //Set UserID เอานะ
         if(data.ContainsKey(RoomPropertyKeys.PLAYER_INDEX)){
             data[RoomPropertyKeys.PLAYER_INDEX] = null;
         }
-        foreach (var player in PhotonNetwork.CurrentRoom.Players)
-        {
-            Debug.Log(string.Format("player KEY : {0} , VALUE : {1}",player.Key,player.Value));
-
-            // Player p = player.Value;
-            // ExitGames.Client.Photon.Hashtable playerProperties = p.CustomProperties;
-
-            //SetPlayer Start Position X on Game
-            Debug.Log("PlayerData "+playerDatas);
-            Debug.Log("playerIndex "+playerIndex);
-            Debug.Log("userid "+player.Value);
-
-            
-            if(!playerDatas.ContainsKey(player.Value.NickName)){
-                //playerDatas.Add(player.Value.NickName,18); //เอาออกเพราะตอนเข้าเกม ถึงแม้ตัวรถจะวิ่งไปตำแหน่งอื่น ต้ำแหน่งที่ add มาแต่แรกก็ยังรันอยู่
-            }
-            if(!playerIndex.ContainsKey(player.Value.NickName)){
-                playerIndex.Add(player.Value.NickName,index);
-            }
-            //playerDatas[player.Value.NickName] =24;
-            playerIndex[player.Value.NickName] =index;
-           // Debug.Log("playerIndex "+playerIndex[player.Value.UserId]);
-            index++;
-            // ExitGames.Client.Photon.Hashtable playerData = new ExitGames.Client.Photon.Hashtable();
-            // playerData.Add("Distance",1000);
-            // playerDatas.Add(player.Value.UserId, playerData); 
-        }
         data.Add(RoomPropertyKeys.PLAYER_DATA,playerDatas);
-        data.Add(RoomPropertyKeys.PLAYER_INDEX,playerIndex);
-        data.Add(RoomPropertyKeys.GAME_START,true);
+        //data.Add(RoomPropertyKeys.GAME_START,true);
         PhotonNetwork.CurrentRoom.SetCustomProperties(data);
+        PhotonNetwork.CurrentRoom.IsVisible = false;
 
+        PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
 
         //PhotonNetwork.CurrentRoom.SetCustomProperties();
     }
@@ -102,6 +126,11 @@ public class UI_Room : MonoBehaviourPunCallbacks
                 }
             }
         }
+        var playerindexHashtable = PhotonNetwork.CurrentRoom.CustomProperties[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
+        if(playerindexHashtable != null){
+             Debug.Log("playerindexHashtable total "+playerindexHashtable);
+        }
+
         if(propertiesThatChanged.ContainsKey(RoomPropertyKeys.GAME_START)){
             if((bool)propertiesThatChanged[RoomPropertyKeys.GAME_START])
                 PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
@@ -109,14 +138,15 @@ public class UI_Room : MonoBehaviourPunCallbacks
          
     }
     public override void OnLeftRoom(){
-        root.gameObject.SetActive(false);
+        if(root != null)
+            root.gameObject.SetActive(false);
         PageManager.Instance.OpenLobby();
     }
     //other joined room
     public override void OnPlayerEnteredRoom(Player newPlayer){
-        Debug.Log("playerenterroom ++++"+newPlayer.NickName);
+        Debug.Log("playerenterroom ++++"+newPlayer.UserId);
         Debug.Log("PlayerCount ++++"+PhotonNetwork.CurrentRoom.PlayerCount);
-        //PhotonNetwork.CurrentRoom.AddPlayer(newPlayer);
+        PhotonNetwork.CurrentRoom.AddPlayer(newPlayer);
         UpdatePlayerInroom();
     }
     public override void OnPlayerLeftRoom(Player otherPlayer){
@@ -124,31 +154,23 @@ public class UI_Room : MonoBehaviourPunCallbacks
     }
     // local joined Room;
     public override void OnJoinedRoom(){
-        //PhotonNetwork.CurrentRoom.AddPlayer(PhotonNetwork.LocalPlayer);
+        PhotonNetwork.CurrentRoom.AddPlayer(PhotonNetwork.LocalPlayer);
         UpdatePlayerInroom();
     }
-    public void UpdatePlayerInroom(){
-        ClearData();
-        var index = 0;
-        var playerIndex =  PhotonNetwork.CurrentRoom.Players.OrderBy(key => key.Key).ToDictionary(k =>k.Key , v =>v.Value);
-
-        foreach (var item in playerIndex)
-        {
-            var go = Instantiate(playerinroomPrefab,Vector3.zero,Quaternion.identity,content.transform);
-            go.GetComponent<PlayerInRoom_Prefab>().SetData(item.Value.NickName,playerColor[index]);
-            go.gameObject.SetActive(true);
-            index ++;
-        }
-        b_playGame.gameObject.SetActive(PhotonNetwork.CurrentRoom.masterClientId == PhotonNetwork.LocalPlayer.ActorNumber);
-    }
+    
     void ClearData(){
         Debug.Log("clear data ");
-        for (int i = 0; i < content.childCount; i++)
+        for (int i = 0; i < playersData.Length; i++)
         {
-            Destroy(content.GetChild(i).gameObject);
+            //Destroy(content.GetChild(i).gameObject);
+            playersData[i].gameObject.SetActive(false);
         }
     }
     // void Update(){
     //     Debug.Log(PhotonNetwork.LevelLoadingProgress);
     // }
+}
+public class PlayerIndexRank{
+    public int index;
+    public string nickName;
 }

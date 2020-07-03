@@ -31,16 +31,17 @@ public class CenterOfMass : MonoBehaviour
         Debug.Log("inertiaTensor "+rigidbody.inertiaTensor);
         // newMass = defaultMass;
         // rigidbody.centerOfMass = newMass;
-        rigidbody.inertiaTensor = setInitialTensor;///
+       // rigidbody.inertiaTensor = setInitialTensor;///
         rigidbody.centerOfMass = objectOfMass.transform.localPosition;
         AbikeChopSystem.OnGrouned.Subscribe(grouned =>{
             // Debug.Log("Subscribe grouned "+grouned);
-            if(grouned)
-                rigidbody.centerOfMass = objectOfMass.transform.localPosition;
-            else
-                rigidbody.centerOfMass = objectCenter.transform.localPosition;
+            // if(grouned)
+            //     rigidbody.centerOfMass = objectOfMass.transform.localPosition;
+            // else
+            //     rigidbody.centerOfMass = objectCenter.transform.localPosition;
             
-            defaultMass = rigidbody.centerOfMass;
+            // defaultMass = rigidbody.centerOfMass;
+            // newMass = new Vector3(rigidbody.centerOfMass.x,rigidbody.centerOfMass.y,defaultMass.z+currentMass);
         });
         CrashDetecter.OnCrash.Subscribe(_=>{
             OnCrash();
@@ -61,7 +62,7 @@ public class CenterOfMass : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         //rigidbody.centerOfMass = newMass;
+         rigidbody.centerOfMass = newMass;
          //rigidbody.AddForceAtPosition(new Vector3(1,1,1f),transform.position,ForceMode.Impulse);
          //rigidbody.MoveRotation(Quaternion.Euler(-90,90,0));
          //sphere.transform.localPosition = newMass;

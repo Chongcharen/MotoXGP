@@ -57,6 +57,9 @@ public class UI_HUD_Glowing : MonoBehaviour
         }else if(value.ReadValue<Vector2>().x > 0){
             glow_right.DOFade(1,0.5f);
             glow_left.DOFade(0,0.5f);
+        }else if(value.ReadValue<Vector2>().x == 0){
+            glow_right.DOFade(0,0.5f);
+            glow_left.DOFade(0,0.5f);
         }
 
         if(value.ReadValue<Vector2>().y > 0)

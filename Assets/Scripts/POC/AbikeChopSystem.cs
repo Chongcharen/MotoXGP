@@ -39,20 +39,30 @@ public class AbikeChopSystem : MonoBehaviour
     public bool isControll = false;
     [Header ("Speed Setting")]
     public float speed;
+
+    public float currentSpeedLimit =0;
     public float speedLimit = 60;
+    public float boostedLimit = 120;
     float axisX;
     public float direction = 0;
     [SerializeField] AnimationCurve motorTorque = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
-     [SerializeField] Transform centerOfMass;
+    [SerializeField] AnimationCurve boostTorque = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
+    [SerializeField] Transform centerOfMass;
     [Header("Boost")]
-    [SerializeField] float boostForce = 5000;
+    [SerializeField]Transform explosionTransform;
+    [SerializeField]float explosionPower;
+    [SerializeField]float explosionRadius;
+    [SerializeField] float boostForce = 200;
+    [SerializeField] float brakeForce = 5000;
     [SerializeField] int boostLimit = 3;
+    BoostSystem boostSystem;
     
     [SerializeField] float boostTimeLimit = 5;
     float currentBoostTime = 0;
     bool isBoosting = false;
     public float BoostForce { get { return boostForce; } set { boostForce = value; } }
-    [SerializeField]int airBrake = 100;
+    public float BreakForce { get { return boostForce; } set { boostForce = value; } }
+    [SerializeField]int airBrake = 200;
     [Range(0.5f, 10f)]
     [SerializeField] float downforce = 1.0f;
     public float Downforce { get{ return downforce; } set{ downforce = Mathf.Clamp(value, 0, 5); } }     
@@ -77,13 +87,18 @@ public class AbikeChopSystem : MonoBehaviour
     //resetPosition and reStartPosition;
     public Vector3 startPosition;
     public Vector3 bikerStartPosition;
+    //respawn by zone
+    public Vector3 respawnPosition;
+    bool isDeadzone = false;
     void Awake(){
         myRigidbody = GetComponent<Rigidbody>();
         wheels = new WheelComponent[2];
         wheels[0] = SetWheelComponent(connectWheel.wheelFront,connectWheel.AxleFront,false,0,connectWheel.AxleFront.localPosition.y);
         wheels[1] = SetWheelComponent(connectWheel.wheelBack,connectWheel.AxleBack,true,0,connectWheel.AxleBack.localPosition.y);
         startPosition = transform.position;
+        respawnPosition = startPosition;
         bikerStartPosition = bikeSetting.bikerMan.transform.localPosition;
+        currentSpeedLimit = speedLimit;
         GameHUD.OnRestartPosition.Subscribe(_=>{
             RestartPosition();
         }).AddTo(this);
@@ -104,16 +119,23 @@ public class AbikeChopSystem : MonoBehaviour
             //     OnCrash();
             // }).AddTo(this);
         }
+        boostSystem = GetComponent<BoostSystem>();
     }
 
     public void SetController(bool _isActive){
         isControll = _isActive;
         objectDetecter.SetActive(_isActive);
         if(_isActive){
-            CrashDetecter.OnCrash.Subscribe(_=>{
+            CrashDetecter.OnCrash.Subscribe(crashPosition=>{
                 crash = true;
+                respawnPosition = new Vector3(crashPosition.x,respawnPosition.y+2,startPosition.z);
                 OnCrash();
             }).AddTo(this);
+            GameplayManager.OnGameEnd.Subscribe(_=>{
+                isControll = false;
+                ForceBrake();
+                print(Depug.Log("GameEnd !!!!!!!",Color.green));
+            });
         }
     }
 
@@ -121,12 +143,18 @@ public class AbikeChopSystem : MonoBehaviour
         animator.enabled = false;
         objectDetecter.gameObject.SetActive(false);
         StartCoroutine(DelayRespawn());
-        
+    }
+    IEnumerator DelayRespawn(){
+        yield return new WaitForSeconds(2);
+        RestartPosition();
     }
     void RestartPosition(){
+        Debug.Log("restartPosition");
         if(!isControll)return;
+        if(MapManager.Instance.isDeadzone)
+            respawnPosition = new Vector3(MapManager.Instance.respawnPosition.x,MapManager.Instance.respawnPosition.y,startPosition.z);
         StopAllCoroutines();
-        transform.position = startPosition;
+        transform.position = respawnPosition;
         transform.rotation = Quaternion.Euler(0,90,0);
         animator.enabled = true;
         animator.gameObject.transform.localPosition = bikerStartPosition;
@@ -137,6 +165,7 @@ public class AbikeChopSystem : MonoBehaviour
         StopMotor();
     }
     void RestartPosition(Vector3 newPosition){
+        
         if(!isControll)return;
         transform.position = newPosition;
         transform.rotation = Quaternion.Euler(0,90,0);
@@ -173,22 +202,33 @@ public class AbikeChopSystem : MonoBehaviour
     // Update is called once per frame
     void ForceBrake(){
          foreach(WheelComponent component in wheels){
+             if(component.collider == null)continue;
              component.collider.brakeTorque = 100000000;
              component.collider.motorTorque = 0f;
          }
+    }
+    void Brake(bool brake){
+        if(brake){
+            wheels[0].collider.brakeTorque = 100000000;
+            wheels[1].collider.brakeTorque = 100000000;
+            wheels[0].collider.motorTorque = 0;
+        }else{
+            wheels[0].collider.brakeTorque = 0;
+        }
     }
     void ResetEngine(){
         foreach(WheelComponent component in wheels){
              component.collider.brakeTorque = 0;
              component.collider.motorTorque = 0;
          }
+         wheels[0].collider.enabled = false;
+         wheels[1].collider.enabled = false;
+         
     }
-    IEnumerator DelayRespawn(){
-        yield return new WaitForSeconds(2);
-        RestartPosition();
-    }
+    
     void FixedUpdate(){
         speed = transform.InverseTransformDirection(myRigidbody.velocity).z * 3.6f;
+        
         if(!isControll)return;
         if(isControll && !crash){
             accel = motorControl.accelerator;
@@ -196,11 +236,16 @@ public class AbikeChopSystem : MonoBehaviour
             jump = motorControl.isJump;
             isLeft = motorControl.isLeft;
             isRight = motorControl.isRight;
-            if(motorControl.isBoost&& boostLimit >=0 && !isBoosting){
+            if(motorControl.isBoost&& boostLimit >0 && !isBoosting){
                 isBoosting = true; 
                 boostLimit -- ;    
+                currentSpeedLimit = boostedLimit;
                 OnBoostChanged.OnNext(boostLimit);
                 OnBoostTime.OnNext(boostTimeLimit);
+                if(boostSystem != null)
+                    boostSystem.StartBoostEffect(boostTimeLimit);
+                //myRigidbody.AddExplosionForce(explosionPower,explosionTransform.position,explosionRadius,1,ForceMode.Impulse);
+                myRigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
             }
         }
         if(isControll&&crash){
@@ -213,24 +258,32 @@ public class AbikeChopSystem : MonoBehaviour
         }
         if(isBoosting){
             if(currentBoostTime < boostTimeLimit){
-                myRigidbody.AddForce(transform.forward*BoostForce);
+                //myRigidbody.AddForce(transform.forward*BoostForce);
                 currentBoostTime += Time.deltaTime*1;
             }else
             {
+                //myRigidbody.AddForce(-transform.forward*(BreakForce*1000));
+                myRigidbody.AddForce(-transform.forward*2,ForceMode.VelocityChange);
+                wheels[1].collider.brakeTorque = 2000;
+                wheels[0].collider.brakeTorque = 2000;
                 isBoosting = false;
+                currentSpeedLimit = speedLimit;
                 currentBoostTime = 0;
+                wheels[1].collider.brakeTorque = 0;
+                wheels[0].collider.brakeTorque = 0;
             }
         }
          
         foreach(WheelComponent component in wheels){
             WheelHit hit;
-            if(speed > speedLimit && !isBoosting){
-                speed = speedLimit;
+            if(speed > currentSpeedLimit && !isBoosting){
+                speed = currentSpeedLimit;
             }
-            if(component.drive && isGround[indexWhell]){
+            if(component.drive && grounded&&!brake){
                 if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
-                    component.collider.motorTorque = accel * motorTorque.Evaluate(speed) * diffGearing / 1;
-                   // Debug.Log("Evaluate "+motorTorque.Evaluate(speed));
+                    var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                    component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
+                    // Debug.Log("Evaluate "+motorTorque.Evaluate(speed));
                     //Debug.Log("component.collider.motorTorque "+component.collider.motorTorque);
                   // component.sphereCollider.attachedRigidbody.AddForce(transform.forward * boostForce);
                     //myRigidbody.AddForce(transform.forward * boostForce);
@@ -239,13 +292,40 @@ public class AbikeChopSystem : MonoBehaviour
                     component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
                 }
             }
-            if(brake){
-                component.collider.motorTorque = 0.0001f;
-                component.collider.brakeTorque = bikeSetting.brakePower;
-            }else{
-                component.collider.brakeTorque = 0;
+            if(component.drive && accel == 0){
+                 component.collider.brakeTorque = 100;
             }
-            
+            // if(!component.drive){
+            //     if(brake)
+            //         component.collider.brakeTorque = 100000000;
+            //     else
+            //         component.collider.brakeTorque = 0.00001f;
+            // }
+            // if(!isGround[indexWhell]){
+            //     if(brake){
+            //         component.collider.brakeTorque = bikeSetting.brakePower;
+            //     }else
+            //     {
+            //         component.collider.brakeTorque = airBrake;
+            //     }
+                
+            // }else
+            // {
+            //     component.collider.brakeTorque = 0;
+            // }
+
+            if(brake){
+                if(!component.drive)
+                    component.collider.brakeTorque = bikeSetting.brakePower;
+                else
+                    component.collider.brakeTorque = bikeSetting.brakePower;
+            }else
+            {
+                if(!isGround[indexWhell])
+                    component.collider.brakeTorque = airBrake;
+                else
+                    component.collider.brakeTorque = 0;
+            }
             Quaternion quaternion;
             Vector3 position;
             component.collider.GetWorldPose(out position,out quaternion);
@@ -260,32 +340,81 @@ public class AbikeChopSystem : MonoBehaviour
                 isGround[indexWhell] = false;
                 
             }
-            if(component.drive ){
-                if(!isGround[indexWhell])
-                    component.collider.brakeTorque = airBrake;
-                else
-                    component.collider.brakeTorque = 0;
-            }
+            // if(component.drive ){
+            //     if(!isGround[indexWhell])
+            //         component.collider.brakeTorque = airBrake;
+            //     else
+            //         component.collider.brakeTorque = 0;
+            // }
+           
+
             component.axle.localPosition = lp;
             lp.y -= Vector3.Dot(component.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
             lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheels.setting.SuspensionDistance, component.startPos.y + bikeWheels.setting.SuspensionDistance);
             indexWhell++;
             
         }
-        if((isGround[0] == false && isGround[1] == false)){
-            if(grounded && isControll)
-                OnGrouned.OnNext(false);
-            grounded = false;
+
+        //old
+        // if((isGround[0] == false && isGround[1] == false)){
+        //     if(grounded && isControll)
+        //         OnGrouned.OnNext(false);
+        //     grounded = false;
+        //     OnGrouned.OnNext(grounded);
+        // }
+        // else if((isGround[0] == true && isGround[1] == true)){
+        //     if(!grounded && isControll)
+        //         OnGrouned.OnNext(true);
+        //     grounded = true;
+        // }
+        // else if((isGround[0] == false && isGround[1] == true)){
+        //     OnGrouned.OnNext(false);
+        //     grounded = true;
+        // }
+        // else if((isGround[0] == true && isGround[1] == false)){
+        //     OnGrouned.OnNext(true);
+        //     grounded = true;
+        // }
+
+        //OnGrouned.OnNext(isGround[1]);
+        
+        
+        // if(isGround[0] && isGround[1])
+        //     OnGrouned.OnNext(true);
+        // else if(!isGround[0] && !isGround[1])
+        //     OnGrouned.OnNext(false);
+       // grounded = isGround[0] && isGround[1];
+        if(grounded != (isGround[0] && isGround[1])){
+            grounded = !grounded;
             OnGrouned.OnNext(grounded);
         }
-        else if((isGround[0] == true && isGround[1] == true)){
-            if(!grounded && isControll)
-                OnGrouned.OnNext(true);
-            grounded = true;
-        }
-        else if((isGround[0] == true || isGround[1] == true)){
-           // myRigidbody.AddTorque(Vector3.zero*10,ForceMode.Acceleration);
-        }
+        // if(isGround[0] == false && isGround[1] == false){
+        //     grounded = false;
+        //     if(grounded && isControll)
+        //         OnGrouned.OnNext(grounded);
+        //     OnGrouned.OnNext(grounded);
+        // }else if((isGround[0] == true && isGround[1] == true)){
+        //     grounded = true;
+        //     if(!grounded && isControll)
+        //         OnGrouned.OnNext(grounded);
+        // }else if((isGround[0] == true && isGround[1] == false)){
+
+        // }
+
+        // if(isGround[0] == false){
+        //     OnGrouned.OnNext(false);
+        // }
+        
+        // if(isGround[0] == false && isGround[1] == false){
+        //     grounded = false;
+        // }else if((isGround[0] == true && isGround[1] == true)){
+        //     grounded = true;
+        // }
+        //grounded = isGround[0] && isGround[1];
+        //OnGrouned.OnNext(isGround[1]);
+
+       // OnGrouned.OnNext(isGround[1]);
+
 
         /*if(grounded && accel > 0){
             myRigidbody.AddForce(transform.forward * boostForce);
@@ -326,6 +455,10 @@ public class AbikeChopSystem : MonoBehaviour
     
     public void RemoveCrashDetecter(){
         objectDetecter.gameObject.SetActive(false);
+    }
+    public void RemoveEngine(){
+        myRigidbody.Sleep();
+        GetComponent<CenterOfMass>().enabled = false;
     }
     #region Setting
     private WheelComponent SetWheelComponent(Transform wheel, Transform axle, bool drive, float maxSteer, float pos_y)

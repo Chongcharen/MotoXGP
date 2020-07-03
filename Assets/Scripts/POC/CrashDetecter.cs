@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 public class CrashDetecter : MonoBehaviour
 {
-    public static Subject<Unit> OnCrash = new Subject<Unit>();
+    public static Subject<Vector3> OnCrash = new Subject<Vector3>();
     void Start(){
 
     }
@@ -12,7 +12,7 @@ public class CrashDetecter : MonoBehaviour
     {
        if(other.tag == TagKeys.GROUND || other.tag == TagKeys.ROAD){
            Debug.Log("Crash");
-           OnCrash.OnNext(default);
+           OnCrash.OnNext(transform.position);
        }
     }
 }

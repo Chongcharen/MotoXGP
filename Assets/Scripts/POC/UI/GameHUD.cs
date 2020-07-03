@@ -18,12 +18,20 @@ public class GameHUD : MonoBehaviourPunCallbacks
     [SerializeField]Image image_nos,image_timeNod;
     public float deltaTime;
     
+    ///TestGame
+    [Header("GameDebug")]
+    [SerializeField]Button b_restartGame;
 
     void Start(){
-        b_reset.OnClickAsObservable().Subscribe(_=>{
-            OnResetPosition.OnNext(default);
-        });
+        // b_restartGame.OnClickAsObservable().Subscribe(_=>{
+           
+        //     GameplayManager.Instance.ResetGame();
+        // });
+        // b_reset.OnClickAsObservable().Subscribe(_=>{
+        //     OnResetPosition.OnNext(default);
+        // });
         b_restart.OnClickAsObservable().Subscribe(_=>{
+             Debug.Log("restart Click");
             OnRestartPosition.OnNext(default);
         });
         GameController.OnMicActive.Subscribe(active =>{
@@ -54,7 +62,9 @@ public class GameHUD : MonoBehaviourPunCallbacks
         image_timeNod.DOFillAmount(1,time).OnComplete(()=>{
             image_timeNod.DOFillAmount(0,.5f);
         });
-        image_nos.transform.DOShakePosition(time,10,10,180);
+        if(image_nos != null){
+            image_nos.transform.DOShakePosition(time,10,10,180);
+        }
     }
 
     void SetPing(Color firstColor,Color secondColor,Color thirthColor){

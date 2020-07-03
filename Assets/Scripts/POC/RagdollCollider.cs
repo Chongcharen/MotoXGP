@@ -16,10 +16,11 @@ public class RagdollCollider : MonoBehaviour
             //coll.enabled = false;
             coll.material = material;
             var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
-            rigidbody.interpolation = RigidbodyInterpolation.None;
-            coll.GetComponent<Rigidbody>().mass = 0;
-            coll.GetComponent<Rigidbody>().drag = 0;
-            coll.GetComponent<Rigidbody>().angularDrag = 0;
+            rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+            rigidbody.mass = 0;
+            rigidbody.drag = 0;
+            rigidbody.angularDrag = 0;
+            rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
             //rigidbody.angularDrag = 10;
             //rigidbody.drag = 1;
             //rigidbody.useGravity = false;

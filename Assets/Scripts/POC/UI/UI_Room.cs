@@ -97,11 +97,11 @@ public class UI_Room : MonoBehaviourPunCallbacks
             data[RoomPropertyKeys.PLAYER_INDEX] = null;
         }
         data.Add(RoomPropertyKeys.PLAYER_DATA,playerDatas);
-        data.Add(RoomPropertyKeys.GAME_START,true);
+        //data.Add(RoomPropertyKeys.GAME_START,true);
         PhotonNetwork.CurrentRoom.SetCustomProperties(data);
+        PhotonNetwork.CurrentRoom.IsVisible = false;
 
-
-        //PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
+        PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
 
         //PhotonNetwork.CurrentRoom.SetCustomProperties();
     }

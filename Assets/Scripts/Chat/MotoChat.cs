@@ -43,6 +43,7 @@ public class MotoChat : MonoBehaviour
     [SerializeField]GameObject worldChatBox,roomChatBox;
     [Header("PlayerNameInbox")]
     [SerializeField]Color playerColor = Color.yellow;
+    [SerializeField]Color otherColor = Color.blue;
     Dictionary<string,Transform> channelContentTransform = new Dictionary<string, Transform>();
     Dictionary<string,GameObject> channelChatBox = new Dictionary<string, GameObject>();
 
@@ -168,19 +169,40 @@ public class MotoChat : MonoBehaviour
         {
             senderName = data.senders[i];
             var chatPrefab = Instantiate(chatTextPrefab);
-            if(data.channelType == ChannelType.Room){
+            // if(data.channelType == ChannelType.Room){
                 
-                var playerindexProperties = PhotonNetwork.CurrentRoom.CustomProperties[RoomPropertyKeys.PLAYER_INDEX] as ExitGames.Client.Photon.Hashtable;
-                if(!playerindexProperties.ContainsKey(data.senders[i]))continue;
-                var playerIndexProfileData = JsonConvert.DeserializeObject<PlayerIndexProfileData>(playerindexProperties[data.senders[i]].ToString());
-                senderName = playerIndexProfileData.nickName;
-                if(playerIndexProfileData != null && !string.IsNullOrEmpty(playerIndexProfileData.colorCode))
-                    playerColorCode = playerIndexProfileData.colorCode;
-            }else{
-                var targetPlayer = PhotonNetwork.PlayerList.FirstOrDefault(p =>p.UserId == data.senders[i]);
-                if(targetPlayer != null)
-                    senderName = PhotonNetwork.PlayerList.FirstOrDefault(p =>p.UserId == data.senders[i]).NickName;
+            //     var playerindexProperties = PhotonNetwork.CurrentRoom.CustomProperties[RoomPropertyKeys.PLAYER_INDEX] as ExitGames.Client.Photon.Hashtable;
+            //     if(!playerindexProperties.ContainsKey(data.senders[i]))continue;
+            //     var playerIndexProfileData = JsonConvert.DeserializeObject<PlayerIndexProfileData>(playerindexProperties[data.senders[i]].ToString());
+            //     senderName = playerIndexProfileData.nickName;
+            //     if(playerIndexProfileData != null && !string.IsNullOrEmpty(playerIndexProfileData.colorCode))
+            //         playerColorCode = playerIndexProfileData.colorCode;
+            // }else{
+                
+            // }
+
+            // var targetPlayer = PhotonNetwork.PlayerList.FirstOrDefault(p =>p.UserId == data.senders[i]);
+            // if(targetPlayer != null){
+            //     senderName = PhotonNetwork.PlayerList.FirstOrDefault(p =>p.UserId == data.senders[i]).NickName;
+            //     playerColorCode = ColorUtility.ToHtmlStringRGBA(playerColor);
+            // }else
+            // {
+            //     playerColorCode = ColorUtility.ToHtmlStringRGBA(otherColor);
+            // }
+            var targetPlayer = PhotonNetwork.PlayerList.FirstOrDefault(p =>p.UserId == data.senders[i]);
+            if(targetPlayer != null){
+                senderName = PhotonNetwork.PlayerList.FirstOrDefault(p =>p.UserId == data.senders[i]).NickName;
+                playerColorCode = ColorUtility.ToHtmlStringRGBA(playerColor);
             }
+           if(data.senders[i] == PhotonNetwork.LocalPlayer.UserId){
+               playerColorCode = ColorUtility.ToHtmlStringRGBA(playerColor);
+           }else
+           {
+               playerColorCode = ColorUtility.ToHtmlStringRGBA(otherColor);
+           }
+
+
+
             username = string.Format("<color=#{0}>{1}</color> : ",playerColorCode, senderName);
             msgs = string.Format("{0}{1}", username, data.messages[i]);
             chatPrefab.GetComponent<TextMeshProUGUI>().text = msgs;

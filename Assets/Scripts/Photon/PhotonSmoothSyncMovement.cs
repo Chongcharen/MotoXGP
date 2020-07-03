@@ -72,7 +72,6 @@ public class PhotonSmoothSyncMovement : Photon.Pun.MonoBehaviourPun, IPunObserva
             if (!photonView.IsMine)
             {
                 //Update remote player (smooth this, this looks good, at the cost of some accuracy)
-                
                 transform.position = Vector3.Lerp(transform.position, correctPlayerPos, Time.deltaTime * this.SmoothingDelay);
                 transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * this.SmoothingDelay);
             }

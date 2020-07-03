@@ -107,6 +107,7 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
         //Foreach ซ้อนกันเยอะ เอาออกไป อยุ่ hash roomproperty ดีมั้ย?
         foreach (var property in propertiesThatChanged)
         {
+            Debug.Log("property change "+property.Key+" Value "+property);
             if(property.Key.ToString() == RoomPropertyKeys.PLAYER_DATA){
                 var playerData = property.Value as Hashtable;
                 foreach (var data in playerData)
@@ -124,7 +125,7 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
         }
     }
     void SetPlayerRanking(){
-        //Debug.Log("SetplayerRanking************************************************");
+        Debug.Log("SetplayerRanking************************************************");
         dic_playerDistance = dic_playerDistance.OrderByDescending(key => key.Value.distance).ToDictionary(k =>k.Key , v =>v.Value);
         var myranking = 0;
         var currentRanking = 0;
@@ -144,11 +145,11 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
                 else
                     nextPlayerDistanceData = null;
 
-                if(nextPlayerDistanceData != null && (nextPlayerDistanceData.distance - playerDistanceData.distance) < 10){
-                    mySliderPrefab.OverTaking();
-                }else{
-                    mySliderPrefab.CloseOverTake();
-                }
+                // if(nextPlayerDistanceData != null && (nextPlayerDistanceData.distance - playerDistanceData.distance) < 10){
+                //     mySliderPrefab.OverTaking();
+                // }else{
+                //     mySliderPrefab.CloseOverTake();
+                // }
             }
         }
     }

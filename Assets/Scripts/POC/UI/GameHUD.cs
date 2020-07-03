@@ -62,7 +62,9 @@ public class GameHUD : MonoBehaviourPunCallbacks
         image_timeNod.DOFillAmount(1,time).OnComplete(()=>{
             image_timeNod.DOFillAmount(0,.5f);
         });
-        image_nos.transform.DOShakePosition(time,10,10,180);
+        if(image_nos != null){
+            image_nos.transform.DOShakePosition(time,10,10,180);
+        }
     }
 
     void SetPing(Color firstColor,Color secondColor,Color thirthColor){

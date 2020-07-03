@@ -20,20 +20,20 @@ public class UI_Login : MonoBehaviour
         //     if(string.IsNullOrEmpty(input_name.text))return;
         //     PhotonNetworkConsole.Instance.Connect(input_name.text);
         // });
-        GPGSAuthentication.OnGoogleLoginSuccess.Subscribe( _=>{
-            b_google_login.interactable = false;
-            if(!_)
-                b_google_login.gameObject.SetActive(false);
-        });
+        // GPGSAuthentication.OnGoogleLoginSuccess.Subscribe( _=>{
+        //     b_google_login.interactable = false;
+        //     if(!_)
+        //         b_google_login.gameObject.SetActive(false);
+        // });
         PhotonNetworkConsole.OnConnectedServer.Subscribe(connected =>{
             if(root != null)
                 root.gameObject.SetActive(false);
             PageManager.Instance.OpenLobby();
         });
         
-        b_google_login.OnClickAsObservable().Subscribe(_=>{
-            PlayFabController.Instance.LoginWithGoogle();
-        });
+        // b_google_login.OnClickAsObservable().Subscribe(_=>{
+        //     PlayFabController.Instance.LoginWithGoogle();
+        // });
         b_facebook_login.OnClickAsObservable().Subscribe(_=>{
             PlayFabController.Instance.LoginWithFacebook();
         });

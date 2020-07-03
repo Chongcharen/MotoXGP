@@ -25,19 +25,20 @@ public class UI_lobby : MonoBehaviourPunCallbacks
         pathList = new List<Vector3[]>();
         pathList.Add(bike0Path);pathList.Add(bike1Path);pathList.Add(bike2Path);
         b_joinRandomRoom.OnClickAsObservable().Subscribe(_=>{
-            PhotonNetworkConsole.Instance.JoinRandomRoom(null);
+            PageManager.Instance.OpenMap();
+            //PhotonNetworkConsole.Instance.JoinRandomRoom(null);
         });
         root.ObserveEveryValueChanged(r =>r.gameObject.activeSelf).Subscribe(active =>{
             //Animate Bike when lobby active
             if(active)
                  StartBikeAnimation();
         });
-       
     }
     void StartBikeAnimation(){
        // Sequence sequence = DOTween.Sequence();
-        bikeImages[0].rectTransform.DOLocalPath(pathList[0],3,PathType.CatmullRom,PathMode.Full3D).OnComplete(()=>{
-            bikeImages[0].rectTransform.anchoredPosition = pathList[0][0];
+        bikeImages[0].rectTransform.anchoredPosition = pathList[0][0];
+        bikeImages[0].rectTransform.DOLocalPath(pathList[0],1,PathType.CatmullRom,PathMode.Full3D).OnComplete(()=>{
+            //bikeImages[0].rectTransform.anchoredPosition = pathList[0][0];
         });
     }
     public override void OnJoinedRoom(){

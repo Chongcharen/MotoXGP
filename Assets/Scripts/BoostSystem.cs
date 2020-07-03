@@ -18,18 +18,18 @@ public class BoostSystem : MonoBehaviour
        motionBlur = _motion;
     }
     public void StartBoostEffect(float time){
-        if(motionBlur == null)return;
-        motionBlur.sampleCount = 0;
-        motionBlur.shutterAngle = 10;
-        motionBlur.frameBlending = 0.1f;
+        // if(motionBlur == null)return;
+        // motionBlur.sampleCount = 0;
+        // motionBlur.shutterAngle = 10;
+        // motionBlur.frameBlending = 0.1f;
         trailRenderer.emitting = true;
         emission.enabled = true;
         Invoke("StopBoostEffect",time);
     }
     public void StopBoostEffect(){
-        motionBlur.sampleCount = 0;
-        motionBlur.shutterAngle = 0;
-        motionBlur.frameBlending = 0f;
+        // motionBlur.sampleCount = 0;
+        // motionBlur.shutterAngle = 0;
+        // motionBlur.frameBlending = 0f;
         trailRenderer.emitting = false;
         emission.enabled = false;
     }

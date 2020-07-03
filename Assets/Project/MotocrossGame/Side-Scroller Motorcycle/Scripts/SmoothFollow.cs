@@ -12,7 +12,9 @@ Then we apply the smoothed values to the transform's position.
 
 using UnityEngine;
 using System.Collections;
-
+using UniRx;
+using DG.Tweening;
+using DG.Tweening.Core;
 // Place the script in the Camera-Control group in the component menu
 [AddComponentMenu("Camera-Control/Smooth Follow C#")]
 public class SmoothFollow : MonoBehaviour {
@@ -28,8 +30,33 @@ public class SmoothFollow : MonoBehaviour {
 	public float rotationDamping = 3.0f;
 
     public float sideX = 0;
+
+	public float standardSideX = 1.74f;
+
+	public float boostChangeSideX = -2;
+
+	bool isBoost = false;
+	float elapsed = 0;
+
+	float boostChangeCameraTime = 1f;
 	
-	
+	private void Start() {
+		AbikeChopSystem.OnBoostTime.Subscribe(timeChange =>{
+			elapsed = timeChange;
+			isBoost = true;
+			//sideX += boostChangeSideX;
+			//DOTween.To(() => sideX,sideX, sideX+boostChangeSideX , 0.5f);
+			//transform.DOMoveX(sideX + boostChangeSideX,0.3f).SetEase(Ease.OutElastic);
+			// DOGetter<float> doGetter = new DOGetter<float>(() => sideX);
+            // DOSetter <float> dOSetter = new DOSetter <float> ((x) => { x = sideX;});
+        	// DOTween.To(doGetter, dOSetter,sideX+boostChangeSideX, 0.5f);
+			StartCoroutine("closetime",timeChange);
+		}).AddTo(this);
+	}
+	IEnumerator closetime(float time){
+		yield return new WaitForSeconds(time);
+		isBoost = false;
+	}
 	void LateUpdate () {
 		// Early out if we don't have a target
 		if (!target)
@@ -54,8 +81,18 @@ public class SmoothFollow : MonoBehaviour {
         // Set the position of the camera on the x-z plane to:
         // distance meters behind the target
         //transform.position = target.position;
+
+		if(isBoost){
+			sideX = Mathf.Lerp(sideX,-0.5f,0.1f);
+		}else
+		{
+			sideX = Mathf.Lerp(sideX,standardSideX,0.2f);
+		}
         transform.position = new Vector3(target.position.x + sideX, currentHeight, target.position.z);
         transform.position -= currentRotation * Vector3.forward * distance;
+
+
+
 
         // Set the height of the camera
         //transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);

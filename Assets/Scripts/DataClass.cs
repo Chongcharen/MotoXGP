@@ -5,6 +5,7 @@ using UnityEngine;
 public class DataClass 
 {
 }
+[System.Serializable]
 public class EndPointData{
     public int instanceId;
     public bool isPass = false;
@@ -12,6 +13,7 @@ public class EndPointData{
     public float position;
 
 }
+[System.Serializable]
 public struct ChatMessageData{
     
     public string channelName;
@@ -20,6 +22,7 @@ public struct ChatMessageData{
     public object[] messages;
 }
 //PlayerData in playerResult when play end on finishLine
+[System.Serializable]
 public struct PlayerGameResultData{
     public string nation;
     public string playerName;
@@ -28,6 +31,7 @@ public struct PlayerGameResultData{
    // public 
 }
 //playerData in GamePlay
+[System.Serializable]
 public class PlayerIndexProfileData{
     public int index;
     public string userId;
@@ -43,4 +47,12 @@ public class PlayerDistanceData{
     public string userID;
     public string playerName;
     public float distance;
+}
+
+//Mockup Map Data
+[System.Serializable]
+public class MapChoiceData{
+    public string mapType;
+    public int mapLevel;
+    public string mapDetail;
 }

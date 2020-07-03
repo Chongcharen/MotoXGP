@@ -30,7 +30,7 @@ public class LobbyController : MonoBehaviourPunCallbacks
     }
     
     public void JoinPrivateRoom(string roomName , ExitGames.Client.Photon.Hashtable roomOptions){
-
+        
     }
     public void EnterPassword(string password)
     {
@@ -105,9 +105,9 @@ public class LobbyController : MonoBehaviourPunCallbacks
     public void CreateRoom(ExitGames.Client.Photon.Hashtable _customProperty = null) //trying to create our own room
     {
         RoomOptions roomOps = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = (byte)maxPlayer };
-        roomOps.PlayerTtl = -1;
-        roomOps.EmptyRoomTtl = 6000000;
-        roomOps.CleanupCacheOnLeave = true;
+        //roomOps.PlayerTtl = -1;
+        //roomOps.EmptyRoomTtl = 6000000;
+        //roomOps.CleanupCacheOnLeave = true;
         //roomOps.Plugins = new string[] {"MyFirstPlugin"}; // call plugin on create game
         // _customProperty.Add(RoomOptionKey.HostID,UserManager.Instance.userData.Value.uid);
         // if(_customProperty != null){

@@ -39,16 +39,21 @@ public class AbikeChopSystem : MonoBehaviour
     public bool isControll = false;
     [Header ("Speed Setting")]
     public float speed;
+
+    public float currentSpeedLimit =0;
     public float speedLimit = 60;
+    public float boostedLimit = 120;
     float axisX;
     public float direction = 0;
     [SerializeField] AnimationCurve motorTorque = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
-     [SerializeField] Transform centerOfMass;
+    [SerializeField] AnimationCurve boostTorque = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
+    [SerializeField] Transform centerOfMass;
     [Header("Boost")]
     [SerializeField]Transform explosionTransform;
     [SerializeField]float explosionPower;
     [SerializeField]float explosionRadius;
-    [SerializeField] float boostForce = 5000;
+    [SerializeField] float boostForce = 200;
+    [SerializeField] float brakeForce = 5000;
     [SerializeField] int boostLimit = 3;
     BoostSystem boostSystem;
     
@@ -56,6 +61,7 @@ public class AbikeChopSystem : MonoBehaviour
     float currentBoostTime = 0;
     bool isBoosting = false;
     public float BoostForce { get { return boostForce; } set { boostForce = value; } }
+    public float BreakForce { get { return boostForce; } set { boostForce = value; } }
     [SerializeField]int airBrake = 200;
     [Range(0.5f, 10f)]
     [SerializeField] float downforce = 1.0f;
@@ -92,6 +98,7 @@ public class AbikeChopSystem : MonoBehaviour
         startPosition = transform.position;
         respawnPosition = startPosition;
         bikerStartPosition = bikeSetting.bikerMan.transform.localPosition;
+        currentSpeedLimit = speedLimit;
         GameHUD.OnRestartPosition.Subscribe(_=>{
             RestartPosition();
         }).AddTo(this);
@@ -221,6 +228,7 @@ public class AbikeChopSystem : MonoBehaviour
     
     void FixedUpdate(){
         speed = transform.InverseTransformDirection(myRigidbody.velocity).z * 3.6f;
+        
         if(!isControll)return;
         if(isControll && !crash){
             accel = motorControl.accelerator;
@@ -231,12 +239,13 @@ public class AbikeChopSystem : MonoBehaviour
             if(motorControl.isBoost&& boostLimit >0 && !isBoosting){
                 isBoosting = true; 
                 boostLimit -- ;    
+                currentSpeedLimit = boostedLimit;
                 OnBoostChanged.OnNext(boostLimit);
                 OnBoostTime.OnNext(boostTimeLimit);
                 if(boostSystem != null)
                     boostSystem.StartBoostEffect(boostTimeLimit);
-                myRigidbody.AddExplosionForce(explosionPower,explosionTransform.position,explosionRadius,1,ForceMode.Impulse);
-                //myRigidbody.AddForce(transform.forward*100000);
+                //myRigidbody.AddExplosionForce(explosionPower,explosionTransform.position,explosionRadius,1,ForceMode.Impulse);
+                myRigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
             }
         }
         if(isControll&&crash){
@@ -249,27 +258,32 @@ public class AbikeChopSystem : MonoBehaviour
         }
         if(isBoosting){
             if(currentBoostTime < boostTimeLimit){
-                myRigidbody.AddForce(transform.forward*BoostForce);
+                //myRigidbody.AddForce(transform.forward*BoostForce);
                 currentBoostTime += Time.deltaTime*1;
             }else
             {
-                myRigidbody.AddForce(-transform.forward*(BoostForce*100));
-                wheels[1].collider.brakeTorque = 10000;
+                //myRigidbody.AddForce(-transform.forward*(BreakForce*1000));
+                myRigidbody.AddForce(-transform.forward*2,ForceMode.VelocityChange);
+                wheels[1].collider.brakeTorque = 2000;
+                wheels[0].collider.brakeTorque = 2000;
                 isBoosting = false;
+                currentSpeedLimit = speedLimit;
                 currentBoostTime = 0;
                 wheels[1].collider.brakeTorque = 0;
+                wheels[0].collider.brakeTorque = 0;
             }
         }
          
         foreach(WheelComponent component in wheels){
             WheelHit hit;
-            if(speed > speedLimit && !isBoosting){
-                speed = speedLimit;
+            if(speed > currentSpeedLimit && !isBoosting){
+                speed = currentSpeedLimit;
             }
             if(component.drive && grounded&&!brake){
                 if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
-                    component.collider.motorTorque = accel * motorTorque.Evaluate(speed) * diffGearing / 1;
-                   // Debug.Log("Evaluate "+motorTorque.Evaluate(speed));
+                    var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                    component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
+                    // Debug.Log("Evaluate "+motorTorque.Evaluate(speed));
                     //Debug.Log("component.collider.motorTorque "+component.collider.motorTorque);
                   // component.sphereCollider.attachedRigidbody.AddForce(transform.forward * boostForce);
                     //myRigidbody.AddForce(transform.forward * boostForce);

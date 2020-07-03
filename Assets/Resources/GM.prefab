@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1976278397787606}
+  m_IsPrefabAsset: 1
+--- !u!1 &1976278397787606
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4941333725476994}
+  - component: {fileID: 114038789520990592}
+  m_Layer: 0
+  m_Name: GM
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4941333725476994
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1976278397787606}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.11500019, y: 1.1921155, z: -7.196823}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114038789520990592
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1976278397787606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a639d85e2c758ab4da2a327d32ae4be0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bikeBody:
+  - nameItem: Bike03_B01_H_C_02
+    hTexture: {fileID: 2800000, guid: 9bf6d318d4a67774299fe589a6f7505b, type: 3}
+  - nameItem: Bike03_B01_H_C_04
+    hTexture: {fileID: 2800000, guid: e21eb9f64495ed04796094e5c3ea7f9b, type: 3}
+  - nameItem: Bike03_B01_H_C_10
+    hTexture: {fileID: 2800000, guid: d0074d1a074457648b2863305f295df9, type: 3}
+  - nameItem: Bike03_B02_H_C_10
+    hTexture: {fileID: 2800000, guid: d1600c38f6cb381478eb910959aa148d, type: 3}
+  - nameItem: Bike03_B02_H_C_07
+    hTexture: {fileID: 2800000, guid: c1c352ed7583a65469f0e86b6cc91c31, type: 3}
+  suitTex:
+  - nameItem: Suit01_H_C_02
+    hTexture: {fileID: 2800000, guid: 13d8267d1533eb04a84d8b24e7a2e9a6, type: 3}
+  - nameItem: Suit01_H_C_05
+    hTexture: {fileID: 2800000, guid: 095f1aabc88471a43beebea98ab0c950, type: 3}
+  - nameItem: Suit01_H_C_10
+    hTexture: {fileID: 2800000, guid: f956d02e9cbc0fd4fa0d38c4a78d8e9e, type: 3}
+  - nameItem: Suit01_H_C_14
+    hTexture: {fileID: 2800000, guid: 0b32b61d91bf60646b3790311da4d408, type: 3}
+  - nameItem: Suit01_H_C_15
+    hTexture: {fileID: 2800000, guid: 31acae9a76e592d44839832dc82cba90, type: 3}
+  helmetTex:
+  - nameItem: Helmet01_H_C_13
+    hTexture: {fileID: 2800000, guid: c4d4a0c76c6f1724bb1d0dcf3f71c7f0, type: 3}
+  - nameItem: Helmet01_H_C_10
+    hTexture: {fileID: 2800000, guid: 66c894b025e6222418f2373eb4ee9bb9, type: 3}
+  - nameItem: Helmet01_H_C_01
+    hTexture: {fileID: 2800000, guid: 0c823ad7ac581a7408491853f502d170, type: 3}
+  gloveTex:
+  - nameItem: Gloves01_H_C_13
+    hTexture: {fileID: 2800000, guid: 176244b5d061a4346a784483f38a5cb5, type: 3}
+  - nameItem: Gloves02_H_C_08
+    hTexture: {fileID: 2800000, guid: 84abc221537906e4c9d3246a6d6d03c7, type: 3}
+  - nameItem: Gloves02_H_C_13
+    hTexture: {fileID: 2800000, guid: e4fb34b29516bc548b5b43323e7c1b2b, type: 3}
+  bootTex:
+  - nameItem: Boots01_H_C_10
+    hTexture: {fileID: 2800000, guid: 6cc2022587ae9034c8f3415316131a8f, type: 3}
+  - nameItem: Boots01_H_C_14
+    hTexture: {fileID: 2800000, guid: f57a465fd9a963c47b8870d770db6938, type: 3}
+  - nameItem: Boots02_H_C_10
+    hTexture: {fileID: 2800000, guid: 79628bd4aae83b6489450c3995ef45df, type: 3}

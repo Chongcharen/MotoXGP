@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1254664904398326}
+  m_IsPrefabAsset: 1
+--- !u!1 &1254664904398326
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4992736653723982}
+  - component: {fileID: 114460750629810322}
+  - component: {fileID: 114137401675011252}
+  - component: {fileID: 114498904481485396}
+  m_Layer: 0
+  m_Name: DataCSV
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4992736653723982
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1254664904398326}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114137401675011252
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1254664904398326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d434b3d55c9dacf41a308b9e4e5fdd7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CharacterCSV: {fileID: 4900000, guid: 973eb65bf0a6c21428c5cb6e99b1af57, type: 3}
+  HelmetPrefabCSV: {fileID: 4900000, guid: 38518fb5b21888040a10b900079089bd, type: 3}
+  HelmetTextureCSV: {fileID: 4900000, guid: 4b0a77e4bdc93ca4db2d0b733b0df9e7, type: 3}
+  SuitCSV: {fileID: 4900000, guid: 5707150fb839a8c4bb9dc6bedbce8bcb, type: 3}
+  GloveCSV: {fileID: 4900000, guid: de279975ecc3e0d488d94241950b7ebf, type: 3}
+  BootsCSV: {fileID: 4900000, guid: b532d4878d3301743a5de4f02c491439, type: 3}
+  startReadCsvAtRow: 3
+  listCharacterInfo: []
+  listHelmetPrefabInfo: []
+  listHelmetTextureInfo: []
+  listTextureSuitInfo: []
+  listTextureGloveInfo: []
+  listTextureBootsInfo: []
+--- !u!114 &114460750629810322
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1254664904398326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b84c6bf1ebf5c94597e85428d813a1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StickerCSV: {fileID: 4900000, guid: b75f40fbb6c9d8c42957ea52d8f703e8, type: 3}
+  BodyCSV: {fileID: 4900000, guid: 5a987a40782bb7c45a8232f4488f3449, type: 3}
+  FrameCSV: {fileID: 4900000, guid: 810ed6a6be7e72d46aacf89d8042c6f0, type: 3}
+  EngineLevelCSV: {fileID: 4900000, guid: a2099805089ddf849becdf0948b2f6e5, type: 3}
+  WheelLevelCSV: {fileID: 4900000, guid: e43cb951445509841a7374f7ee425778, type: 3}
+  FrameLevelCSV: {fileID: 4900000, guid: d874522290ea9cf4dbdb5388eda3d027, type: 3}
+  startReadCsvAtRow: 3
+  solidMaterial: {fileID: 0}
+  strickerMaterial: {fileID: 0}
+  listFrame: []
+  listBody: []
+  listSticker: []
+  listColorSolid: []
+  listEngineLevel: []
+  listWheelLevel: []
+  listFrameLevel: []
+--- !u!114 &114498904481485396
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1254664904398326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73fd378f841d27a47bcdbbac4d91b3b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MapCSV: {fileID: 4900000, guid: 79b991ae6884e254b96dd9762a58ca3c, type: 3}
+  startReadCsvAtRow: 3
+  listMapInfo: []

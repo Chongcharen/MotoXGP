@@ -176,6 +176,7 @@ public class PhotonNetworkConsole : MonoBehaviourPunCallbacks
         PhotonNetwork.ReconnectAndRejoin();
     }
     public void LeaveRoom(){
+        Debug.Log("LeaveRoom !!!!!");
         PhotonNetwork.LeaveRoom(false);
     }
     #region  VoiceSetting

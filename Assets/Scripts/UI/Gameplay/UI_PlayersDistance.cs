@@ -50,6 +50,9 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
             .AppendInterval(5)
             .Append(round_txt.DOFade(0,0.5f)).SetAutoKill();
         }).AddTo(this);
+        PhotonSmoothSyncMovement.OnPlayerMovement.Subscribe(tupleValue =>{
+            SetDistance(tupleValue.Item1,tupleValue.Item2);
+        }).AddTo(this);
     }
     void CreateSlider(){
         Debug.Log("createSlider ");
@@ -57,7 +60,10 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
         Hashtable property = PhotonNetwork.CurrentRoom.CustomProperties;
         Hashtable playerData = property[RoomPropertyKeys.PLAYER_DATA] as Hashtable;
         Hashtable playerIndexData = property[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
-        foreach (var playerIndex in playerIndexData)
+
+        Debug.LogWarningFormat("playerindex data {0}",playerIndexData);
+        /// เกมถัดไปจากครั้งแรกมักเจอ error
+         foreach (var playerIndex in playerIndexData)
         {
             Debug.Log(string.Format("index key {0} vale {1}",playerIndex.Key,playerIndex.Value));
             var slider = Instantiate(playerSliderPrefab,Vector3.zero,Quaternion.identity,transformParent);
@@ -90,7 +96,13 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
                 dic_playerDistance[playerIndex.Key.ToString()] = null;
                 dic_playerDistance.Remove(playerIndex.Key.ToString());
             }
+            print(Depug.Log("CheckplayerKey "+playerIndex.Key,Color.white));
+            print(Depug.Log("dic_playerDistance null? "+dic_playerDistance,Color.white));
+            
+            
+
             dic_playerDistance.Add(playerIndex.Key.ToString(),playerDistanceData);
+            print(Depug.Log("dic_playerDistance containkey? "+dic_playerDistance.ContainsKey(playerIndex.Key.ToString()),Color.green));
             if(playerIndex.Key.ToString() == PhotonNetwork.LocalPlayer.UserId){
                 localUserId = PhotonNetwork.LocalPlayer.UserId;
                 myDistanceData = playerDistanceData;
@@ -100,6 +112,9 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
         }
         if(mySliderPrefab != null)
             mySliderPrefab.transform.parent.SetAsLastSibling();
+
+
+        print(Depug.Log("stripstringkey = "+PhotonNetwork.CurrentRoom.CustomProperties.StripToStringKeys(),Color.red));
     }
 
     // Update is called once per frame
@@ -107,25 +122,30 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
         //Foreach ซ้อนกันเยอะ เอาออกไป อยุ่ hash roomproperty ดีมั้ย?
         foreach (var property in propertiesThatChanged)
         {
-            Debug.Log("property change "+property.Key+" Value "+property);
-            if(property.Key.ToString() == RoomPropertyKeys.PLAYER_DATA){
-                var playerData = property.Value as Hashtable;
-                foreach (var data in playerData)
-                {
-                    var keyName = data.Key.ToString();
-                    if(dic_playerSlider == null)return;
-                    if(dic_playerSlider.ContainsKey(keyName)){
-                        var distance = System.Convert.ToSingle(data.Value.ToString());
-                        dic_playerSlider[keyName].SetValue(distance);
-                        SetDistance(keyName,distance);
-                        SetPlayerRanking();
-                    }
-                }
-            }
+            Debug.Log("*****property change "+property.Key+" Value "+property);
+            // if(property.Key.ToString() == RoomPropertyKeys.PLAYER_DATA){
+            //     var playerData = property.Value as Hashtable;
+            //     foreach (var data in playerData)
+            //     {
+            //         var keyName = data.Key.ToString();
+            //         if(dic_playerSlider == null)return;
+            //         if(dic_playerSlider.ContainsKey(keyName)){
+            //             var distance = System.Convert.ToSingle(data.Value.ToString());
+            //             dic_playerSlider[keyName].SetValue(distance);
+            //             SetDistance(keyName,distance);
+            //             SetPlayerRanking();
+            //         }
+            //     }
+            // }
         }
     }
+
+    
+    void FixedUpdate(){
+        SetPlayerRanking();
+    }
     void SetPlayerRanking(){
-        Debug.Log("SetplayerRanking************************************************");
+        //Debug.Log("SetplayerRanking************************************************");
         dic_playerDistance = dic_playerDistance.OrderByDescending(key => key.Value.distance).ToDictionary(k =>k.Key , v =>v.Value);
         var myranking = 0;
         var currentRanking = 0;
@@ -153,14 +173,23 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
             }
         }
     }
-    void SetDistance(string key , float _value){
+
+    public void SetDistance(string key , float _value){
         // if(!dic_playerDistance.ContainsKey(key)){
         //     dic_playerDistance.Add(key,_value);
         // }
+        //Debug.Log("Setdistance "+key+" contain ? "+dic_playerDistance.ContainsKey(key));
+        //Debug.Log("_value "+_value);
         if(!dic_playerDistance.ContainsKey(key)){
             Debug.LogError("Not found key "+key+" in dic_playerdistance");
+            return;
+        }
+        if(!dic_playerSlider.ContainsKey(key)){
+            Debug.LogError("Not found key "+key+" in dic_playerSlider");
+            return;
         }
         dic_playerDistance[key].distance = _value;
+        dic_playerSlider[key].SetValue(_value);
     }
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps){
         //targetPlayer.CustomProperties

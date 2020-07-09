@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿
 using UnityEngine;
 using UniRx;
 using ExitGames.Client.Photon;
@@ -22,19 +21,24 @@ public class GameNetwork : MonoBehaviourPunCallbacks
     //player
     Transform playerTransform;
     void Start(){
-        
+        //ObjectPool.Instance.CreatePool("POC/BikeV5.7",10);
         startPosition = spawnPoint[0].position.x;
-        var go = PhotonNetwork.Instantiate("POC/BikeV5.7",spawnPoint[PhotonNetwork.LocalPlayer.ActorNumber].position,Quaternion.Euler(0,90,0));
+        var go = PhotonNetwork.Instantiate("POC/BikeV5.8",spawnPoint[PhotonNetwork.LocalPlayer.ActorNumber].position,Quaternion.Euler(0,90,0));
         go.name = PhotonNetwork.LocalPlayer.NickName;
         go.GetComponent<AbikeChopSystem>().SetController(true);
         go.GetComponent<PhotonSmoothSyncMovement>().fixPostionZ = go.transform.position.z;
         go.transform.position = new Vector3(go.transform.position.x,go.transform.position.y,playerStartPoint.position.z);
         go.transform.GetComponent<AbikeChopSystem>().startPosition = go.transform.position;
-        PhotonVoiceConsole.Instance.CreateVoiceView();
         playerTransform = go.transform;
         cameraFollow.target = go.transform.GetComponent<AbikeChopSystem>().targetForCameraLook;
         go.GetComponent<BoostSystem>().SetUpMotion(motionBlur);
+        //GameplayManager.Instance.PlayerReady(PhotonNetwork.LocalPlayer.UserId);
     }
+    // void PlayerReady(){
+    //     var roomProperties = PhotonNetwork.CurrentRoom.CustomProperties as Hashtable;
+    //     var playerindex = roomProperties[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
+    //     if(playerindex.ContainsKey())
+    // }
     void Update(){
        //totalDirection = finishPoint.position.x- playerTransform.position.x;
     }

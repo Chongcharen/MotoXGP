@@ -45,8 +45,10 @@ public class MapManager : MonoBehaviour {
     }
     private void Start()
     {
+        ObjectPool.Instance.Init();
         GameplayManager.Instance.Init();
         Init();
+        
         
     }
 
@@ -58,6 +60,7 @@ public class MapManager : MonoBehaviour {
         SubscribeEvent();
         GetComponent<UI_PlayersDistance>().enabled = true;
         GetComponent<GameNetwork>().enabled = true;
+        PhotonVoiceConsole.Instance.CreateVoiceView();
     }
     void SubscribeEvent(){
         respawnData.ObserveEveryValueChanged(data => data.Count).Subscribe( vale =>{

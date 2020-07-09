@@ -49,7 +49,7 @@ public class UI_GameResult : MonoBehaviourPunCallbacks
             findPlayer = playerIndexProfileData;
         }
         Debug.Log("playerDataSort count "+playerDataSort.Count);
-        playerDataSort = playerDataSort.OrderByDescending(p => p.playerFinishTime).ToList();
+        playerDataSort = playerDataSort.OrderBy(p => p.playerFinishTime).ToList();
         for (int i = 0; i < playerDataSort.Count; i++)
         {
             playerRanks[i].gameObject.SetActive(true);

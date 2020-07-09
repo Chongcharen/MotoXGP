@@ -119,12 +119,19 @@ public class AbikeChopSystem : MonoBehaviour
             //     OnCrash();
             // }).AddTo(this);
         }
+        // PhotonSmoothSyncMovement.OnPhotonLocalView.Subscribe(islocal =>{
+        //     if(!islocal){
+        //         RemoveEngine();
+        //     }
+        //     SetController(islocal);
+        // }).AddTo(this);
         boostSystem = GetComponent<BoostSystem>();
     }
 
     public void SetController(bool _isActive){
-        isControll = _isActive;
+        //isControll = _isActive;
         objectDetecter.SetActive(_isActive);
+       // RemoveEngine();
         if(_isActive){
             CrashDetecter.OnCrash.Subscribe(crashPosition=>{
                 crash = true;
@@ -135,7 +142,12 @@ public class AbikeChopSystem : MonoBehaviour
                 isControll = false;
                 ForceBrake();
                 print(Depug.Log("GameEnd !!!!!!!",Color.green));
-            });
+            }).AddTo(this);
+            GameplayManager.OnGameStart.Subscribe(_=>{
+                isControll = true;
+            }).AddTo(this);
+        }else{
+            RemoveEngine();
         }
     }
 
@@ -227,9 +239,9 @@ public class AbikeChopSystem : MonoBehaviour
     }
     
     void FixedUpdate(){
-        speed = transform.InverseTransformDirection(myRigidbody.velocity).z * 3.6f;
-        
         if(!isControll)return;
+        if(myRigidbody == null)return;
+        speed = transform.InverseTransformDirection(myRigidbody.velocity).z * 3.6f;
         if(isControll && !crash){
             accel = motorControl.accelerator;
             brake = motorControl.brake;
@@ -263,9 +275,9 @@ public class AbikeChopSystem : MonoBehaviour
             }else
             {
                 //myRigidbody.AddForce(-transform.forward*(BreakForce*1000));
-                myRigidbody.AddForce(-transform.forward*2,ForceMode.VelocityChange);
-                wheels[1].collider.brakeTorque = 2000;
-                wheels[0].collider.brakeTorque = 2000;
+                myRigidbody.AddForce(-transform.forward*3,ForceMode.VelocityChange);
+                wheels[1].collider.brakeTorque = 3000;
+                wheels[0].collider.brakeTorque = 3000;
                 isBoosting = false;
                 currentSpeedLimit = speedLimit;
                 currentBoostTime = 0;
@@ -458,7 +470,34 @@ public class AbikeChopSystem : MonoBehaviour
     }
     public void RemoveEngine(){
         myRigidbody.Sleep();
+        if(!myRigidbody.IsSleeping())
+            myRigidbody.Sleep();
+        if(myRigidbody != null){
+            //Destroy(myRigidbody);
+        }
         GetComponent<CenterOfMass>().enabled = false;
+
+         WheelFrictionCurve frictionCurve = new WheelFrictionCurve();
+        frictionCurve.extremumSlip = 0;
+        frictionCurve.extremumValue = 0;
+        frictionCurve.asymptoteSlip = 0;
+        frictionCurve.asymptoteValue = 0;
+        frictionCurve.stiffness = 0;
+        //result.collider.forwardFriction = frictionCurve;
+
+        WheelFrictionCurve sidewayFriction = new WheelFrictionCurve();
+        sidewayFriction.extremumSlip = 0;
+        sidewayFriction.extremumValue = 0;
+        sidewayFriction.asymptoteSlip = 0;
+        sidewayFriction.asymptoteValue = 0;
+        sidewayFriction.stiffness = 0;
+       // result.collider.sidewaysFriction = frictionCurve;
+        foreach(WheelComponent wheelComponent in wheels){
+            //wheelComponent.collider.enabled = false;
+            wheelComponent.drive = false;
+            wheelComponent.collider.forwardFriction = frictionCurve;
+            wheelComponent.collider.sidewaysFriction = sidewayFriction;
+        }
     }
     #region Setting
     private WheelComponent SetWheelComponent(Transform wheel, Transform axle, bool drive, float maxSteer, float pos_y)

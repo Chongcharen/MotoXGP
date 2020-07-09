@@ -50,6 +50,7 @@ public class CenterOfMass : MonoBehaviour
         
     }
     void OnCrash(){
+        if(objectCenter == null)return;
         rigidbody.centerOfMass = objectCenter.transform.localPosition;
         defaultMass = rigidbody.centerOfMass;
         newMass = defaultMass;

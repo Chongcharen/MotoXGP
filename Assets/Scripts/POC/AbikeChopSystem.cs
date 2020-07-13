@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using System.Data;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
+using Newtonsoft.Json;
 
 public class AbikeChopSystem : MonoBehaviour
 {
@@ -12,6 +14,8 @@ public class AbikeChopSystem : MonoBehaviour
     public static Subject<float> OnBoostTime = new Subject<float>();
     public static Subject<bool> OnGrouned = new Subject<bool>();
     public static Subject<Unit> OnReset = new Subject<Unit>();  
+
+    public static Subject<bool> OnPlayerCrash = new Subject<bool>();
 
     Transform currentSpawn;    
     [SerializeField]TextMeshProUGUI playerName_txt;
@@ -119,23 +123,31 @@ public class AbikeChopSystem : MonoBehaviour
             //     OnCrash();
             // }).AddTo(this);
         }
+        
         boostSystem = GetComponent<BoostSystem>();
     }
 
     public void SetController(bool _isActive){
-        isControll = _isActive;
+        //isControll = _isActive;
         objectDetecter.SetActive(_isActive);
+       // RemoveEngine();
         if(_isActive){
             CrashDetecter.OnCrash.Subscribe(crashPosition=>{
                 crash = true;
-                respawnPosition = new Vector3(crashPosition.x,respawnPosition.y+2,startPosition.z);
+                respawnPosition = new Vector3(crashPosition.x,crashPosition.y+2.5f,startPosition.z);
+                OnPlayerCrash.OnNext(crash);
                 OnCrash();
             }).AddTo(this);
             GameplayManager.OnGameEnd.Subscribe(_=>{
                 isControll = false;
                 ForceBrake();
                 print(Depug.Log("GameEnd !!!!!!!",Color.green));
-            });
+            }).AddTo(this);
+            GameplayManager.OnGameStart.Subscribe(_=>{
+                isControll = true;
+            }).AddTo(this);
+        }else{
+            RemoveEngine();
         }
     }
 
@@ -156,12 +168,14 @@ public class AbikeChopSystem : MonoBehaviour
         StopAllCoroutines();
         transform.position = respawnPosition;
         transform.rotation = Quaternion.Euler(0,90,0);
-        animator.enabled = true;
-        animator.gameObject.transform.localPosition = bikerStartPosition;
         GetComponent<CenterOfMass>().Reset();
         crash = false;
-        OnReset.OnNext(default);
+        
         objectDetecter.gameObject.SetActive(true);
+        OnReset.OnNext(default);
+        animator.enabled = true;
+        animator.gameObject.transform.localPosition = bikerStartPosition;
+        OnPlayerCrash.OnNext(crash);
         StopMotor();
     }
     void RestartPosition(Vector3 newPosition){
@@ -195,9 +209,20 @@ public class AbikeChopSystem : MonoBehaviour
         //     {
         //         myRigidbody.centerOfMass = centerOfMass.localPosition;
         //     }
-        if(playerName_txt != null)
-            playerName_txt.text = GetComponent<PhotonView>().Controller.NickName;
+        if(playerName_txt != null){
+            
+            var photonView = GetComponent<PhotonView>();
+            playerName_txt.text = photonView.Controller.NickName;
+            ExitGames.Client.Photon.Hashtable playerIndexProperty = PhotonNetwork.CurrentRoom.CustomProperties[RoomPropertyKeys.PLAYER_INDEX] as ExitGames.Client.Photon.Hashtable;
+            if(playerIndexProperty.ContainsKey(photonView.Controller.UserId)){
+                var playerProfileData = JsonConvert.DeserializeObject<PlayerIndexProfileData>(playerIndexProperty[photonView.Controller.UserId].ToString());
+                var playerColorName = Color.white;
+                ColorUtility.TryParseHtmlString("#"+playerProfileData.colorCode,out playerColorName);
+                playerName_txt.color = playerColorName;
+            }
+        }
     }
+    
 
     // Update is called once per frame
     void ForceBrake(){
@@ -227,9 +252,9 @@ public class AbikeChopSystem : MonoBehaviour
     }
     
     void FixedUpdate(){
-        speed = transform.InverseTransformDirection(myRigidbody.velocity).z * 3.6f;
-        
         if(!isControll)return;
+        if(myRigidbody == null)return;
+        speed = transform.InverseTransformDirection(myRigidbody.velocity).z * 3.6f;
         if(isControll && !crash){
             accel = motorControl.accelerator;
             brake = motorControl.brake;
@@ -263,9 +288,9 @@ public class AbikeChopSystem : MonoBehaviour
             }else
             {
                 //myRigidbody.AddForce(-transform.forward*(BreakForce*1000));
-                myRigidbody.AddForce(-transform.forward*2,ForceMode.VelocityChange);
-                wheels[1].collider.brakeTorque = 2000;
-                wheels[0].collider.brakeTorque = 2000;
+                myRigidbody.AddForce(-transform.forward*7,ForceMode.VelocityChange);
+                wheels[1].collider.brakeTorque = 3000;
+                wheels[0].collider.brakeTorque = 3000;
                 isBoosting = false;
                 currentSpeedLimit = speedLimit;
                 currentBoostTime = 0;
@@ -458,7 +483,34 @@ public class AbikeChopSystem : MonoBehaviour
     }
     public void RemoveEngine(){
         myRigidbody.Sleep();
+        if(!myRigidbody.IsSleeping())
+            myRigidbody.Sleep();
+        if(myRigidbody != null){
+            //Destroy(myRigidbody);
+        }
         GetComponent<CenterOfMass>().enabled = false;
+
+         WheelFrictionCurve frictionCurve = new WheelFrictionCurve();
+        frictionCurve.extremumSlip = 0;
+        frictionCurve.extremumValue = 0;
+        frictionCurve.asymptoteSlip = 0;
+        frictionCurve.asymptoteValue = 0;
+        frictionCurve.stiffness = 0;
+        //result.collider.forwardFriction = frictionCurve;
+
+        WheelFrictionCurve sidewayFriction = new WheelFrictionCurve();
+        sidewayFriction.extremumSlip = 0;
+        sidewayFriction.extremumValue = 0;
+        sidewayFriction.asymptoteSlip = 0;
+        sidewayFriction.asymptoteValue = 0;
+        sidewayFriction.stiffness = 0;
+       // result.collider.sidewaysFriction = frictionCurve;
+        foreach(WheelComponent wheelComponent in wheels){
+            //wheelComponent.collider.enabled = false;
+            wheelComponent.drive = false;
+            wheelComponent.collider.forwardFriction = frictionCurve;
+            wheelComponent.collider.sidewaysFriction = sidewayFriction;
+        }
     }
     #region Setting
     private WheelComponent SetWheelComponent(Transform wheel, Transform axle, bool drive, float maxSteer, float pos_y)
@@ -520,6 +572,9 @@ public class AbikeChopSystem : MonoBehaviour
 
         return result;
 
+    }
+    public void SetPlayerNameColor(Color color){
+        playerName_txt.color = color;
     }
     #endregion
     Quaternion RigidbodyRotation;

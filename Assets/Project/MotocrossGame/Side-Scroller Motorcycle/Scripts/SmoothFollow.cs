@@ -21,6 +21,7 @@ public class SmoothFollow : MonoBehaviour {
 
 	// The target we are following
 	public Transform target;
+	public bool playerCrash = false;
 	// The distance in the x-z plane to the target
 	public float distance = 10.0f;
 	// the height we want the camera to be above the target
@@ -52,6 +53,9 @@ public class SmoothFollow : MonoBehaviour {
         	// DOTween.To(doGetter, dOSetter,sideX+boostChangeSideX, 0.5f);
 			StartCoroutine("closetime",timeChange);
 		}).AddTo(this);
+		AbikeChopSystem.OnPlayerCrash.Subscribe(isCrash =>{
+			playerCrash = isCrash;
+		}).AddTo(this);	
 	}
 	IEnumerator closetime(float time){
 		yield return new WaitForSeconds(time);
@@ -59,8 +63,8 @@ public class SmoothFollow : MonoBehaviour {
 	}
 	void LateUpdate () {
 		// Early out if we don't have a target
-		if (!target)
-			return;
+		if (!target)return;
+		if(playerCrash)return;
 		
 		// Calculate the current rotation angles
 		var wantedRotationAngle = target.eulerAngles.y;

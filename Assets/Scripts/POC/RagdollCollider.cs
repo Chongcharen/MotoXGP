@@ -13,6 +13,7 @@ public class RagdollCollider : MonoBehaviour
         
         colliders  = GetComponentsInChildren<Collider>();
         foreach(Collider coll in colliders){
+            if(coll == null)continue;
             //coll.enabled = false;
             coll.material = material;
             var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
@@ -30,6 +31,7 @@ public class RagdollCollider : MonoBehaviour
         }
         CrashDetecter.OnCrash.Subscribe(_=>{
              foreach(Collider coll in colliders){
+                if(coll == null)continue;
                 var rigidbody = coll.GetComponent<Rigidbody>();
                 rigidbody.mass = 50;
                 rigidbody.drag = 1f;
@@ -37,10 +39,12 @@ public class RagdollCollider : MonoBehaviour
                 rigidbody.velocity = Vector3.zero;
                 rigidbody.angularVelocity = Vector3.zero;
                 rigidbody.sleepThreshold = 0;
+                rigidbody.constraints = RigidbodyConstraints.FreezePositionZ|RigidbodyConstraints.FreezeRotationY;
              }
         });
         AbikeChopSystem.OnReset.Subscribe(_=>{
             foreach(Collider coll in colliders){
+                if(coll == null)continue;
                 var rigidbody = coll.GetComponent<Rigidbody>();
                 rigidbody.mass = 0;
                 rigidbody.drag = 0;
@@ -48,9 +52,17 @@ public class RagdollCollider : MonoBehaviour
                 rigidbody.velocity = Vector3.zero;
                 rigidbody.angularVelocity = Vector3.zero;
                 rigidbody.sleepThreshold = 0.005f;
+                rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
                 rigidbody.WakeUp();
              }
         });
     }
+    // void OnDestroy(){
+    //     foreach(Collider coll in colliders){
+    //         if(coll != null && coll.gameObject != null){
+    //             Destroy(coll.gameObject);
+    //         }
+    //     }
+    // }
 
 }

@@ -41,6 +41,7 @@ public class PlayerIndexProfileData{
     
     public string nation;
     public string playerFinishTime;
+    public bool ready = false;
 }
 public class PlayerDistanceData{
     public int playerIndex;

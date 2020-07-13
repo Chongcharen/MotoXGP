@@ -35,6 +35,7 @@ public class GameplayManager : InstanceClass<GameplayManager>
         OnRestartGame.OnNext(default);
     }
     public void StartGame(){
+        if(isStart.Value)return;
         isStart.Value = true;
         elapsedTime.Value = Time.time;
         OnGameStart.OnNext(default);

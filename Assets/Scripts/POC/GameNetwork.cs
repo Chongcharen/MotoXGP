@@ -31,6 +31,7 @@ public class GameNetwork : MonoBehaviourPunCallbacks
         go.transform.GetComponent<AbikeChopSystem>().startPosition = go.transform.position;
         playerTransform = go.transform;
         cameraFollow.target = go.transform.GetComponent<AbikeChopSystem>().targetForCameraLook;
+        cameraFollow.playerCrash = go.transform.GetComponent<AbikeChopSystem>().crash;
         go.GetComponent<BoostSystem>().SetUpMotion(motionBlur);
         //GameplayManager.Instance.PlayerReady(PhotonNetwork.LocalPlayer.UserId);
     }

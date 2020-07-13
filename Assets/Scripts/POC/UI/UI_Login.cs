@@ -15,6 +15,13 @@ public class UI_Login : MonoBehaviour
     [SerializeField]TMP_InputField input_name;
     [SerializeField]Button b_connect;
 
+    void Awake(){
+        if(PhotonNetworkConsole.Instance.isConnected){
+            if(root != null)
+                root.gameObject.SetActive(false);
+            PageManager.Instance.OpenLobby();
+        }
+    }
     void Start(){
         // b_connect.OnClickAsObservable().Subscribe(_=>{
         //     if(string.IsNullOrEmpty(input_name.text))return;

@@ -45,8 +45,10 @@ public class MapManager : MonoBehaviour {
     }
     private void Start()
     {
+        ObjectPool.Instance.Init();
         GameplayManager.Instance.Init();
         Init();
+        
         
     }
 
@@ -58,6 +60,7 @@ public class MapManager : MonoBehaviour {
         SubscribeEvent();
         GetComponent<UI_PlayersDistance>().enabled = true;
         GetComponent<GameNetwork>().enabled = true;
+        PhotonVoiceConsole.Instance.CreateVoiceView();
     }
     void SubscribeEvent(){
         respawnData.ObserveEveryValueChanged(data => data.Count).Subscribe( vale =>{
@@ -100,7 +103,7 @@ public class MapManager : MonoBehaviour {
         }
     }
     public void GetEndPoint(int endPointId){
-        Debug.Log("GetEndpoint");
+        //Debug.Log("GetEndpoint");
         Debug.Assert(endpointData.ContainsKey(endPointId));
         var endpointRawdata = endpointData[endPointId];
         if(!endpointRawdata.isPass){
@@ -110,7 +113,7 @@ public class MapManager : MonoBehaviour {
         }
     }
     public void GetZone(int zoneInstanceID){
-        Debug.Log("Respawn Count "+respawnData.Count);
+        //Debug.Log("Respawn Count "+respawnData.Count);
         Debug.Assert(respawnData.ContainsKey(zoneInstanceID),"get responseZone");
         respawnPosition = respawnData[zoneInstanceID];
     }
@@ -118,7 +121,7 @@ public class MapManager : MonoBehaviour {
         isDeadzone = _isdeadzone;
     }
     private void SetDeadZone(){
-        Debug.Log("SetDeadZone ");
+        //Debug.Log("SetDeadZone ");
         GameObject[] objZone = GameObject.FindGameObjectsWithTag(TagKeys.Zone);//zoneObject.GetComponentsInChildren<Transform>();
         foreach (var gameObj in objZone)
         {
@@ -128,8 +131,8 @@ public class MapManager : MonoBehaviour {
                 if(item.gameObject.name == "ZonePoint"){
                     var deadZoneTarget = item.Find(deadZone);
                     var respawnTarget = item.Find(respawnZone);
-                    Debug.Log("deadZoneTarget = "+deadZoneTarget);
-                    Debug.Log("respawnTarget = "+respawnTarget);
+                    //Debug.Log("deadZoneTarget = "+deadZoneTarget);
+                    //Debug.Log("respawnTarget = "+respawnTarget);
                     if(!respawnData.ContainsKey(deadZoneTarget.GetInstanceID()))
                         respawnData.Add(deadZoneTarget.GetInstanceID(),respawnTarget.position);
                 }

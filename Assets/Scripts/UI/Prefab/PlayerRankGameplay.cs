@@ -19,6 +19,6 @@ public class PlayerRankGameplay : MonoBehaviour
         player_name_txt.text = profileModel.DisplayName;
         Debug.Log(player_name_txt.text + "time "+profileData.playerFinishTime);
         var TimeSpan = System.TimeSpan.FromTicks(System.Convert.ToInt64(profileData.playerFinishTime));
-        player_time_txt.text = TimeSpan.ToString(@"mm\:ss\:ff");
+        player_time_txt.text = TimeSpan.ToString(@"mm\:ss\:fff");
     }
 }

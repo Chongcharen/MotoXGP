@@ -22,10 +22,10 @@ public class UI_Gameplay : MonoBehaviour
         }).AddTo(this);
         GameplayManager.Instance.elapsedTime.ObserveEveryValueChanged(t =>t.Value).Subscribe(_timeElapsed =>{
             timeElapsed = _timeElapsed;
-        });
+        }).AddTo(this);
         GameplayManager.Instance.isStart.ObserveEveryValueChanged(s =>s.Value).Subscribe(start =>{
             stopTimer = !start;
-        });
+        }).AddTo(this);
     }
 
     private void Update() {

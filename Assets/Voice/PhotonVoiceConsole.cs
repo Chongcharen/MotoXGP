@@ -23,7 +23,7 @@ public class PhotonVoiceConsole : MonoBehaviourPunCallbacks
         }
     }
     public void Init(){
-        
+        Debug.Log("Photon voiceconsole init");
     }
     private void Awake() {
         GameController.OnMicActive.Subscribe(active =>{

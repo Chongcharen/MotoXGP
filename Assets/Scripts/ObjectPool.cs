@@ -41,7 +41,7 @@ public class ObjectPool : MonoSingleton<ObjectPool>
         var prefab = Resources.Load(assetPath) as GameObject;
         if(prefab == null)
             Debug.LogError("Not found "+assetPath + "in resources folder");
-
+        
         return prefab != null ? prefab : new GameObject();
         //Debug.Log("GetAssetPrefab : "+assetPath);
         //Debug.Assert(assetBind.ContainsKey(assetPath));

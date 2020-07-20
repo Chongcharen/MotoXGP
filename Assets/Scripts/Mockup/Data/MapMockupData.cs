@@ -12,6 +12,7 @@ public class MapMockupData
         {
             MapChoiceData mockupData = new MapChoiceData();
             mockupData.mapLevel = i;
+            mockupData.mapName = "Mountain01";
             mockupData.mapType = "FOREST";
             mockupData.mapDetail = "เล่นให้ผ่านด่าน "+(i+1);
             choiceMockupData.Add(mockupData);

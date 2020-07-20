@@ -7,7 +7,7 @@ using UniRx;
 using UnityEngine.Networking;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-public class MapGenerater : MonoBehaviour
+public class MapDataGenerator : MonoBehaviour
 {
     public string documentKey = "1tfL2zeis-h9OAwL5TJzQQ-3DYa59a75spelWFzvdHoI";
         //view format
@@ -96,8 +96,9 @@ public class MapGenerater : MonoBehaviour
                         Debug.LogError("can not found position in startPosition");
                     }
                     var position = new Vector3(float.Parse(posX),float.Parse(posY),float.Parse(posZ));
-                    Debug.Log("position "+position);
+                    Debug.Log("====>position "+position);
                     targetMapLocationData.startPositionDatas.Add(position);
+                    Debug.Log("startposition count "+targetMapLocationData.startPositionDatas.Count);
                 }
                 if(!string.IsNullOrEmpty(objectName)){
                     if(string.IsNullOrEmpty(posX)||string.IsNullOrEmpty(posY)||string.IsNullOrEmpty(posZ)){

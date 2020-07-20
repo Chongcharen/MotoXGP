@@ -55,7 +55,12 @@ public class PlayerDistanceData{
 public class MapChoiceData{
     public string mapType;
     public int mapLevel;
+    public string mapName;
     public string mapDetail;
+}
+[System.Serializable]
+public class GameLevelData{
+    
 }
 [System.Serializable]
 public class MapLocationData{

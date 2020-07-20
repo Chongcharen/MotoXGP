@@ -17,6 +17,10 @@ public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
             return instance;
         }
     }
+    public void Dispose(){
+        Debug.Log("Destroy SingleTon "+this.gameObject.name);
+        Destroy(this.gameObject);
+    }
 }
 public class TestingSingle : Singleton<TestingSingle> {
     

@@ -27,6 +27,7 @@ public class TagKeys{
     public const string GROUND = "Ground";
     public const string ROAD = "Road";
     public const string Zone = "Zone";
+    public const string ZonePoint = "ZonePoint";
     public const string DEADZONE = "DeadZone";
     public const string SAFEZONE = "SafeZone";
     public const string ENDPOINT = "EndPoint";
@@ -57,6 +58,7 @@ public static class SceneName{
     public const string START = "Initial";
     public const string GAMEPLAY = "NetworkGame";
     public const string LOBBY = "TestNetwork";
+    public const string TEST_GENMAP = "MapGenerater";
 }
 public static class MapKeys{
     public const string Map_Name = "Map_Name";

@@ -75,7 +75,6 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         b_EnterLevel.OnClickAsObservable().Subscribe(_=>{
             PhotonNetworkConsole.Instance.JoinRandomRoom(null);
             PageManager.Instance.CloseMap();
-            
         });
         
         //ChildrenNum = Page.Count;

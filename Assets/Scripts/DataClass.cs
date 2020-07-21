@@ -60,7 +60,18 @@ public class MapChoiceData{
 }
 [System.Serializable]
 public class GameLevelData{
-    
+    public List<GameThemeData> gameThemes;
+}
+[System.Serializable]
+public class GameThemeData{
+    public string themeName;
+    public List<GameStageData> gameStages;
+}
+[System.Serializable]
+public class GameStageData{
+    public string themeName;
+    public int stage;
+    public int level;
 }
 [System.Serializable]
 public class MapLocationData{

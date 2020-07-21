@@ -5,7 +5,7 @@ using System.Linq;
 public class GameDataManager : MonoSingleton<GameDataManager>
 {
     public List<MapLocationData> mapLocationDatas;
-    public string currentMapChoose = "Mountain01";
+    public string currentMapChoose = "Forest01";
     public void Init(){
         mapLocationDatas = new List<MapLocationData>();
     }

@@ -27,10 +27,10 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
     void GenerateTerrain(){
         var mapRoot = new GameObject("MapRoot");
         poolCount = mapLocationData.startPositionDatas.Count;
-        ObjectPool.Instance.CreatePool("Map/Moutain/Terrain",poolCount);
+        ObjectPool.Instance.CreatePool("Map/Forest/Terrain",poolCount);
         foreach (var positionData in mapLocationData.startPositionDatas)
         {
-            var prefab = ObjectPool.Instance.GetObjectFormPool("Map/Moutain/Terrain");
+            var prefab = ObjectPool.Instance.GetObjectFormPool("Map/Forest/Terrain");
             if(prefab != null){
                 prefab.gameObject.SetActive(true);
                 prefab.transform.SetParent(mapRoot.transform);
@@ -45,8 +45,9 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
         environment.transform.position = Vector3.zero;
         foreach (var objectData in mapLocationData.objectLocationDatas)
         {
-            ObjectPool.Instance.CreatePool("Map/Moutain/"+objectData.prefabName,1);
-            var prefab = ObjectPool.Instance.GetObjectFormPool("Map/Moutain/"+objectData.prefabName);
+            Debug.Log("Prefab name "+objectData.prefabName);
+            ObjectPool.Instance.CreatePool("Map/Forest/"+objectData.prefabName,1);
+            var prefab = ObjectPool.Instance.GetObjectFormPool("Map/Forest/"+objectData.prefabName);
             if(prefab != null){
                 prefab.gameObject.SetActive(true);
                 prefab.transform.SetParent(environment.transform);

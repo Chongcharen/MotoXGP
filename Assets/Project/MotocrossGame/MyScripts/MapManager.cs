@@ -121,7 +121,6 @@ public class MapManager : MonoBehaviour {
     }
     public void GetZone(int zoneInstanceID){
         //Debug.Log("Respawn Count "+respawnData.Count);
-        Debug.Log("zoneInstanceID "+zoneInstanceID);
         Debug.Assert(respawnData.ContainsKey(zoneInstanceID),"get responseZone");
         respawnPosition = respawnData[zoneInstanceID];
     }

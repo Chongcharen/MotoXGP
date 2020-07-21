@@ -64,6 +64,7 @@ public class MapDataGenerator : MonoBehaviour
         var posYindex = System.Array.FindIndex(header, (item) => { return item == headerKeys[4]; });
         var posZindex = System.Array.FindIndex(header, (item) => { return item == headerKeys[5]; });
         Debug.Log("levelIndex "+levelIndex);
+        Debug.Log("mapPositionIndex "+mapPositionIndex);
         Debug.Log("objectIndex "+objectIndex);
         Debug.Log("posXindex "+posXindex);
         Debug.Log("posYindex "+posYindex);
@@ -72,7 +73,7 @@ public class MapDataGenerator : MonoBehaviour
             {
                 var values = Regex.Split(lines[i], SPLIT_REX);//3 column
                 var level = values[levelIndex]; // level
-                var mapStartPositon = values[objectIndex]; //hint
+                var mapStartPositon = values[mapPositionIndex]; //hint
                 var objectName = values[objectIndex]; //hint
                 var posX = values[posXindex]; // place
                 var posY = values[posYindex]; // place

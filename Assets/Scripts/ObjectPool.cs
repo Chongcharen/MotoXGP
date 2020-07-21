@@ -112,4 +112,8 @@ public class ObjectPool : MonoSingleton<ObjectPool>
         }
         pools.Clear();
     }
+    public override void Dispose(){
+        ClearPool();
+        Destroy(this.gameObject);
+    }
 }

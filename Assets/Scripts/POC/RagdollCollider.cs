@@ -39,6 +39,7 @@ public class RagdollCollider : MonoBehaviour
                 rigidbody.velocity = Vector3.zero;
                 rigidbody.angularVelocity = Vector3.zero;
                 rigidbody.sleepThreshold = 0;
+                rigidbody.constraints = RigidbodyConstraints.FreezePositionZ|RigidbodyConstraints.FreezeRotationY;
              }
         });
         AbikeChopSystem.OnReset.Subscribe(_=>{
@@ -51,6 +52,7 @@ public class RagdollCollider : MonoBehaviour
                 rigidbody.velocity = Vector3.zero;
                 rigidbody.angularVelocity = Vector3.zero;
                 rigidbody.sleepThreshold = 0.005f;
+                rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
                 rigidbody.WakeUp();
              }
         });

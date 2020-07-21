@@ -23,6 +23,7 @@ public class GameNetwork : MonoBehaviourPunCallbacks
     void Start(){
         //ObjectPool.Instance.CreatePool("POC/BikeV5.7",10);
         startPosition = spawnPoint[0].position.x;
+        //var go = PhotonNetwork.Instantiate("POC/BikeV5.8",spawnPoint[PhotonNetwork.LocalPlayer.ActorNumber].position,Quaternion.Euler(0,90,0));
         var go = PhotonNetwork.Instantiate("POC/BikeV5.8",spawnPoint[PhotonNetwork.LocalPlayer.ActorNumber].position,Quaternion.Euler(0,90,0));
         go.name = PhotonNetwork.LocalPlayer.NickName;
         go.GetComponent<AbikeChopSystem>().SetController(true);
@@ -31,6 +32,7 @@ public class GameNetwork : MonoBehaviourPunCallbacks
         go.transform.GetComponent<AbikeChopSystem>().startPosition = go.transform.position;
         playerTransform = go.transform;
         cameraFollow.target = go.transform.GetComponent<AbikeChopSystem>().targetForCameraLook;
+        cameraFollow.playerCrash = go.transform.GetComponent<AbikeChopSystem>().crash;
         go.GetComponent<BoostSystem>().SetUpMotion(motionBlur);
         //GameplayManager.Instance.PlayerReady(PhotonNetwork.LocalPlayer.UserId);
     }

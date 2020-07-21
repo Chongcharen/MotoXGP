@@ -14,19 +14,27 @@ public class UI_Ready : MonoBehaviourPunCallbacks
     [SerializeField]Button b_ready;
     [SerializeField]Image image_panel;
     [SerializeField]TextMeshProUGUI countdown_txt;
+    bool isPlayed = false;
     void Start(){
-        b_ready.OnClickAsObservable().Subscribe(_=>{
-            GameplayManager.Instance.PlayerReady(PhotonNetwork.LocalPlayer.UserId);
-            b_ready.gameObject.SetActive(false);
-            image_panel.enabled = false;
-        });
+        // b_ready.OnClickAsObservable().Subscribe(_=>{
+        //     GameplayManager.Instance.PlayerReady(PhotonNetwork.LocalPlayer.UserId);
+        //     b_ready.gameObject.SetActive(false);
+        //     image_panel.enabled = false;
+        // });
+        
+        Invoke("Ready",1);
+    }
+    void Ready(){
+        GameplayManager.Instance.PlayerReady(PhotonNetwork.LocalPlayer.UserId);
+        b_ready.gameObject.SetActive(false);
+        image_panel.enabled = false;
     }
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged){
         var roomProperties = PhotonNetwork.CurrentRoom.CustomProperties as Hashtable;
         var playerIndexProperties = roomProperties[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
         foreach (var property in propertiesThatChanged)
         {
-            Debug.Log(string.Format("key {0} value {1}",property.Key,property.Value));
+            //Debug.Log(string.Format("key {0} value {1}",property.Key,property.Value));
             //if(!playerIndexProperties.ContainsKey(property.Key))return;
            // UpdatePlayerRanking(property.Value.ToString());
         }
@@ -34,6 +42,7 @@ public class UI_Ready : MonoBehaviourPunCallbacks
     }
 
     void CheckPlayerReady(){
+        if(isPlayed)return;
         var roomProperties = PhotonNetwork.CurrentRoom.CustomProperties;
         var playersIndexHash =  PhotonNetwork.CurrentRoom.CustomProperties[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
 
@@ -73,6 +82,7 @@ public class UI_Ready : MonoBehaviourPunCallbacks
         })).Append(countdown_txt.transform.DOScale(new Vector3(0f,0f,0f),0))
         .Append(countdown_txt.transform.DOScale(new Vector3(1.3f,1.3f,1.3f),1).SetEase(Ease.InOutCirc).OnComplete(()=>{
             countdown_txt.text = "Go!";
+            isPlayed = true;
             GameplayManager.Instance.StartGame();
         })).Append(countdown_txt.transform.DOScale(new Vector3(0f,0f,0f),0))
         .Append(countdown_txt.transform.DOScale(new Vector3(1.3f,1.3f,1.3f),1).SetEase(Ease.InOutCirc).OnComplete(()=>{

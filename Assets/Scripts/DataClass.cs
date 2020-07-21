@@ -55,5 +55,23 @@ public class PlayerDistanceData{
 public class MapChoiceData{
     public string mapType;
     public int mapLevel;
+    public string mapName;
     public string mapDetail;
+}
+[System.Serializable]
+public class GameLevelData{
+    
+}
+[System.Serializable]
+public class MapLocationData{
+    public string mapName;
+    public List<Vector3> startPositionDatas;
+    public List<ObjectLocationData> objectLocationDatas;
+    
+}
+[System.Serializable]
+public struct ObjectLocationData{
+    public string prefabName;
+    public Vector3 position;
+    public Quaternion rotation;
 }

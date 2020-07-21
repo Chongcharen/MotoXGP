@@ -22,6 +22,7 @@ public class UI_GameResult : MonoBehaviourPunCallbacks
         }).AddTo(this);
         b_leaveRoom.OnClickAsObservable().Subscribe(_=>{
             PhotonNetworkConsole.Instance.LeaveRoom();
+            ObjectPool.Instance.Dispose();
             SceneManager.LoadScene(SceneName.LOBBY);
         }).AddTo(this);
     }

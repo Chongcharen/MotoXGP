@@ -10,7 +10,7 @@ public class MapDataDownloader : IDisposable
 {
     public delegate void OnDownloadComplete (List<MapLocationData> mapLocationDataList);
     public event OnDownloadComplete downloadComplete;
-    public string documentKey = "1tfL2zeis-h9OAwL5TJzQQ-3DYa59a75spelWFzvdHoI";
+    public string documentKey = "1SEHi1SfZJn5WKAjzCUn-HLecthRc5iS-F-TsHI8_e3A";
         //view format
     public string addressView = "https://docs.google.com/spreadsheets/d/";
     public string viewFormat = "/edit#gid=0";

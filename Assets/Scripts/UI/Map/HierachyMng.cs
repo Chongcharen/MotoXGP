@@ -12,6 +12,7 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
     [SerializeField]GameObject mapSwipeObjectPrefab; 
     [SerializeField]Transform content;
     [SerializeField]Button b_EnterLevel;
+    [SerializeField]Button b_forest,b_desert,b_beach;
 
     //Mockupdata
      MapMockupData mapMockupData;
@@ -60,7 +61,7 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
     List<int> indexExtend = new List<int>();
 
     bool isRunning = false;
-
+    int themeIndex = 0;
     // Use this for initialization
     void Start () {
         mapCanvas.ObserveEveryValueChanged(c => mapCanvas.enabled).Subscribe(active =>{
@@ -73,10 +74,28 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
             }
         });
         b_EnterLevel.OnClickAsObservable().Subscribe(_=>{
-            PhotonNetworkConsole.Instance.JoinRandomRoom(null);
+            ExitGames.Client.Photon.Hashtable roomOptions = new ExitGames.Client.Photon.Hashtable();
+            roomOptions.Add(RoomPropertyKeys.MAP_THEME,themeIndex);
+            roomOptions.Add(RoomPropertyKeys.MAP_STAGE,currentFocusIndex);
+            PhotonNetworkConsole.Instance.JoinRandomRoom(roomOptions);
             PageManager.Instance.CloseMap();
+            //ClearPage();
+            GameDataManager.Instance.SetUpGameLevel(themeIndex,currentFocusIndex);
+            Debug.Log("thene => "+themeIndex);
+            Debug.Log("stage "+currentFocusIndex);
         });
-        
+        b_forest.OnClickAsObservable().Subscribe(_=>{
+            themeIndex = 0;
+            Init();
+        });
+        b_desert.OnClickAsObservable().Subscribe(_=>{
+            themeIndex = 1;
+            Init();
+        });
+        b_beach.OnClickAsObservable().Subscribe(_=>{
+            themeIndex = 2;
+            Init();
+        });
         //ChildrenNum = Page.Count;
 
         ////Flip all sibling index
@@ -91,9 +110,36 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         
     }
     void Init(){
-        Debug.Log("Init ");
-        
         GenerateMapChoice();
+        ShowHierachy();
+        
+    }
+    void ClearPage(){
+        for (int i = 0; i < Page.Count; i++)
+        {
+            if(Page[i] != null)
+                Destroy(Page[i].gameObject);
+        }
+        Page.Clear();
+    }
+    void GenerateMapChoice(){
+        ClearPage();
+        MapMockupData mapMockupData = new MapMockupData();
+        mapMockupData.Generatedata();
+        var serialized = JsonConvert.SerializeObject(mapMockupData.choiceMockupData);
+
+        var themeData = GameDataManager.Instance.GameLevelData.gameThemesData[themeIndex];
+
+        for (int i = 0; i < themeData.gameStages.Count; i++)
+        {
+            var go = Instantiate(mapSwipeObjectPrefab,Vector3.zero,Quaternion.identity,content);
+            go.GetComponent<MapSwipeObjectPrefab>().Setup(themeData.gameStages[i]);
+            go.gameObject.SetActive(true);
+            go.transform.localRotation = Quaternion.Euler(0,-13,0);
+            Page.Add(go.transform);
+        }
+    }
+    void ShowHierachy(){
         for (int b = 0; b < Page.Count; b++)
         {
             Page[b].GetComponent<RectTransform>().sizeDelta = new Vector2(Element_Width, Element_Height);
@@ -102,25 +148,9 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         }
 
         //MockUpdata 
-
-        
         cal();
         fetchHierachy();
         isRunning = true;
-    }
-    void GenerateMapChoice(){
-        Page.Clear();
-        MapMockupData mapMockupData = new MapMockupData();
-        mapMockupData.Generatedata();
-        var serialized = JsonConvert.SerializeObject(mapMockupData.choiceMockupData);
-        for (int i = 0; i < mapMockupData.choiceMockupData.Count; i++)
-        {
-            var go = Instantiate(mapSwipeObjectPrefab,Vector3.zero,Quaternion.identity,content);
-            go.GetComponent<MapSwipeObjectPrefab>().Setup(mapMockupData.choiceMockupData[i]);
-            go.gameObject.SetActive(true);
-            go.transform.localRotation = Quaternion.Euler(0,-13,0);
-            Page.Add(go.transform);
-        }
     }
 	// Update is called once per frame
 	void Update () {

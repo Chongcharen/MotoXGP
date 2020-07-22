@@ -11,25 +11,26 @@ public class MapSwipeObjectPrefab : MonoBehaviour
     // Start is called before the first frame update
     [SerializeField]TextMeshProUGUI map_name_txt,map_level_txt,map_detail_txt;
     public Button b_Enter;
+    public Image img_map;
     [SerializeField]Image img_fade;
-    [SerializeField]Image[] startImages;
+    [SerializeField]Image[] starImages;
 
     bool isBlock = true;
 
-    MapChoiceData choiceData;
+    GameStageData gameStageData;
     private void Start() {
         b_Enter.OnClickAsObservable().Subscribe(_=>{
             //EnterLevel
         });
     
     }
-    public void Setup(MapChoiceData _data){
-        choiceData = _data;
-        map_name_txt.text = choiceData.mapType;
-        var level = choiceData.mapLevel +1;
-        var mapLevelName = level < 10 ? "0"+level : level.ToString();
-        map_level_txt.text = mapLevelName;
-        map_detail_txt.text = choiceData.mapDetail;
+    public void Setup(GameStageData _data){
+        gameStageData = _data;
+        map_name_txt.text = gameStageData.themeName;
+        //var level = gameStageData.mapLevel +1;
+        //var mapLevelName = level < 10 ? "0"+level : level.ToString();
+        map_level_txt.text = gameStageData.stageName;
+        map_detail_txt.text = gameStageData.detail;
     }
     public void EnabledInterActive(){
         if(!isBlock)return;

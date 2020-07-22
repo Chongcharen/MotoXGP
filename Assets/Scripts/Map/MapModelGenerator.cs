@@ -18,7 +18,9 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
     }
     public void GenerateMap(){
         mapList = new List<GameObject>();
-        mapLocationData = GameDataManager.Instance.GetLevelMap(GameDataManager.Instance.currentMapChoose);
+        //Debug.Log()
+        
+        mapLocationData = GameDataManager.Instance.GetLevelMap(GameDataManager.Instance.GetStageName());
         
         GenerateTerrain();
         GenerateObject();

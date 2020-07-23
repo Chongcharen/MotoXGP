@@ -21,18 +21,30 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
         //Debug.Log()
         
         mapLocationData = GameDataManager.Instance.GetLevelMap(GameDataManager.Instance.GetStageName());
-        
+        Debug.Log("----------Level "+GameDataManager.Instance.gameLevel.theme);
+        Debug.Log("----------stage "+GameDataManager.Instance.gameLevel.stage);
+        GenerateTerrain();
+        GenerateObject();
+        GetSpawnPoint();
+    }
+    public void GenerateMapByName(string mapName){
+        mapList = new List<GameObject>();
+        mapLocationData = GameDataManager.Instance.GetLevelMap(mapName);
+        GameDataManager.Instance.gameLevel.gameStageData = GameDataManager.Instance.GetGamelevelByName(mapName);
         GenerateTerrain();
         GenerateObject();
         GetSpawnPoint();
     }
     void GenerateTerrain(){
+        ClearMap();
         var mapRoot = new GameObject("MapRoot");
         poolCount = mapLocationData.startPositionDatas.Count;
-        ObjectPool.Instance.CreatePool("Map/Forest/Terrain",poolCount);
+        var prefabTerrain = GameDataManager.Instance.gameLevel.gameStageData.themeName+""+GameDataManager.Instance.gameLevel.gameStageData.stageName;
+        Debug.Log("prefabTerrain "+prefabTerrain);
+        ObjectPool.Instance.CreatePool("Map/Forest/"+prefabTerrain,poolCount);
         foreach (var positionData in mapLocationData.startPositionDatas)
         {
-            var prefab = ObjectPool.Instance.GetObjectFormPool("Map/Forest/Terrain");
+            var prefab = ObjectPool.Instance.GetObjectFormPool("Map/Forest/"+prefabTerrain);
             if(prefab != null){
                 prefab.gameObject.SetActive(true);
                 prefab.transform.SetParent(mapRoot.transform);
@@ -70,6 +82,17 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
         {
             spawnPointsPosition[i] = spawnGroup.GetSpawnPoints()[i].position;
         }
+    }
+
+    void ClearMap(){
+        var root = GameObject.Find("MapRoot");
+        var environment = GameObject.Find("Environment");
+        if(root != null)
+            Destroy(root.gameObject);
+        if(environment != null)
+            Destroy(environment.gameObject);
+
+        ObjectPool.Instance.ClearPool();
     }
 
     

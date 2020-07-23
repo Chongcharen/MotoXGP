@@ -81,10 +81,21 @@ public class LobbyController : MonoBehaviourPunCallbacks
     }
     public void JoinRandom()
     {
+    //      LobbyOptions = new string[2];
+    //     LobbyOptions[0] = MapIndexKey;
+    //     LobbyOptions[1] = GameModeIndexKey;
+    //     ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable() {
+	// 	{ MapIndexKey, mapIndexValue }, { GameModeIndexKey, gameModeIndexValue }
+	// };
+        var LobbyOptions = new string[2];
+        LobbyOptions[0] = RoomPropertyKeys.MAP_THEME;
+        LobbyOptions[1] = RoomPropertyKeys.MAP_STAGE;
         var roomName = "name"+UnityEngine.Random.Range(0,999);
         RoomOptions roomOption = new RoomOptions();
         roomOption.MaxPlayers = 10;
         roomOption.PublishUserId = true;
+        roomOption.CustomRoomPropertiesForLobby = LobbyOptions;
+        roomOption.CustomRoomProperties = customProperty;
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOption,TypedLobby.Default);
     }
 

@@ -10,7 +10,7 @@ public class MapDataDownloader : IDisposable
 {
     public delegate void OnDownloadComplete (List<MapLocationData> mapLocationDataList);
     public event OnDownloadComplete downloadComplete;
-    public string documentKey = "1tfL2zeis-h9OAwL5TJzQQ-3DYa59a75spelWFzvdHoI";
+    public string documentKey = "1SEHi1SfZJn5WKAjzCUn-HLecthRc5iS-F-TsHI8_e3A";
         //view format
     public string addressView = "https://docs.google.com/spreadsheets/d/";
     public string viewFormat = "/edit#gid=0";
@@ -97,19 +97,25 @@ public class MapDataDownloader : IDisposable
                 if(!string.IsNullOrEmpty(mapStartPositon)){
                     if(string.IsNullOrEmpty(posX)||string.IsNullOrEmpty(posY)||string.IsNullOrEmpty(posZ)){
                         Debug.LogError("can not found position in startPosition");
+                    }else
+                    {
+                        var position = new Vector3(float.Parse(posX),float.Parse(posY),float.Parse(posZ));
+                        Debug.Log("====>position "+position);
+                        targetMapLocationData.startPositionDatas.Add(position);
+                        Debug.Log("startposition count "+targetMapLocationData.startPositionDatas.Count);
                     }
-                    var position = new Vector3(float.Parse(posX),float.Parse(posY),float.Parse(posZ));
-                    Debug.Log("====>position "+position);
-                    targetMapLocationData.startPositionDatas.Add(position);
-                    Debug.Log("startposition count "+targetMapLocationData.startPositionDatas.Count);
                 }
                 if(!string.IsNullOrEmpty(objectName)){
                     if(string.IsNullOrEmpty(posX)||string.IsNullOrEmpty(posY)||string.IsNullOrEmpty(posZ)){
                         Debug.LogError("can not found position in startPosition");
+                    }else
+                    {
+                        Debug.Log(string.Format("x {0} y {1} z {0}",posX,posY,posZ));
+                        var position = new Vector3(float.Parse(posX),float.Parse(posY),float.Parse(posZ));
+                        var objectLocationData = new ObjectLocationData{prefabName = objectName,position = position , rotation = Quaternion.identity};
+                        targetMapLocationData.objectLocationDatas.Add(objectLocationData);
                     }
-                    var position = new Vector3(float.Parse(posX),float.Parse(posY),float.Parse(posZ));
-                    var objectLocationData = new ObjectLocationData{prefabName = objectName,position = position , rotation = Quaternion.identity};
-                    targetMapLocationData.objectLocationDatas.Add(objectLocationData);
+                   
                 }
             }
         downloadComplete(mapLocationDatas);

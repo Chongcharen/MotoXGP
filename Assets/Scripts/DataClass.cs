@@ -66,6 +66,7 @@ public class MapChoiceData{
 public class GameLevel{
     public int theme;
     public int stage;
+    public GameStageData gameStageData;
 }
 //GameLeveldata for choose map
 [System.Serializable]

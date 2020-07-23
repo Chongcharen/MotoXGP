@@ -39,6 +39,9 @@ public class RoomPropertyKeys{
     public const string ROOM_DATA = "room_data";
     public const string PLAYER_RESULT = "player_result";
     public const string GAME_START = "game_start";
+
+    public const string MAP_THEME = "map_theme";
+    public const string MAP_STAGE = "map_stage";
 }
 
 //playerdata in photonplayer
@@ -59,6 +62,7 @@ public static class SceneName{
     public const string GAMEPLAY = "NetworkGame";
     public const string LOBBY = "TestNetwork";
     public const string TEST_GENMAP = "MapGenerater";
+    public const string MAP_VIEWER = "MapViewer";
 }
 public static class MapKeys{
     public const string Map_Name = "Map_Name";
@@ -67,4 +71,7 @@ public static class MapKeys{
     public const string Position_X = "Position_X";
     public const string Position_Y = "Position_Y";  
     public const string Position_Z = "Position_Z";      
+}
+public static class FilePath{
+    public const string GAME_LEVEL_DATA = "GameLevel/GameLevelData.txt";
 }

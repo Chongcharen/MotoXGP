@@ -8,10 +8,11 @@ using UniRx;
 using Photon.Realtime;
 using Photon.Pun;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 public class UI_lobby : MonoBehaviourPunCallbacks
 {
     [SerializeField]GameObject root;
-    [SerializeField]Button b_joinRandomRoom;
+    [SerializeField]Button b_joinRandomRoom,b_mapviewer;
     [SerializeField]Image[] bikeImages;
 
     [SerializeField]float[] bikeStartScale;
@@ -32,6 +33,9 @@ public class UI_lobby : MonoBehaviourPunCallbacks
             //Animate Bike when lobby active
             if(active)
                  StartBikeAnimation();
+        });
+        b_mapviewer.OnClickAsObservable().Subscribe(_=>{
+            SceneManager.LoadScene(SceneName.MAP_VIEWER);
         });
     }
     void StartBikeAnimation(){

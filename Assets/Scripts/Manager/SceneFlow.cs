@@ -11,8 +11,9 @@ public class SceneFlow : MonoSingleton<SceneFlow>
         Debug.Log("StartScene");
         Debug.Log("dirty "+SceneManager.GetSceneByPath(SceneName.START).isDirty);
         Debug.Log("isLoaded "+SceneManager.GetSceneByPath(SceneName.START).isLoaded);
+        Debug.Log("GetSceneByName isLoaded "+SceneManager.GetSceneByName(SceneName.START).isLoaded);
         if(isInit)return;
-        if(!SceneManager.GetSceneByPath(SceneName.START).isLoaded){
+        if(!SceneManager.GetSceneByName(SceneName.START).isLoaded){
             SceneManager.LoadScene(SceneName.START);
             isInit = true;
         }else{

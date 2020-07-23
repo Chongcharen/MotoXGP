@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Security.Cryptography.X509Certificates;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -55,5 +56,46 @@ public class PlayerDistanceData{
 public class MapChoiceData{
     public string mapType;
     public int mapLevel;
+    public string mapName;
     public string mapDetail;
+}
+
+
+
+[System.Serializable]
+public class GameLevel{
+    public int theme;
+    public int stage;
+    public GameStageData gameStageData;
+}
+//GameLeveldata for choose map
+[System.Serializable]
+public class GameLevelData{
+    public string version;
+    public List<GameThemeData> gameThemesData;
+}
+[System.Serializable]
+public class GameThemeData{
+    public string themeName;
+    public List<GameStageData> gameStages;
+}
+[System.Serializable]
+public class GameStageData{
+    public string themeName;
+    public string stageName;
+    public string detail;
+    public int stage;
+}
+[System.Serializable]
+public class MapLocationData{
+    public string mapName;
+    public List<Vector3> startPositionDatas;
+    public List<ObjectLocationData> objectLocationDatas;
+    
+}
+[System.Serializable]
+public struct ObjectLocationData{
+    public string prefabName;
+    public Vector3 position;
+    public Quaternion rotation;
 }

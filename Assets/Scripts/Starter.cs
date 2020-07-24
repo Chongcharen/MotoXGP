@@ -25,7 +25,7 @@ public class Starter : MonoBehaviour
     // }
 
     private void Start() {
-        Debug.Log("aaaaaaaaaaa");
+        Debug.Log("aaaaaaaaaaabbbbb");
         Debug.Log("******************Initial******************");
         SceneFlow.Instance.StartScene();
         Application.targetFrameRate = 60;

@@ -52,18 +52,18 @@ public class PhotonNetworkConsole : MonoBehaviourPunCallbacks
     }
     private void Init()
     {
-        PhotonNetwork.GameVersion = gameVersion;
-        PhotonNetwork.SendRate = 10;
-        PhotonNetwork.SerializationRate = 5;
-        PhotonNetwork.AutomaticallySyncScene = true;
-        //PhotonNetwork.KeepAliveInBackground = 600000;
+        
+        //PhotonNetwork.ServerAddress
         lobbyController = instance.gameObject.GetComponent<LobbyController>();
         //chatManager = ChatManager.Instance;
     }
     //Connect with photon authentication
     public void Connect(){
-        Debug.Log("Connect ");
-        Debug.Log("Nickname "+PhotonNetwork.NickName);
+        PhotonNetwork.GameVersion = GameDataManager.Instance.gameConfigData.photonNetworkConfig.gameVersion;
+        PhotonNetwork.SendRate = GameDataManager.Instance.gameConfigData.photonNetworkConfig.sendRate;
+        PhotonNetwork.SerializationRate = GameDataManager.Instance.gameConfigData.photonNetworkConfig.serializationRate;
+        PhotonNetwork.KeepAliveInBackground = GameDataManager.Instance.gameConfigData.photonNetworkConfig.keepAliveInBackground;
+        PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.ConnectUsingSettings();
     }
     //Connect without photon authentication ( login with inputname)

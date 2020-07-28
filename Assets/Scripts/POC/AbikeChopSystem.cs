@@ -25,7 +25,8 @@ public class AbikeChopSystem : MonoBehaviour
     [Header("Controller")]
     [SerializeField]GameController motorControl;
     [SerializeField]Animator animator;
-    
+    [SerializeField]RagdollCollider ragdollCollider;
+    [SerializeField]GameObject ragdollObject;
     public float torque = 200;
     public float airDrag = 0.1f;
     public float massBodyIncrease = 0.05f;
@@ -123,13 +124,16 @@ public class AbikeChopSystem : MonoBehaviour
             //     OnCrash();
             // }).AddTo(this);
         }
-        
         boostSystem = GetComponent<BoostSystem>();
     }
 
     public void SetController(bool _isActive){
+        Debug.Log("---------------------------->setcontroller "+_isActive);
         //isControll = _isActive;
         objectDetecter.SetActive(_isActive);
+        //biker_joint_obj.SetActive(_isActive);
+        //ragdollCollider.EnabledRagDolls(_isActive);
+        ragdollObject.SetActive(_isActive);
        // RemoveEngine();
         if(_isActive){
             CrashDetecter.OnCrash.Subscribe(crashPosition=>{
@@ -491,18 +495,18 @@ public class AbikeChopSystem : MonoBehaviour
         GetComponent<CenterOfMass>().enabled = false;
 
          WheelFrictionCurve frictionCurve = new WheelFrictionCurve();
-        frictionCurve.extremumSlip = 0;
-        frictionCurve.extremumValue = 0;
-        frictionCurve.asymptoteSlip = 0;
-        frictionCurve.asymptoteValue = 0;
+        // frictionCurve.extremumSlip = 0;
+        // frictionCurve.extremumValue = 0;
+        // frictionCurve.asymptoteSlip = 0;
+        // frictionCurve.asymptoteValue = 0;
         frictionCurve.stiffness = 0;
         //result.collider.forwardFriction = frictionCurve;
 
         WheelFrictionCurve sidewayFriction = new WheelFrictionCurve();
-        sidewayFriction.extremumSlip = 0;
-        sidewayFriction.extremumValue = 0;
-        sidewayFriction.asymptoteSlip = 0;
-        sidewayFriction.asymptoteValue = 0;
+        // sidewayFriction.extremumSlip = 0;
+        // sidewayFriction.extremumValue = 0;
+        // sidewayFriction.asymptoteSlip = 0;
+        // sidewayFriction.asymptoteValue = 0;
         sidewayFriction.stiffness = 0;
        // result.collider.sidewaysFriction = frictionCurve;
         foreach(WheelComponent wheelComponent in wheels){
@@ -510,6 +514,7 @@ public class AbikeChopSystem : MonoBehaviour
             wheelComponent.drive = false;
             wheelComponent.collider.forwardFriction = frictionCurve;
             wheelComponent.collider.sidewaysFriction = sidewayFriction;
+            wheelComponent.collider.brakeTorque = 10000000;
         }
     }
     #region Setting

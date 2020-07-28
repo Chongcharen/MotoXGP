@@ -1,7 +1,5 @@
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
-// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
 // Shader created with Shader Forge v1.38 
 // Shader Forge (c) Freya Holmer - http://www.acegikmo.com/shaderforge/
 // Note: Manually altering this data may prevent you from opening it in Shader Forge
@@ -36,7 +34,7 @@ Shader "Shader Forge/AlphaBlendLocation" {
             #include "UnityCG.cginc"
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles 
+            #pragma only_renderers d3d9 d3d11 glcore gles gles3 
             #pragma target 2.0
             uniform float _Intensity;
             uniform sampler2D _MainTex_copy; uniform float4 _MainTex_copy_ST;

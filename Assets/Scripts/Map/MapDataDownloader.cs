@@ -64,12 +64,12 @@ public class MapDataDownloader : IDisposable
         var posXindex = System.Array.FindIndex(header, (item) => { return item == headerKeys[3]; });
         var posYindex = System.Array.FindIndex(header, (item) => { return item == headerKeys[4]; });
         var posZindex = System.Array.FindIndex(header, (item) => { return item == headerKeys[5]; });
-        Debug.Log("levelIndex "+levelIndex);
-        Debug.Log("mapPositionIndex "+mapPositionIndex);
-        Debug.Log("objectIndex "+objectIndex);
-        Debug.Log("posXindex "+posXindex);
-        Debug.Log("posYindex "+posYindex);
-        Debug.Log("posZindex "+posZindex);
+        // Debug.Log("levelIndex "+levelIndex);
+        // Debug.Log("mapPositionIndex "+mapPositionIndex);
+        // Debug.Log("objectIndex "+objectIndex);
+        // Debug.Log("posXindex "+posXindex);
+        // Debug.Log("posYindex "+posYindex);
+        // Debug.Log("posZindex "+posZindex);
         for (var i = 1; i < lines.Length; i++)
             {
                 var values = Regex.Split(lines[i], SPLIT_REX);//3 column
@@ -79,16 +79,16 @@ public class MapDataDownloader : IDisposable
                 var posX = values[posXindex]; // place
                 var posY = values[posYindex]; // place
                 var posZ = values[posZindex]; // place
-                Debug.Log("Level "+level);
-                Debug.Log("mapStartPositon "+mapStartPositon);
-                Debug.Log("objectName "+objectName);
-                Debug.Log("posX "+posX);
-                Debug.Log("posY "+posY);
-                Debug.Log("posZ "+posZ);
+                // Debug.Log("Level "+level);
+                // Debug.Log("mapStartPositon "+mapStartPositon);
+                // Debug.Log("objectName "+objectName);
+                // Debug.Log("posX "+posX);
+                // Debug.Log("posY "+posY);
+                // Debug.Log("posZ "+posZ);
                 if(!string.IsNullOrEmpty(level)){
                     targetMapLocationData = new MapLocationData();
                     targetMapLocationData.mapName = level;
-                    Debug.Log("Mapname "+targetMapLocationData.mapName);
+                    //Debug.Log("Mapname "+targetMapLocationData.mapName);
                     targetMapLocationData.startPositionDatas = new List<Vector3>();
                     targetMapLocationData.objectLocationDatas = new List<ObjectLocationData>();
                     mapLocationDatas.Add(targetMapLocationData);
@@ -100,9 +100,9 @@ public class MapDataDownloader : IDisposable
                     }else
                     {
                         var position = new Vector3(float.Parse(posX),float.Parse(posY),float.Parse(posZ));
-                        Debug.Log("====>position "+position);
+                        //Debug.Log("====>position "+position);
                         targetMapLocationData.startPositionDatas.Add(position);
-                        Debug.Log("startposition count "+targetMapLocationData.startPositionDatas.Count);
+                        //Debug.Log("startposition count "+targetMapLocationData.startPositionDatas.Count);
                     }
                 }
                 if(!string.IsNullOrEmpty(objectName)){
@@ -110,7 +110,7 @@ public class MapDataDownloader : IDisposable
                         Debug.LogError("can not found position in startPosition");
                     }else
                     {
-                        Debug.Log(string.Format("x {0} y {1} z {0}",posX,posY,posZ));
+                        //Debug.Log(string.Format("x {0} y {1} z {0}",posX,posY,posZ));
                         var position = new Vector3(float.Parse(posX),float.Parse(posY),float.Parse(posZ));
                         var objectLocationData = new ObjectLocationData{prefabName = objectName,position = position , rotation = Quaternion.identity};
                         targetMapLocationData.objectLocationDatas.Add(objectLocationData);

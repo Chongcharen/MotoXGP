@@ -99,3 +99,16 @@ public struct ObjectLocationData{
     public Vector3 position;
     public Quaternion rotation;
 }
+
+// Data form sheet
+[System.Serializable]
+public class GameConfigData{
+    public PhotonNetworkConfigData photonNetworkConfig;
+}
+[System.Serializable]
+public class PhotonNetworkConfigData{
+    public string gameVersion;
+    public int sendRate;
+    public int serializationRate;
+    public float keepAliveInBackground;
+}

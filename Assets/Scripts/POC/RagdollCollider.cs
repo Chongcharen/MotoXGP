@@ -27,6 +27,8 @@ public class RagdollCollider : MonoBehaviour
         AbikeChopSystem.OnReset.Subscribe(_=>{
             foreach(Collider coll in colliders){
                 if(coll == null)continue;
+                EnabledRagDolls(false);
+
                 var rigidbody = coll.GetComponent<Rigidbody>();
                 rigidbody.mass = 0;
                 rigidbody.drag = 0;
@@ -36,6 +38,7 @@ public class RagdollCollider : MonoBehaviour
                 rigidbody.sleepThreshold = 0.005f;
                 rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
                 rigidbody.WakeUp();
+                EnabledRagDolls(true);
              }
         });
     }

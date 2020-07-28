@@ -50,7 +50,7 @@ public class UI_PlayersDistance : MonoBehaviourPunCallbacks
             .AppendInterval(5)
             .Append(round_txt.DOFade(0,0.5f)).SetAutoKill();
         }).AddTo(this);
-        PhotonSmoothSyncMovement.OnPlayerMovement.Subscribe(tupleValue =>{
+        PhotonCustomTransformView.OnPlayerMovement.Subscribe(tupleValue =>{
             SetDistance(tupleValue.Item1,tupleValue.Item2);
         }).AddTo(this);
     }

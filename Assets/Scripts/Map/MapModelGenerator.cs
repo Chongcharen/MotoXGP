@@ -93,7 +93,8 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
             mapList.Add(terrainInstance);
         }
         Destroy(templateTerrain);
-        terrainResource.gameObject.SetActive(false);
+        Resources.UnloadAsset(terrainResource);
+        //terrainResource.gameObject.SetActive(false);
     
 
 

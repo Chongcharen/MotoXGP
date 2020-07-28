@@ -90,6 +90,7 @@ public class GameStageData{
 public class MapLocationData{
     public string mapName;
     public List<Vector3> startPositionDatas;
+    public List<ObjectLocationData> objectTerrainDatas;
     public List<ObjectLocationData> objectLocationDatas;
     
 }

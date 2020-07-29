@@ -31,7 +31,7 @@ public class GameNetwork : MonoBehaviourPunCallbacks
         var playerProfileData = JsonConvert.DeserializeObject<PlayerIndexProfileData>(playerIndex[PhotonNetwork.LocalPlayer.UserId].ToString());
         //
         startPosition = MapManager.Instance.localSpawnPosition.x;//spawnPoint[0].position.x;
-
+        Debug.Log("-----------------------------------");
         var go = PhotonNetwork.Instantiate("POC/BikeV5.8",MapManager.Instance.spawnPointsPosition[playerProfileData.index],Quaternion.Euler(0,90,0));
         go.name = PhotonNetwork.LocalPlayer.NickName;
         go.GetComponent<PhotonCustomTransformView>().fixPositionZ = go.transform.position.z;

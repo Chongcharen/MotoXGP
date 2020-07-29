@@ -74,9 +74,9 @@ public static class MapKeys{
     public const string Map_Start = "Map_Start";
     public const string Object_Terrain = "Object_Terrain";
     public const string Object_Name = "Object_Name";
-    public const string Position_X = "Position_X";
-    public const string Position_Y = "Position_Y";  
-    public const string Position_Z = "Position_Z";      
+    public const string Position_X = "Position_X*0.01";
+    public const string Position_Y = "Position_Y*0.01";  
+    public const string Position_Z = "Position_Z*-1";      
 }
 public static class FilePath{
     public const string GAME_LEVEL_DATA = "GameLevel/GameLevelData.txt";

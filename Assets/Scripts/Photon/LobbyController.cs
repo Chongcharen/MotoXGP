@@ -77,7 +77,8 @@ public class LobbyController : MonoBehaviourPunCallbacks
     {
         base.OnJoinRandomFailed(returnCode, message);
         Debug.Log(string.Format("OnJoinRandomFailed++ code {0} message {1}", returnCode, message));
-        JoinRandom();
+        //JoinRandom();
+        CreateRoom(customProperty);
     }
     public void JoinRandom()
     {
@@ -88,8 +89,12 @@ public class LobbyController : MonoBehaviourPunCallbacks
 	// 	{ MapIndexKey, mapIndexValue }, { GameModeIndexKey, gameModeIndexValue }
 	// };
         var LobbyOptions = new string[2];
-        LobbyOptions[0] = RoomPropertyKeys.MAP_THEME;
-        LobbyOptions[1] = RoomPropertyKeys.MAP_STAGE;
+        LobbyOptions[0] = RoomOptionKey.MAP_THEME;
+        LobbyOptions[1] = RoomOptionKey.MAP_STAGE;
+        for (int i = 0; i < LobbyOptions.Length; i++)
+        {
+            Debug.Log("Roomoption "+i+" = "+LobbyOptions[i]);
+        }
         var roomName = "name"+UnityEngine.Random.Range(0,999);
         RoomOptions roomOption = new RoomOptions();
         roomOption.MaxPlayers = 10;
@@ -115,7 +120,7 @@ public class LobbyController : MonoBehaviourPunCallbacks
     }
     public void CreateRoom(ExitGames.Client.Photon.Hashtable _customProperty = null) //trying to create our own room
     {
-        RoomOptions roomOps = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = (byte)maxPlayer };
+        //RoomOptions roomOps = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = (byte)maxPlayer };
         //roomOps.PlayerTtl = -1;
         //roomOps.EmptyRoomTtl = 6000000;
         //roomOps.CleanupCacheOnLeave = true;
@@ -137,9 +142,26 @@ public class LobbyController : MonoBehaviourPunCallbacks
         //     }
         //     roomOps.CustomRoomPropertiesForLobby = Property;
         // }
-        roomOps.PublishUserId = true;
-        Debug.Log("!!!!!!!!!!!!!!!!!CreateRoom");
-        PhotonNetwork.CreateRoom( "aaaa", roomOps,TypedLobby.Default); //attempting to create a new room
+        // roomOps.PublishUserId = true;
+        // Debug.Log("!!!!!!!!!!!!!!!!!CreateRoom");
+        // PhotonNetwork.CreateRoom( "aaaa", roomOps,TypedLobby.Default); //attempting to create a new room
+
+
+        var LobbyOptions = new string[]{RoomOptionKey.HOST_ID,RoomOptionKey.MAP_THEME,RoomOptionKey.MAP_STAGE};
+        for (int i = 0; i < LobbyOptions.Length; i++)
+        {
+            Debug.Log("Roomoption "+i+" = "+LobbyOptions[i]);
+        }
+        var roomName = "name"+UnityEngine.Random.Range(0,999);
+        RoomOptions roomOption = new RoomOptions();
+        roomOption.MaxPlayers = 10;
+        roomOption.IsVisible = true;
+        roomOption.IsOpen = true;
+        roomOption.PublishUserId = true;
+        _customProperty.Add(RoomOptionKey.HOST_ID,PhotonNetwork.LocalPlayer.UserId);
+        roomOption.CustomRoomProperties = _customProperty;
+        roomOption.CustomRoomPropertiesForLobby = LobbyOptions;
+        PhotonNetwork.JoinOrCreateRoom(roomName, roomOption,TypedLobby.Default);
     }
     
     public override void OnCreateRoomFailed(short returnCode, string message) //callback function for if we fail to create a room. Most likely fail because room name was taken.

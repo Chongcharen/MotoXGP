@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Newtonsoft.Json;
+using DevAhead.Data;
+using UniRx;
 public class GameDataManager : MonoSingleton<GameDataManager>
 {
     public List<MapLocationData> mapLocationDatas;
+    public GameConfigData gameConfigData;
     GameLevelData gameLevelData;
     public GameLevel gameLevel; //level for choose map
     public string currentMapChoose = "Forest01";
@@ -12,16 +16,28 @@ public class GameDataManager : MonoSingleton<GameDataManager>
     public void Init(){
         gameLevel = new GameLevel();
         mapLocationDatas = new List<MapLocationData>();
+
+        SpreadSheetGameConfig.OnUpdateGameConfigData.Subscribe(_ =>{
+            gameConfigData = _;
+            Debug.Log("gameConfigData "+gameConfigData.photonNetworkConfig.gameVersion);
+            Debug.Log("gameConfigData "+gameConfigData.photonNetworkConfig.sendRate);
+        }).AddTo(this);
     }
     public void SetUpGameLevel(int themeIndex,int stageIndex){
         gameLevel.theme = themeIndex;gameLevel.stage = stageIndex;
         gameLevel.gameStageData =  gameLevelData.gameThemesData[gameLevel.theme].gameStages[gameLevel.stage];
     }
+    public void SetUpGameConfigData(string jsonData){
+        //gameConfigData = JsonConvert.DeserializeObject<GameConfigData>(jsonData);
+        Debug.Log("jsondata "+jsonData);
+        // var spreadSheetConverter = new SpreadSheetDataConverter();
+        // gameConfigData = spreadSheetConverter.ConvertData<GameConfigData>(jsonData,new string[]{SpreadSheetKeys.HEADER_NAME,SpreadSheetKeys.HEADER_DATA,SpreadSheetKeys.HEADER_VALE});
+        // Debug.Log("gameversion "+gameConfigData.photonNetworkConfig.gameVersion);
+    }
     public void SaveMapData(List<MapLocationData> _data){
         mapLocationDatas.Clear();
         mapLocationDatas = _data.ToList();
     }
-
     //gamelevel
     public void SetUpGameLeveldata(GameLevelData _data){
         gameLevelData = _data;

@@ -120,7 +120,8 @@ public class MapManager : MonoBehaviour {
         }
     }
     public void GetZone(int zoneInstanceID){
-        //Debug.Log("Respawn Count "+respawnData.Count);
+        Debug.Log("Respawn Count "+respawnData.Count);
+        Debug.Log("Getzone "+zoneInstanceID);
         Debug.Assert(respawnData.ContainsKey(zoneInstanceID),"get responseZone");
         respawnPosition = respawnData[zoneInstanceID];
     }
@@ -128,7 +129,7 @@ public class MapManager : MonoBehaviour {
         isDeadzone = _isdeadzone;
     }
     private void SetDeadZone(){
-        //Debug.Log("SetDeadZone ");
+        Debug.Log("SetDeadZone==========> ");
         GameObject[] objZone = GameObject.FindGameObjectsWithTag(TagKeys.Zone);//zoneObject.GetComponentsInChildren<Transform>();
         Debug.Log("OBJ Zone length "+objZone.Length);
         foreach (var gameObj in objZone)

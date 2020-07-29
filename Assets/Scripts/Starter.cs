@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Security.Cryptography.X509Certificates;
+using System.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,9 +7,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 using UniRx;
+using DevAhead.Data;
+using System.Linq;
 public class Starter : MonoBehaviour
 {
     public static Subject<string> OnNotification = new Subject<string>();
+    Dictionary<int,bool> loaderSheetData = new Dictionary<int, bool>();
     MapDataDownloader mapDataDownloader;
     //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     // static void OnLoad(){
@@ -25,7 +29,7 @@ public class Starter : MonoBehaviour
     // }
 
     private void Start() {
-        Debug.Log("aaaaaaaaaaa");
+        Debug.Log("aaaaaaaaaaabbbbb");
         Debug.Log("******************Initial******************");
         SceneFlow.Instance.StartScene();
         Application.targetFrameRate = 60;
@@ -38,9 +42,15 @@ public class Starter : MonoBehaviour
         // LobbyController.Instance.Init();
         // RoomController.Instance.Init();
         Debug.Log("Onload !!!");
+        SpreadSheetDataConverter.OnCompleted.Subscribe(id =>{
+            CheckCopmpletedData(id);
+        });
     }
     void DownloadData(){
         OnNotification.OnNext("DownloadMapData");
+        var spreadSheetGameconfig = new SpreadSheetGameConfig();
+        spreadSheetGameconfig.Start();
+        loaderSheetData.Add(spreadSheetGameconfig.GetHashCode(),false);
         mapDataDownloader = new MapDataDownloader();
         mapDataDownloader.Start();
         mapDataDownloader.downloadComplete += OnMapDownlodComplete;
@@ -83,7 +93,7 @@ public class Starter : MonoBehaviour
         GameLevelData levelData = JsonConvert.DeserializeObject<GameLevelData>(jsonString);
         GameDataManager.Instance.SetUpGameLeveldata(levelData);
         OnNotification.OnNext("LevelData download complete prepareTo Login");
-        SceneManager.LoadScene(SceneName.LOBBY);
+        CheckCopmpletedData(-1);
         Debug.Log("leveldata "+levelData.version);
         Debug.Log("leveldata gameThemes"+levelData.gameThemesData.Count);
         Debug.Log("dic count "+gameleveldata.Count);
@@ -92,6 +102,16 @@ public class Starter : MonoBehaviour
             Debug.Log(string.Format("themename {0} stageLevel {1}",data.themeName,data.gameStages.Count));
         }
         //Debug.Log("gameleveldata "+gameleveldata.gameThemes);
-        
+    }
+
+    void CheckCopmpletedData(int instanceID){
+        Debug.Log("CheckCompletedData ");
+        Debug.Log("all sheet download "+loaderSheetData.All(data =>data.Value == true));
+        if(loaderSheetData.ContainsKey(instanceID)){
+            loaderSheetData[instanceID] = true;
+        }
+        if(GameDataManager.Instance.GameLevelData == null)return;
+        if(!loaderSheetData.All(data =>data.Value == true))return;
+        SceneManager.LoadScene(SceneName.LOBBY);
     }
 }

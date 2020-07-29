@@ -1,15 +1,15 @@
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
 // Shader created with Shader Forge v1.38 
-// Shader Forge (c) Neat Corporation / Joachim Holmer - http://www.acegikmo.com/shaderforge/
+// Shader Forge (c) Freya Holmer - http://www.acegikmo.com/shaderforge/
 // Note: Manually altering this data may prevent you from opening it in Shader Forge
-/*SF_DATA;ver:1.38;sub:START;pass:START;ps:flbk:Transparent/Cutout/Diffuse,iptp:0,cusa:False,bamd:0,cgin:,lico:1,lgpr:1,limd:1,spmd:1,trmd:0,grmd:0,uamb:True,mssp:True,bkdf:True,hqlp:False,rprd:False,enco:False,rmgx:True,imps:True,rpth:0,vtps:0,hqsc:True,nrmq:1,nrsp:0,vomd:0,spxs:False,tesm:0,olmd:1,culm:2,bsrc:0,bdst:1,dpts:2,wrdp:True,dith:0,atcv:True,rfrpo:True,rfrpn:Refraction,coma:15,ufog:True,aust:True,igpj:False,qofs:0,qpre:2,rntp:3,fgom:False,fgoc:False,fgod:False,fgor:False,fgmd:0,fgcr:0.5,fgcg:0.5,fgcb:0.5,fgca:1,fgde:0.01,fgrn:0,fgrf:300,stcl:False,atwp:False,stva:128,stmr:255,stmw:255,stcp:6,stps:0,stfa:0,stfz:0,ofsf:0,ofsu:0,f2p0:False,fnsp:False,fnfb:False,fsmp:False;n:type:ShaderForge.SFN_Final,id:0,x:34000,y:32640,varname:node_0,prsc:2|spec-3-OUT,gloss-2321-OUT,normal-2-RGB,emission-322-OUT,clip-1-A,voffset-394-OUT;n:type:ShaderForge.SFN_Tex2d,id:1,x:33472,y:32635,ptovrint:False,ptlb:MainTex,ptin:_MainTex,varname:_Diffuse,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:0,isnm:False;n:type:ShaderForge.SFN_Tex2d,id:2,x:33472,y:32823,ptovrint:False,ptlb:Normal,ptin:_Normal,varname:_Normal,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,tex:cb6c5165ed180c543be39ed70e72abc8,ntxv:3,isnm:True;n:type:ShaderForge.SFN_Vector1,id:3,x:33777,y:32641,varname:node_3,prsc:2,v1:0.2;n:type:ShaderForge.SFN_Vector1,id:270,x:33777,y:32701,varname:node_270,prsc:2,v1:0.4;n:type:ShaderForge.SFN_VertexColor,id:321,x:33194,y:32589,varname:node_321,prsc:2;n:type:ShaderForge.SFN_Multiply,id:322,x:33777,y:32456,varname:node_322,prsc:2|A-321-RGB,B-1-RGB;n:type:ShaderForge.SFN_Multiply,id:394,x:33729,y:33420,cmnt:Wind animation,varname:node_394,prsc:2|A-6087-RGB,B-3686-OUT;n:type:ShaderForge.SFN_Slider,id:2321,x:33589,y:32969,ptovrint:False,ptlb:Glosness,ptin:_Glosness,varname:node_2321,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,min:-1,cur:0,max:1;n:type:ShaderForge.SFN_VertexColor,id:6087,x:33423,y:33249,varname:node_6087,prsc:2;n:type:ShaderForge.SFN_Append,id:3686,x:33423,y:33504,varname:node_3686,prsc:2|A-5381-OUT,B-5432-OUT,C-5381-OUT;n:type:ShaderForge.SFN_Vector1,id:5432,x:33065,y:33296,varname:node_5432,prsc:2,v1:0;n:type:ShaderForge.SFN_Multiply,id:5381,x:33138,y:33598,varname:node_5381,prsc:2|A-4688-OUT,B-9431-OUT;n:type:ShaderForge.SFN_FragmentPosition,id:2848,x:32879,y:33307,varname:node_2848,prsc:2;n:type:ShaderForge.SFN_Sin,id:4688,x:32896,y:33475,varname:node_4688,prsc:2|IN-2848-X;n:type:ShaderForge.SFN_Multiply,id:9431,x:32896,y:33661,varname:node_9431,prsc:2|A-6240-OUT,B-7959-OUT;n:type:ShaderForge.SFN_ValueProperty,id:6240,x:32511,y:33497,ptovrint:False,ptlb:Intensity,ptin:_Intensity,varname:node_6240,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,v1:1;n:type:ShaderForge.SFN_Multiply,id:7959,x:32664,y:33720,varname:node_7959,prsc:2|A-812-V,B-8829-OUT;n:type:ShaderForge.SFN_TexCoord,id:812,x:32134,y:33544,varname:node_812,prsc:2,uv:0,uaff:False;n:type:ShaderForge.SFN_Cos,id:8829,x:32388,y:33777,varname:node_8829,prsc:2|IN-7273-T;n:type:ShaderForge.SFN_Time,id:7273,x:32141,y:33819,varname:node_7273,prsc:2;proporder:1-2-2321-6240;pass:END;sub:END;*/
+/*SF_DATA;ver:1.38;sub:START;pass:START;ps:flbk:Transparent/Cutout/Diffuse,iptp:0,cusa:False,bamd:0,cgin:,lico:1,lgpr:1,limd:1,spmd:1,trmd:0,grmd:0,uamb:True,mssp:True,bkdf:True,hqlp:False,rprd:False,enco:False,rmgx:True,imps:True,rpth:0,vtps:0,hqsc:True,nrmq:1,nrsp:0,vomd:0,spxs:False,tesm:0,olmd:1,culm:2,bsrc:0,bdst:1,dpts:2,wrdp:True,dith:0,atcv:True,rfrpo:True,rfrpn:Refraction,coma:15,ufog:True,aust:True,igpj:False,qofs:0,qpre:2,rntp:3,fgom:False,fgoc:False,fgod:False,fgor:False,fgmd:0,fgcr:0.5,fgcg:0.5,fgcb:0.5,fgca:1,fgde:0.01,fgrn:0,fgrf:300,stcl:False,atwp:False,stva:128,stmr:255,stmw:255,stcp:6,stps:0,stfa:0,stfz:0,ofsf:0,ofsu:0,f2p0:False,fnsp:False,fnfb:False,fsmp:False;n:type:ShaderForge.SFN_Final,id:0,x:34000,y:32640,varname:node_0,prsc:2|spec-3-OUT,gloss-2321-OUT,normal-2-RGB,emission-322-OUT,clip-1-A,voffset-394-OUT;n:type:ShaderForge.SFN_Tex2d,id:1,x:33472,y:32635,ptovrint:False,ptlb:MainTex,ptin:_MainTex,varname:_MainTex,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:0,isnm:False;n:type:ShaderForge.SFN_Tex2d,id:2,x:33472,y:32867,ptovrint:False,ptlb:Normal,ptin:_Normal,varname:_Normal,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,tex:cb6c5165ed180c543be39ed70e72abc8,ntxv:3,isnm:True;n:type:ShaderForge.SFN_Vector1,id:3,x:33777,y:32641,varname:node_3,prsc:2,v1:0.2;n:type:ShaderForge.SFN_Vector1,id:270,x:33777,y:32701,varname:node_270,prsc:2,v1:0.4;n:type:ShaderForge.SFN_VertexColor,id:321,x:33194,y:32589,varname:node_321,prsc:2;n:type:ShaderForge.SFN_Multiply,id:322,x:33777,y:32456,varname:node_322,prsc:2|A-321-RGB,B-1-RGB;n:type:ShaderForge.SFN_Multiply,id:394,x:33729,y:33420,cmnt:Wind animation,varname:node_394,prsc:2|A-6087-RGB,B-3686-OUT;n:type:ShaderForge.SFN_Slider,id:2321,x:33601,y:33052,ptovrint:False,ptlb:Glosness,ptin:_Glosness,varname:_Glosness,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,min:-1,cur:-0.115867,max:3;n:type:ShaderForge.SFN_VertexColor,id:6087,x:33352,y:33245,varname:node_6087,prsc:2;n:type:ShaderForge.SFN_Append,id:3686,x:33423,y:33504,varname:node_3686,prsc:2|A-5381-OUT,B-5432-OUT,C-5381-OUT;n:type:ShaderForge.SFN_Vector1,id:5432,x:33065,y:33296,varname:node_5432,prsc:2,v1:0;n:type:ShaderForge.SFN_Multiply,id:5381,x:33138,y:33598,varname:node_5381,prsc:2|A-4688-OUT,B-9431-OUT;n:type:ShaderForge.SFN_FragmentPosition,id:2848,x:32879,y:33307,varname:node_2848,prsc:2;n:type:ShaderForge.SFN_Sin,id:4688,x:32896,y:33475,varname:node_4688,prsc:2|IN-2848-X;n:type:ShaderForge.SFN_Multiply,id:9431,x:32896,y:33661,varname:node_9431,prsc:2|A-6240-OUT,B-7959-OUT;n:type:ShaderForge.SFN_ValueProperty,id:6240,x:32511,y:33497,ptovrint:False,ptlb:Intensity,ptin:_Intensity,varname:_Intensity,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,v1:1;n:type:ShaderForge.SFN_Multiply,id:7959,x:32664,y:33720,varname:node_7959,prsc:2|A-812-V,B-8829-OUT;n:type:ShaderForge.SFN_TexCoord,id:812,x:32134,y:33544,varname:node_812,prsc:2,uv:0,uaff:False;n:type:ShaderForge.SFN_Cos,id:8829,x:32423,y:33751,varname:node_8829,prsc:2|IN-7273-T;n:type:ShaderForge.SFN_Time,id:7273,x:32141,y:33819,varname:node_7273,prsc:2;proporder:1-2-2321-6240;pass:END;sub:END;*/
 
 Shader "Shader Forge/Animated Plant" {
     Properties {
         _MainTex ("MainTex", 2D) = "white" {}
         _Normal ("Normal", 2D) = "bump" {}
-        _Glosness ("Glosness", Range(-1, 1)) = 0
+        _Glosness ("Glosness", Range(-1, 3)) = -0.115867
         _Intensity ("Intensity", Float ) = 1
         [HideInInspector]_Cutoff ("Alpha cutoff", Range(0,1)) = 0.5
     }
@@ -30,7 +30,7 @@ Shader "Shader Forge/Animated Plant" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            //#define UNITY_PASS_FORWARDBASE
+            #define UNITY_PASS_FORWARDBASE
             #define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
@@ -42,8 +42,7 @@ Shader "Shader Forge/Animated Plant" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
-            #pragma target 3.0
+            #pragma target 3.5
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform sampler2D _Normal; uniform float4 _Normal_ST;
             uniform float _Glosness;
@@ -189,7 +188,6 @@ Shader "Shader Forge/Animated Plant" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
             #pragma target 3.0
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform sampler2D _Normal; uniform float4 _Normal_ST;
@@ -294,7 +292,6 @@ Shader "Shader Forge/Animated Plant" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
             #pragma target 3.0
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform float _Intensity;
@@ -360,7 +357,6 @@ Shader "Shader Forge/Animated Plant" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
             #pragma target 3.0
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform float _Glosness;

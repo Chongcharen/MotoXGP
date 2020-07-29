@@ -15,7 +15,9 @@ public class GameHUD : MonoBehaviourPunCallbacks
     [SerializeField]Button b_reset,b_restart,b_mic;
     [SerializeField]TextMeshProUGUI nos_txt,fps_txt;
     [SerializeField]Image[] images_wifi;
-    [SerializeField]Image image_nos,image_timeNod;
+    [Header("Nos")]
+    [SerializeField]Image image_nos;
+    [SerializeField]Image image_timeNod;
     public float deltaTime;
     
     ///TestGame
@@ -24,7 +26,6 @@ public class GameHUD : MonoBehaviourPunCallbacks
 
     void Start(){
         // b_restartGame.OnClickAsObservable().Subscribe(_=>{
-           
         //     GameplayManager.Instance.ResetGame();
         // });
         // b_reset.OnClickAsObservable().Subscribe(_=>{
@@ -33,18 +34,22 @@ public class GameHUD : MonoBehaviourPunCallbacks
         b_restart.OnClickAsObservable().Subscribe(_=>{
              Debug.Log("restart Click");
             OnRestartPosition.OnNext(default);
-        });
+        }).AddTo(this);
         GameController.OnMicActive.Subscribe(active =>{
             b_mic.interactable = active;
-        });
+        }).AddTo(this);
         AbikeChopSystem.OnBoostChanged.Subscribe(value =>{
             nos_txt.text = value.ToString();
-        });
+        }).AddTo(this);
         AbikeChopSystem.OnBoostTime.Subscribe(boostTime =>{
             MakeAnimationBoosted(boostTime);
-        });
+        }).AddTo(this);
+        AbikeChopSystem.OnBoostDelay.Subscribe(delayTime =>{
+            image_nos.DOFillAmount(0,0).SetAutoKill();
+            image_nos.DOFillAmount(1,delayTime).SetAutoKill();
+        }).AddTo(this);
     }
-    void Update(){
+    private void Update() {
         if(PhotonNetwork.GetPing() <= 60){
             SetPing(Color.green,Color.green,Color.green);
         }else if(PhotonNetwork.GetPing() > 60 && PhotonNetwork.GetPing() <= 90){

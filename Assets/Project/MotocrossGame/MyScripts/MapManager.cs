@@ -120,8 +120,8 @@ public class MapManager : MonoBehaviour {
         }
     }
     public void GetZone(int zoneInstanceID){
-        Debug.Log("Respawn Count "+respawnData.Count);
-        Debug.Log("Getzone "+zoneInstanceID);
+        // Debug.Log("Respawn Count "+respawnData.Count);
+        // Debug.Log("Getzone "+zoneInstanceID);
         Debug.Assert(respawnData.ContainsKey(zoneInstanceID),"get responseZone");
         respawnPosition = respawnData[zoneInstanceID];
     }
@@ -129,9 +129,10 @@ public class MapManager : MonoBehaviour {
         isDeadzone = _isdeadzone;
     }
     private void SetDeadZone(){
-        Debug.Log("SetDeadZone==========> ");
+        endpointData.Clear();
+        //Debug.Log("SetDeadZone==========> ");
         GameObject[] objZone = GameObject.FindGameObjectsWithTag(TagKeys.Zone);//zoneObject.GetComponentsInChildren<Transform>();
-        Debug.Log("OBJ Zone length "+objZone.Length);
+        //Debug.Log("OBJ Zone length "+objZone.Length);
         foreach (var gameObj in objZone)
         {
             var trans = gameObj.GetComponentsInChildren<Transform>();
@@ -141,14 +142,15 @@ public class MapManager : MonoBehaviour {
                 if(item.gameObject.tag == TagKeys.ZonePoint){
                     var deadZoneTarget = item.Find(deadZone);
                     var respawnTarget = item.Find(respawnZone);
-                    Debug.Log("deadZoneTarget = "+deadZoneTarget.GetInstanceID());
-                    Debug.Log("respawnTarget = "+respawnTarget.position);
+                    //Debug.Log("deadZoneTarget = "+deadZoneTarget.GetInstanceID());
+                    //Debug.Log("respawnTarget = "+respawnTarget.position);
                     if(!respawnData.ContainsKey(deadZoneTarget.GetInstanceID()))
                         respawnData.Add(deadZoneTarget.GetInstanceID(),respawnTarget.position);
                 }
-
                 if(item.gameObject.tag == TagKeys.ENDPOINT){
                     var endpoint = item.gameObject.GetComponent<Collider>();
+                    // print(Depug.Log("Get in object name "+item.name,Color.blue));
+                    // print(Depug.Log("instanceid "+item.transform.GetInstanceID(),Color.red));
                     if(!endpointData.ContainsKey(item.transform.GetInstanceID())){
                         var rawdata = new EndPointData{
                             instanceId = item.transform.GetInstanceID(),
@@ -156,36 +158,32 @@ public class MapManager : MonoBehaviour {
                             collider = endpoint,
                             position = item.position.x
                         };
-                        Debug.Log("endpoint raw data "+rawdata.position);
+                        //print(Depug.Log("endpoint raw data "+rawdata.position,Color.white));
                         endpointData.Add(item.transform.GetInstanceID(),rawdata);
                     }  
                 }
             }
         }
-        Debug.Log("SetDeadZone 1 ");
+        //Debug.Log("SetDeadZone 1 ");
         var sort = from enrty in endpointData orderby enrty.Value.position ascending select enrty;
         var firstEndPoint = sort.ElementAtOrDefault(0);
         var lastEndpoint = sort.ElementAtOrDefault(sort.Count()-1);
-        Debug.Log("xxxxxxxxxxxxxxxxxxxxxx "+firstEndPoint+" "+lastEndpoint);
         if(lastEndpoint.Value != null && firstEndPoint.Value != null){
-             Debug.Log("ccccccccccccccc "+firstEndPoint+" "+lastEndpoint);
             startPoint = firstEndPoint.Value.position;
             finishPoint = lastEndpoint.Value.position;
-            Debug.Log("StartEndpoint "+startPoint);
-            Debug.Log("finish "+finishPoint);
             //OnSetDirection.OnNext(new Vector2(firstEndPoint.Value.position,lastEndpoint.Value.position));
         }else
         {
             Debug.LogError("Cannot found firstEndpoint or last endpoint");
         }
-        Debug.Log("SetDeadZone 2");
+        //Debug.Log("SetDeadZone 2  Endpoint DAta "+endpointData.Count);
         GameplayManager.Instance.SetTotalRound(endpointData.Count);
 
-        foreach (var item in respawnData)
-        {
-            Debug.Log(string.Format("Key {0} Value {1}",item.Key,item.Value));
-        }
-        Debug.Log("TotalCount "+respawnData.Count);
+        // foreach (var item in respawnData)
+        // {
+        //     Debug.Log(string.Format("Key {0} Value {1}",item.Key,item.Value));
+        // }
+        // Debug.Log("TotalCount "+respawnData.Count);
     }
 
    

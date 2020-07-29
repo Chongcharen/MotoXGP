@@ -19,6 +19,7 @@ public class GameplayManager : InstanceClass<GameplayManager>
 
     }
     public void SetTotalRound(int _totalRound){
+        print(Depug.Log("Settotal round "+_totalRound,Color.yellow));
         totalRound.Value =_totalRound-1;
         
     }

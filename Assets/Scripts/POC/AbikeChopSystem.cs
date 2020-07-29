@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Linq;
+using System.Data;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,11 +8,13 @@ using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
 using Newtonsoft.Json;
-
+using System;
+using System.Linq;
 public class AbikeChopSystem : MonoBehaviour
 {
     public static Subject<int> OnBoostChanged = new Subject<int>();
     public static Subject<float> OnBoostTime = new Subject<float>();
+    public static Subject<float> OnBoostDelay = new Subject<float>();
     public static Subject<bool> OnGrouned = new Subject<bool>();
     public static Subject<Unit> OnReset = new Subject<Unit>();  
 
@@ -59,12 +62,13 @@ public class AbikeChopSystem : MonoBehaviour
     [SerializeField]float explosionRadius;
     [SerializeField] float boostForce = 200;
     [SerializeField] float brakeForce = 5000;
-    [SerializeField] int boostLimit = 3;
     BoostSystem boostSystem;
-    
+    [SerializeField] int boostLimit = 3;
     [SerializeField] float boostTimeLimit = 5;
+    [SerializeField]float boostDelay =2;
     float currentBoostTime = 0;
     bool isBoosting = false;
+    bool isBoostDelay = false;
     public float BoostForce { get { return boostForce; } set { boostForce = value; } }
     public float BreakForce { get { return boostForce; } set { boostForce = value; } }
     [SerializeField]int airBrake = 200;
@@ -265,8 +269,8 @@ public class AbikeChopSystem : MonoBehaviour
             jump = motorControl.isJump;
             isLeft = motorControl.isLeft;
             isRight = motorControl.isRight;
-            if(motorControl.isBoost&& boostLimit >0 && !isBoosting){
-                isBoosting = true; 
+            if(motorControl.isBoost&& boostLimit >0 && !isBoosting && !isBoostDelay){
+                
                 boostLimit -- ;    
                 currentSpeedLimit = boostedLimit;
                 OnBoostChanged.OnNext(boostLimit);
@@ -274,7 +278,11 @@ public class AbikeChopSystem : MonoBehaviour
                 if(boostSystem != null)
                     boostSystem.StartBoostEffect(boostTimeLimit);
                 //myRigidbody.AddExplosionForce(explosionPower,explosionTransform.position,explosionRadius,1,ForceMode.Impulse);
-                myRigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
+                if(grounded){
+                    myRigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
+                    isBoosting = true; 
+                    
+                }
             }
         }
         if(isControll&&crash){
@@ -282,8 +290,8 @@ public class AbikeChopSystem : MonoBehaviour
             return;
         }
         var indexWhell = 0;
-        if(jump && grounded){
-            myRigidbody.AddForce(transform.up* myRigidbody.mass*forceJump);
+        if(jump && isGround.Any(g => g == true)){
+            myRigidbody.AddForce(grounded ? transform.up : transform.forward* myRigidbody.mass*forceJump);
         }
         if(isBoosting){
             if(currentBoostTime < boostTimeLimit){
@@ -291,15 +299,20 @@ public class AbikeChopSystem : MonoBehaviour
                 currentBoostTime += Time.deltaTime*1;
             }else
             {
-                //myRigidbody.AddForce(-transform.forward*(BreakForce*1000));
+
                 myRigidbody.AddForce(-transform.forward*7,ForceMode.VelocityChange);
                 wheels[1].collider.brakeTorque = 3000;
                 wheels[0].collider.brakeTorque = 3000;
+                isBoostDelay = true;
                 isBoosting = false;
+                Observable.Timer(TimeSpan.FromSeconds(boostDelay)).Subscribe(_=>{
+                    isBoostDelay = false;
+                }).AddTo(this);
                 currentSpeedLimit = speedLimit;
                 currentBoostTime = 0;
                 wheels[1].collider.brakeTorque = 0;
                 wheels[0].collider.brakeTorque = 0;
+                OnBoostDelay.OnNext(boostDelay);
             }
         }
          

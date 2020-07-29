@@ -90,6 +90,7 @@ public class GameStageData{
 public class MapLocationData{
     public string mapName;
     public List<Vector3> startPositionDatas;
+    public List<ObjectLocationData> objectTerrainDatas;
     public List<ObjectLocationData> objectLocationDatas;
     
 }
@@ -98,4 +99,17 @@ public struct ObjectLocationData{
     public string prefabName;
     public Vector3 position;
     public Quaternion rotation;
+}
+
+// Data form sheet
+[System.Serializable]
+public class GameConfigData{
+    public PhotonNetworkConfigData photonNetworkConfig;
+}
+[System.Serializable]
+public class PhotonNetworkConfigData{
+    public string gameVersion;
+    public int sendRate;
+    public int serializationRate;
+    public float keepAliveInBackground;
 }

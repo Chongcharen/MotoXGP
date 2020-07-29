@@ -14,6 +14,8 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
     public Vector3[] spawnPointsPosition;
     public float startPosition;
     public float finishPosition;
+
+    string gamePath;
     void Start(){
     }
     public void GenerateMap(){
@@ -37,31 +39,77 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
     }
     void GenerateTerrain(){
         ClearMap();
+
+        gamePath = "Map/"+GameDataManager.Instance.gameLevel.gameStageData.themeName+"/";
+
         var mapRoot = new GameObject("MapRoot");
         poolCount = mapLocationData.startPositionDatas.Count;
         var prefabTerrain = GameDataManager.Instance.gameLevel.gameStageData.themeName+""+GameDataManager.Instance.gameLevel.gameStageData.stageName;
         Debug.Log("prefabTerrain "+prefabTerrain);
-        ObjectPool.Instance.CreatePool("Map/Forest/"+prefabTerrain,poolCount);
-        foreach (var positionData in mapLocationData.startPositionDatas)
+
+        var terrainResource = Resources.Load<GameObject>(gamePath+prefabTerrain);
+        Debug.Log("prefabterrain "+prefabTerrain);
+        Debug.Log("templateTerrain "+terrainResource);
+
+        var templateTerrain = Instantiate(terrainResource);
+        Debug.Log("templateTerrain "+templateTerrain);
+
+        if(templateTerrain != null){
+            templateTerrain.gameObject.SetActive(true);
+            templateTerrain.transform.SetParent(mapRoot.transform);
+            templateTerrain.transform.position = Vector3.zero;
+            templateTerrain.transform.rotation = Quaternion.Euler(0,180,0);
+        }
+
+        // Add prefab terrainset
+
+        var environment = new GameObject("Environment");
+        environment.transform.position = Vector3.zero;
+        environment.transform.SetParent(templateTerrain.transform);
+
+        
+
+        
+
+        foreach (var objectData in mapLocationData.objectTerrainDatas)
         {
-            var prefab = ObjectPool.Instance.GetObjectFormPool("Map/Forest/"+prefabTerrain);
+            Debug.Log("Prefab name "+objectData.prefabName);
+            var objectPath = gamePath+objectData.prefabName;
+            ObjectPool.Instance.CreatePool(objectPath,1);
+            var prefab = ObjectPool.Instance.GetObjectFormPool(objectPath);
             if(prefab != null){
                 prefab.gameObject.SetActive(true);
-                prefab.transform.SetParent(mapRoot.transform);
-                prefab.transform.position = positionData;
+                prefab.transform.SetParent(environment.transform);
+                prefab.transform.position = objectData.position;
                 prefab.transform.rotation = Quaternion.Euler(0,180,0);
-                mapList.Add(prefab);
             }
         }
+
+        foreach (var positionData in mapLocationData.startPositionDatas)
+        {
+            var terrainInstance = Instantiate(templateTerrain);
+            terrainInstance.transform.SetParent(mapRoot.transform);
+            terrainInstance.transform.position = positionData;
+            mapList.Add(terrainInstance);
+        }
+        Destroy(templateTerrain);
+        Resources.UnloadAsset(terrainResource);
+        //terrainResource.gameObject.SetActive(false);
+    
+
+
+
+        //ObjectPool.Instance.CreatePool("Map/Forest/"+prefabTerrain,poolCount);
+        
     }
     public void GenerateObject(){
-        var environment = new GameObject("Environment");
+        var environment = new GameObject("BaseEnvironmentObject");
         environment.transform.position = Vector3.zero;
         foreach (var objectData in mapLocationData.objectLocationDatas)
         {
-            Debug.Log("Prefab name "+objectData.prefabName);
-            ObjectPool.Instance.CreatePool("Map/Forest/"+objectData.prefabName,1);
-            var prefab = ObjectPool.Instance.GetObjectFormPool("Map/Forest/"+objectData.prefabName);
+            var objectPath = gamePath+objectData.prefabName;
+            ObjectPool.Instance.CreatePool(objectPath,1);
+            var prefab = ObjectPool.Instance.GetObjectFormPool(objectPath);
             if(prefab != null){
                 prefab.gameObject.SetActive(true);
                 prefab.transform.SetParent(environment.transform);

@@ -75,8 +75,8 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         });
         b_EnterLevel.OnClickAsObservable().Subscribe(_=>{
             ExitGames.Client.Photon.Hashtable roomOptions = new ExitGames.Client.Photon.Hashtable();
-            roomOptions.Add(RoomPropertyKeys.MAP_THEME,themeIndex);
-            roomOptions.Add(RoomPropertyKeys.MAP_STAGE,currentFocusIndex);
+            roomOptions.Add(RoomOptionKey.MAP_THEME,themeIndex);
+            roomOptions.Add(RoomOptionKey.MAP_STAGE,currentFocusIndex);
             PhotonNetworkConsole.Instance.JoinRandomRoom(roomOptions);
             PageManager.Instance.CloseMap();
             //ClearPage();

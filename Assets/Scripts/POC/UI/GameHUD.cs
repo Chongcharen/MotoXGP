@@ -66,7 +66,6 @@ public class GameHUD : MonoBehaviourPunCallbacks
             image_nos.transform.DOShakePosition(time,10,10,180);
         }
     }
-
     void SetPing(Color firstColor,Color secondColor,Color thirthColor){
         images_wifi[0].color = firstColor;
         images_wifi[1].color = secondColor;

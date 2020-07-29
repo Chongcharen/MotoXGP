@@ -35,8 +35,7 @@ Shader "Shader Forge/spriteTexture" {
             #include "UnityStandardBRDF.cginc"
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles 
-            #pragma target 3.0
+            #pragma target 3.5
             uniform float4 _Frame;
             uniform sampler2D _Texture; uniform float4 _Texture_ST;
             uniform float _Alpha;
@@ -105,7 +104,6 @@ Shader "Shader Forge/spriteTexture" {
             #pragma fragmentoption ARB_precision_hint_fastest
             #pragma multi_compile_shadowcaster
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles 
             #pragma target 3.0
             uniform float4 _Frame;
             uniform sampler2D _Texture; uniform float4 _Texture_ST;

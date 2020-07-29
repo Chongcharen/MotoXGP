@@ -25,11 +25,10 @@ Shader "Shader Forge/AlphaBlendObj" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            //#define UNITY_PASS_FORWARDBASE
+            #define UNITY_PASS_FORWARDBASE
             #include "UnityCG.cginc"
-            // #pragma multi_compile_fwdbase_fullshadows
-            // #pragma only_renderers d3d9 d3d11 glcore gles 
-            // #pragma target 2.0
+            #pragma multi_compile_fwdbase_fullshadows
+            #pragma target 3.5
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform float _CutOff;
             struct VertexInput {

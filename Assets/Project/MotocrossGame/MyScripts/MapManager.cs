@@ -8,6 +8,7 @@ using UniRx;
 public class MapManager : MonoBehaviour {
 
     public static Subject<Vector2> OnSetDirection = new Subject<Vector2>();
+    public static Subject<Quaternion> OnCameraRotate = new Subject<Quaternion>();
     public static MapManager Instance;
     [Header("Name Obj")]
     public string roadName = "Road";
@@ -37,6 +38,7 @@ public class MapManager : MonoBehaviour {
     [Header("Zone")]
     Dictionary<int,Vector3> respawnData;
     Dictionary<int,EndPointData> endpointData;
+    Dictionary<int,Quaternion> camerapointData;
     public Vector3 respawnPosition;
     public bool isDeadzone = false;
 
@@ -58,6 +60,7 @@ public class MapManager : MonoBehaviour {
     public void Init()
     {
         endpointData = new Dictionary<int, EndPointData>();
+        camerapointData = new Dictionary<int, Quaternion>();
         respawnData = new Dictionary<int, Vector3>();
         MapModelGenerator.Instance.GenerateMap();
         localSpawnPosition = MapModelGenerator.Instance.localSpawnPosition;
@@ -126,6 +129,10 @@ public class MapManager : MonoBehaviour {
         Debug.Assert(respawnData.ContainsKey(zoneInstanceID),"get responseZone");
         respawnPosition = respawnData[zoneInstanceID];
     }
+    public void GetCameraZone(int cameraInstanceID){
+        Debug.Assert(camerapointData.ContainsKey(cameraInstanceID),"get responseZone");
+        OnCameraRotate.OnNext(camerapointData[cameraInstanceID]);
+    }
     public void PassDeadZone(bool _isdeadzone){
         isDeadzone = _isdeadzone;
     }
@@ -187,7 +194,25 @@ public class MapManager : MonoBehaviour {
         // Debug.Log("TotalCount "+respawnData.Count);
     }
     void SetCameraZone(){
-        
+        camerapointData.Clear();
+        GameObject[] objZone = GameObject.FindGameObjectsWithTag(TagKeys.CAMERAZONE);//zoneObject.GetComponentsInChildren<Transform>();
+        //Debug.Log("OBJ Zone length "+objZone.Length);
+        foreach (var gameObj in objZone)
+        {
+            var trans = gameObj.GetComponentsInChildren<Transform>();
+            foreach (var cameraTrans in trans)
+            {
+                if(!camerapointData.ContainsKey(cameraTrans.GetInstanceID())){
+                    Quaternion rotate = Quaternion.Euler(cameraTrans.rotation.eulerAngles.x,cameraTrans.rotation.eulerAngles.y-180,cameraTrans.rotation.eulerAngles.z);
+                    Debug.Log("Rotate =========+++++++ "+rotate);
+                    Debug.Log("Rotate =========+++++++ "+cameraTrans.rotation.eulerAngles.x);
+                    Debug.Log("Rotate =========+++++++ "+cameraTrans.rotation.eulerAngles.y);
+                    Debug.Log("Rotate =========+++++++ "+cameraTrans.rotation.eulerAngles.z);
+                    camerapointData.Add(cameraTrans.GetInstanceID(),rotate);
+                }
+            }
+
+        }
     }
 
    

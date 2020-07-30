@@ -14,6 +14,14 @@ public class EndPointData{
     public float position;
 
 }
+public class CameraPointData{
+    public int instanceId;
+    public bool isPass = false;
+    public Collider collider;
+    public float position;
+    public Quaternion rotation;
+
+}
 [System.Serializable]
 public struct ChatMessageData{
     

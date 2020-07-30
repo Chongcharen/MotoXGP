@@ -59,6 +59,9 @@ public class UI_Room : MonoBehaviourPunCallbacks
         }
         foreach (var player in playerIndex)
         {
+            Debug.Log("Index "+index);
+            Debug.Log("player value "+player.Value);
+            Debug.Log("playersData data "+playersData);
             playersData[index].SetData(player.Value,playerColor[index]);
             playersData[index].gameObject.SetActive(true);
             PlayerIndexProfileData playerIndexProfileData;

@@ -64,6 +64,7 @@ public class MapManager : MonoBehaviour {
         spawnPointsPosition = MapModelGenerator.Instance.spawnPointsPosition.ToArray();
         MapModelGenerator.Instance.Dispose();
         SetDeadZone();
+        SetCameraZone();
         SubscribeEvent();
         GetComponent<UI_PlayersDistance>().enabled = true;
         GetComponent<GameNetwork>().enabled = true;
@@ -184,6 +185,9 @@ public class MapManager : MonoBehaviour {
         //     Debug.Log(string.Format("Key {0} Value {1}",item.Key,item.Value));
         // }
         // Debug.Log("TotalCount "+respawnData.Count);
+    }
+    void SetCameraZone(){
+        
     }
 
    

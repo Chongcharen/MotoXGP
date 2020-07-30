@@ -30,6 +30,7 @@ public class TagKeys{
     public const string ZonePoint = "ZonePoint";
     public const string DEADZONE = "DeadZone";
     public const string SAFEZONE = "SafeZone";
+    public const string CAMERAZONE = "CameraZone";
     public const string ENDPOINT = "EndPoint";
     
 }

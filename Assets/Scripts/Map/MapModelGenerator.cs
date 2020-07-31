@@ -84,9 +84,7 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
         templateTerrain.gameObject.SetActive(false);
         terrainResource.gameObject.SetActive(false);
         Destroy(templateTerrain);
-        
         Resources.UnloadAsset(terrainResource);
-        DestroyImmediate(terrainResource,false);
         
     }
     public void GenerateObject(){

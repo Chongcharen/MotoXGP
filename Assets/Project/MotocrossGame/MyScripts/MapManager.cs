@@ -202,13 +202,28 @@ public class MapManager : MonoBehaviour {
             var trans = gameObj.GetComponentsInChildren<Transform>();
             foreach (var cameraTrans in trans)
             {
-                if(!camerapointData.ContainsKey(cameraTrans.GetInstanceID())){
-                    Quaternion rotate = Quaternion.Euler(cameraTrans.rotation.eulerAngles.x,cameraTrans.rotation.eulerAngles.y-180,cameraTrans.rotation.eulerAngles.z);
-                    Debug.Log("Rotate =========+++++++ "+rotate);
-                    Debug.Log("Rotate =========+++++++ "+cameraTrans.rotation.eulerAngles.x);
-                    Debug.Log("Rotate =========+++++++ "+cameraTrans.rotation.eulerAngles.y);
-                    Debug.Log("Rotate =========+++++++ "+cameraTrans.rotation.eulerAngles.z);
-                    camerapointData.Add(cameraTrans.GetInstanceID(),rotate);
+                var childTransform = cameraTrans.GetComponentsInChildren<Transform>();
+                foreach (var child in childTransform)
+                {
+                    if(child.tag == TagKeys.CAMERAPOINT){
+                        if(!camerapointData.ContainsKey(cameraTrans.GetInstanceID())){
+                            Debug.Log("------ "+child.gameObject.name);
+                            Debug.Log("Rotation "+child.rotation.eulerAngles);
+                            Debug.Log("basic "+child.rotation);
+                            Debug.Log("local "+child.localRotation);
+                            Debug.Log("local euler "+child.localRotation.eulerAngles);
+                            Debug.Log("rotation euler "+child.rotation.eulerAngles);
+                            Quaternion rotate = Quaternion.Euler(child.localRotation.eulerAngles.x,child.localRotation.eulerAngles.y-180,child.localRotation.eulerAngles.z);
+                            //this.transform.localRotation = Quaternion.Euler(cameraTrans.localRotation);
+                            //Quaternion aaa = Quaternion.(cameraTrans.localRotation.eulerAngles);
+                            //Debug.Log("aaaa "+aaa);
+                            Debug.Log("Rotate =========+++++++ "+rotate);
+                            Debug.Log("Rotate =========+++++++ "+child.rotation.eulerAngles.x);
+                            Debug.Log("Rotate =========+++++++ "+child.rotation.eulerAngles.y);
+                            Debug.Log("Rotate =========+++++++ "+child.rotation.eulerAngles.z);
+                            camerapointData.Add(cameraTrans.GetInstanceID(),rotate);
+                        }
+                    }
                 }
             }
 

@@ -8,6 +8,8 @@ using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
+
 public class GameHUD : MonoBehaviourPunCallbacks
 {
     public static Subject<Unit> OnResetPosition = new Subject<Unit>();
@@ -15,6 +17,7 @@ public class GameHUD : MonoBehaviourPunCallbacks
     public static Subject<Unit> OnLowerGear = new Subject<Unit>();
     [SerializeField]Button b_reset,b_restart,b_mic;
     [SerializeField]Button b_accel;
+    [SerializeField]Button b_back;
     [SerializeField]TextMeshProUGUI nos_txt,fps_txt,speed_txt;
     [SerializeField]Image[] images_wifi;
     [Header("Nos")]
@@ -53,7 +56,11 @@ public class GameHUD : MonoBehaviourPunCallbacks
             print(Depug.Log("Gear Count "+gear_count,Color.yellow));
         });
 
-
+        b_back.OnClickAsObservable().Subscribe(_=>{
+            PhotonNetworkConsole.Instance.LeaveRoom();
+            ObjectPool.Instance.Dispose();
+            SceneManager.LoadScene(SceneName.LOBBY);
+        });
         b_restart.OnClickAsObservable().Subscribe(_=>{
              Debug.Log("restart Click");
             OnRestartPosition.OnNext(default);

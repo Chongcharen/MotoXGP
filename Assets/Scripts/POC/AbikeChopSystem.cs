@@ -306,7 +306,7 @@ public class AbikeChopSystem : MonoBehaviour
         if(jump && isGround.Any(g => g == true)){
             // print(Depug.Log("Go to jump force "+forceJump,Color.red));
             // print(Depug.Log("transform  "+(grounded ? transform.up : transform.forward),Color.red));
-            print(Depug.Log("Go to jump force "+((grounded ? transform.up : transform.forward)* myRigidbody.mass*forceJump),Color.green));
+            //print(Depug.Log("Go to jump force "+((grounded ? transform.up : transform.forward)* myRigidbody.mass*forceJump),Color.green));
             myRigidbody.AddForce((grounded ? transform.up : new Vector3(0,0.5f,0.5f))* myRigidbody.mass*forceJump);
         }
         if(isBoosting){

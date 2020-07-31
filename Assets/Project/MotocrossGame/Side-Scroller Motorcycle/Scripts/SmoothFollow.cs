@@ -63,10 +63,10 @@ public class SmoothFollow : MonoBehaviour {
 			playerCrash = isCrash;
 		}).AddTo(this);	
 		MapManager.OnCameraRotate.Subscribe(rotation =>{
-			transform.DORotateQuaternion(rotation,cameraRotateTime).SetAutoKill();
+			transform.DOLocalRotateQuaternion(rotation,cameraRotateTime).SetAutoKill();
 		});
 		ZoneDetecter.OnCameraZoneExit.Subscribe(_=>{
-			transform.DORotateQuaternion(baseCameraRotation,cameraRotateTime).SetAutoKill();
+			transform.DOLocalRotateQuaternion(baseCameraRotation,cameraRotateTime).SetAutoKill();
 		}).AddTo(this);
 	}
 	IEnumerator closetime(float time){

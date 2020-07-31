@@ -28,7 +28,7 @@ Shader "Shader Forge/AlphaBlendObj" {
             #define UNITY_PASS_FORWARDBASE
             #include "UnityCG.cginc"
             #pragma multi_compile_fwdbase_fullshadows
-            #pragma target 3.5
+            #pragma target 2.0
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform float _CutOff;
             struct VertexInput {

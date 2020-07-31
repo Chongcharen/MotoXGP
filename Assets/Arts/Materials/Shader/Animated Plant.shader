@@ -42,7 +42,7 @@ Shader "Shader Forge/Animated Plant" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma target 3.5
+            #pragma target 3.0
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform sampler2D _Normal; uniform float4 _Normal_ST;
             uniform float _Glosness;

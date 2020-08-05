@@ -150,8 +150,8 @@ public class MapManager : MonoBehaviour {
                 if(item.gameObject.tag == TagKeys.ZonePoint){
                     var deadZoneTarget = item.Find(deadZone);
                     var respawnTarget = item.Find(respawnZone);
-                    //Debug.Log("deadZoneTarget = "+deadZoneTarget.GetInstanceID());
-                    //Debug.Log("respawnTarget = "+respawnTarget.position);
+                    Debug.Log("deadZoneTarget = "+deadZoneTarget.GetInstanceID());
+                    Debug.Log("respawnTarget = "+respawnTarget.position);
                     if(!respawnData.ContainsKey(deadZoneTarget.GetInstanceID()))
                         respawnData.Add(deadZoneTarget.GetInstanceID(),respawnTarget.position);
                 }

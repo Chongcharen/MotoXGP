@@ -316,7 +316,7 @@ public class AbikeChopSystem : MonoBehaviour
             }else
             {
 
-                myRigidbody.AddForce(-transform.forward*7,ForceMode.VelocityChange);
+                myRigidbody.AddForce(-transform.forward*1,ForceMode.VelocityChange);
                 wheels[1].collider.brakeTorque = 3000;
                 wheels[0].collider.brakeTorque = 3000;
                 isBoostDelay = true;

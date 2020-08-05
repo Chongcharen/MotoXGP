@@ -24,9 +24,11 @@ public class MapSwipeObjectPrefab : MonoBehaviour
         });
     
     }
-    public void Setup(GameStageData _data){
+    public void Setup(GameStageData _data,Sprite _sprite){
         gameStageData = _data;
         map_name_txt.text = gameStageData.themeName;
+        img_map.sprite = _sprite;
+       // img_map.main = Sprite.Create(_texture,img_map.sprite.rect,new Vector2(0.5f,0.5f));
         //var level = gameStageData.mapLevel +1;
         //var mapLevelName = level < 10 ? "0"+level : level.ToString();
         map_level_txt.text = gameStageData.stageName;

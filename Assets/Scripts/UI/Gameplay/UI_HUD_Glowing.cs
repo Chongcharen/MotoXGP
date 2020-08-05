@@ -8,7 +8,7 @@ using System;
 using DG.Tweening;
 public class UI_HUD_Glowing : MonoBehaviour
 {
-    [SerializeField]Image glow_acc,glow_brake,glow_jump,glow_right,glow_left;
+    [SerializeField]Image glow_acc,glow_brake,glow_jump,glow_right,glow_left,glow_back;
     InputControl inputControl;
     void Awake(){
         inputControl = new InputControl();
@@ -54,7 +54,8 @@ public class UI_HUD_Glowing : MonoBehaviour
         if(value.ReadValue<Vector2>().x < 0){
             glow_left.DOFade(1,0.5f);
             glow_right.DOFade(0,0.5f);
-        }else if(value.ReadValue<Vector2>().x > 0){
+        }
+        else if(value.ReadValue<Vector2>().x > 0){
             glow_right.DOFade(1,0.5f);
             glow_left.DOFade(0,0.5f);
         }else if(value.ReadValue<Vector2>().x == 0){
@@ -62,10 +63,15 @@ public class UI_HUD_Glowing : MonoBehaviour
             glow_left.DOFade(0,0.5f);
         }
 
-        if(value.ReadValue<Vector2>().y > 0)
+        if(value.ReadValue<Vector2>().y > 0){
             glow_acc.DOFade(1,0.5f);
-        else
+        }else if(value.ReadValue<Vector2>().y <= 0){
             glow_acc.DOFade(0,0.5f);
+        }
+        if(value.ReadValue<Vector2>().y < 0){
+            glow_back.DOFade(1,0.5f);
+        }
+        
     } 
      void OnEnable(){
         inputControl.Enable();

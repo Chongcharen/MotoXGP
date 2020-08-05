@@ -13,7 +13,7 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
     [SerializeField]Transform content;
     [SerializeField]Button b_EnterLevel;
     [SerializeField]Button b_forest,b_desert,b_beach;
-
+    [SerializeField]Toggle t_forest,t_desert,t_sea;
     //Mockupdata
      MapMockupData mapMockupData;
 
@@ -93,6 +93,18 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
             Init();
         });
         b_beach.OnClickAsObservable().Subscribe(_=>{
+            themeIndex = 2;
+            Init();
+        });
+        t_forest.OnValueChangedAsObservable().Subscribe(_=>{
+            themeIndex = 0;
+            Init();
+        });
+        t_desert.OnValueChangedAsObservable().Subscribe(_=>{
+            themeIndex = 1;
+            Init();
+        });
+        t_sea.OnValueChangedAsObservable().Subscribe(_=>{
             themeIndex = 2;
             Init();
         });

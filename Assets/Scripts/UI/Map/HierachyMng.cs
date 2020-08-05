@@ -177,6 +177,8 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         for (int b = currentFocusIndex; b <= currentFocusIndex + (extendR+rangeR); b++)
         {
             int tmp = b;
+            Debug.Log("tmp "+tmp);
+            Debug.Log("page "+Page.Count);
             if (tmp >= Page.Count)
                 tmp = tmp % Page.Count;
             PageShow[tmp] = true;

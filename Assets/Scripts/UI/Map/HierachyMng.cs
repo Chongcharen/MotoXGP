@@ -96,15 +96,18 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
             themeIndex = 2;
             Init();
         });
-        t_forest.OnValueChangedAsObservable().Subscribe(_=>{
+        t_forest.onValueChanged.AddListener(active =>{
+            if(!active)return;
             themeIndex = 0;
             Init();
         });
-        t_desert.OnValueChangedAsObservable().Subscribe(_=>{
+        t_desert.onValueChanged.AddListener(active =>{
+            if(!active)return;
             themeIndex = 1;
             Init();
         });
-        t_sea.OnValueChangedAsObservable().Subscribe(_=>{
+        t_sea.onValueChanged.AddListener(active =>{
+            if(!active)return;
             themeIndex = 2;
             Init();
         });
@@ -122,6 +125,7 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         
     }
     void Init(){
+        Debug.Log("themeIndex "+themeIndex);
         GenerateMapChoice();
         ShowHierachy();
         
@@ -141,11 +145,12 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         var serialized = JsonConvert.SerializeObject(mapMockupData.choiceMockupData);
 
         var themeData = GameDataManager.Instance.GameLevelData.gameThemesData[themeIndex];
-
+        var texture_map = Resources.Load<Texture2D>("Image/Forest");
+        var img_sprite = Sprite.Create(texture_map,new Rect(0,0,texture_map.width,texture_map.height),new Vector2(0.5f,0.5f));
         for (int i = 0; i < themeData.gameStages.Count; i++)
         {
             var go = Instantiate(mapSwipeObjectPrefab,Vector3.zero,Quaternion.identity,content);
-            go.GetComponent<MapSwipeObjectPrefab>().Setup(themeData.gameStages[i]);
+            go.GetComponent<MapSwipeObjectPrefab>().Setup(themeData.gameStages[i],img_sprite);
             go.gameObject.SetActive(true);
             go.transform.localRotation = Quaternion.Euler(0,-13,0);
             Page.Add(go.transform);
@@ -177,8 +182,6 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         for (int b = currentFocusIndex; b <= currentFocusIndex + (extendR+rangeR); b++)
         {
             int tmp = b;
-            Debug.Log("tmp "+tmp);
-            Debug.Log("page "+Page.Count);
             if (tmp >= Page.Count)
                 tmp = tmp % Page.Count;
             PageShow[tmp] = true;

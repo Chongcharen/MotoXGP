@@ -64,7 +64,7 @@ public class SmoothFollow : MonoBehaviour {
 		}).AddTo(this);	
 		MapManager.OnCameraRotate.Subscribe(rotation =>{
 			transform.DOLocalRotateQuaternion(rotation,cameraRotateTime).SetAutoKill();
-		});
+		}).AddTo(this);
 		ZoneDetecter.OnCameraZoneExit.Subscribe(_=>{
 			transform.DOLocalRotateQuaternion(baseCameraRotation,cameraRotateTime).SetAutoKill();
 		}).AddTo(this);

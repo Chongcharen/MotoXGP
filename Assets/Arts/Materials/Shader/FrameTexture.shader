@@ -35,7 +35,7 @@ Shader "Shader Forge/spriteTexture" {
             #include "UnityStandardBRDF.cginc"
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
-            #pragma target 3.5
+            #pragma target 3.0
             uniform float4 _Frame;
             uniform sampler2D _Texture; uniform float4 _Texture_ST;
             uniform float _Alpha;

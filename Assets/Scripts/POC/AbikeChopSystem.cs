@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Linq;
+using System.Data;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,13 +8,16 @@ using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
 using Newtonsoft.Json;
-
+using System;
+using System.Linq;
 public class AbikeChopSystem : MonoBehaviour
 {
     public static Subject<int> OnBoostChanged = new Subject<int>();
     public static Subject<float> OnBoostTime = new Subject<float>();
+    public static Subject<float> OnBoostDelay = new Subject<float>();
     public static Subject<bool> OnGrouned = new Subject<bool>();
     public static Subject<Unit> OnReset = new Subject<Unit>();  
+    public static Subject<float> OnShowSpeed = new Subject<float>();
 
     public static Subject<bool> OnPlayerCrash = new Subject<bool>();
 
@@ -59,14 +63,17 @@ public class AbikeChopSystem : MonoBehaviour
     [SerializeField]float explosionRadius;
     [SerializeField] float boostForce = 200;
     [SerializeField] float brakeForce = 5000;
-    [SerializeField] int boostLimit = 3;
     BoostSystem boostSystem;
-    
+    [SerializeField] int boostLimit = 3;
     [SerializeField] float boostTimeLimit = 5;
+    [SerializeField]float boostDelay =2;
     float currentBoostTime = 0;
     bool isBoosting = false;
+    bool isBoostDelay = false;
     public float BoostForce { get { return boostForce; } set { boostForce = value; } }
     public float BreakForce { get { return boostForce; } set { boostForce = value; } }
+    [Header("Lower Gear")]
+    [SerializeField]int lower_gear_force = 200;
     [SerializeField]int airBrake = 200;
     [Range(0.5f, 10f)]
     [SerializeField] float downforce = 1.0f;
@@ -150,6 +157,9 @@ public class AbikeChopSystem : MonoBehaviour
             GameplayManager.OnGameStart.Subscribe(_=>{
                 isControll = true;
             }).AddTo(this);
+            GameHUD.OnLowerGear.Subscribe(_=>{
+                myRigidbody.AddForce(transform.forward* myRigidbody.mass*lower_gear_force,ForceMode.Impulse);
+            }).AddTo(this);
         }else{
             RemoveEngine();
         }
@@ -161,7 +171,7 @@ public class AbikeChopSystem : MonoBehaviour
         StartCoroutine(DelayRespawn());
     }
     IEnumerator DelayRespawn(){
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         RestartPosition();
     }
     void RestartPosition(){
@@ -259,14 +269,18 @@ public class AbikeChopSystem : MonoBehaviour
         if(!isControll)return;
         if(myRigidbody == null)return;
         speed = transform.InverseTransformDirection(myRigidbody.velocity).z * 3.6f;
+        if(isControll){
+            // for debuggin only ถ้า เชคแล้ว เอาออกด้วย
+            OnShowSpeed.OnNext(speed);
+        }
         if(isControll && !crash){
             accel = motorControl.accelerator;
             brake = motorControl.brake;
             jump = motorControl.isJump;
             isLeft = motorControl.isLeft;
             isRight = motorControl.isRight;
-            if(motorControl.isBoost&& boostLimit >0 && !isBoosting){
-                isBoosting = true; 
+            if(motorControl.isBoost&& boostLimit >0 && !isBoosting && !isBoostDelay){
+                
                 boostLimit -- ;    
                 currentSpeedLimit = boostedLimit;
                 OnBoostChanged.OnNext(boostLimit);
@@ -274,7 +288,11 @@ public class AbikeChopSystem : MonoBehaviour
                 if(boostSystem != null)
                     boostSystem.StartBoostEffect(boostTimeLimit);
                 //myRigidbody.AddExplosionForce(explosionPower,explosionTransform.position,explosionRadius,1,ForceMode.Impulse);
-                myRigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
+                if(grounded){
+                    myRigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
+                    isBoosting = true; 
+                    
+                }
             }
         }
         if(isControll&&crash){
@@ -282,8 +300,14 @@ public class AbikeChopSystem : MonoBehaviour
             return;
         }
         var indexWhell = 0;
-        if(jump && grounded){
-            myRigidbody.AddForce(transform.up* myRigidbody.mass*forceJump);
+        // print(Depug.Log("jump ?"+jump,Color.yellow));
+        // print(Depug.Log("Grouned ?"+grounded,Color.yellow));
+        // print(Depug.Log("isGround.Any(g => g == true) ?"+isGround.Any(g => g == true),Color.yellow));
+        if(jump && isGround.Any(g => g == true)){
+            // print(Depug.Log("Go to jump force "+forceJump,Color.red));
+            // print(Depug.Log("transform  "+(grounded ? transform.up : transform.forward),Color.red));
+            //print(Depug.Log("Go to jump force "+((grounded ? transform.up : transform.forward)* myRigidbody.mass*forceJump),Color.green));
+            myRigidbody.AddForce((grounded ? transform.up : new Vector3(0,0.5f,0.5f))* myRigidbody.mass*forceJump);
         }
         if(isBoosting){
             if(currentBoostTime < boostTimeLimit){
@@ -291,15 +315,20 @@ public class AbikeChopSystem : MonoBehaviour
                 currentBoostTime += Time.deltaTime*1;
             }else
             {
-                //myRigidbody.AddForce(-transform.forward*(BreakForce*1000));
-                myRigidbody.AddForce(-transform.forward*7,ForceMode.VelocityChange);
+
+                myRigidbody.AddForce(-transform.forward*1,ForceMode.VelocityChange);
                 wheels[1].collider.brakeTorque = 3000;
                 wheels[0].collider.brakeTorque = 3000;
+                isBoostDelay = true;
                 isBoosting = false;
+                Observable.Timer(TimeSpan.FromSeconds(boostDelay)).Subscribe(_=>{
+                    isBoostDelay = false;
+                }).AddTo(this);
                 currentSpeedLimit = speedLimit;
                 currentBoostTime = 0;
                 wheels[1].collider.brakeTorque = 0;
                 wheels[0].collider.brakeTorque = 0;
+                OnBoostDelay.OnNext(boostDelay);
             }
         }
          
@@ -314,7 +343,7 @@ public class AbikeChopSystem : MonoBehaviour
                     component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
                     // Debug.Log("Evaluate "+motorTorque.Evaluate(speed));
                     //Debug.Log("component.collider.motorTorque "+component.collider.motorTorque);
-                  // component.sphereCollider.attachedRigidbody.AddForce(transform.forward * boostForce);
+                    // component.sphereCollider.attachedRigidbody.AddForce(transform.forward * boostForce);
                     //myRigidbody.AddForce(transform.forward * boostForce);
                     //component.sphereCollider.GetComponent<Rigidbody>().AddTorque(Vector3.forward* accel * motorTorque.Evaluate(speed) * diffGearing / 1);
                 }else{

@@ -8,6 +8,7 @@ using UniRx;
 public class MapManager : MonoBehaviour {
 
     public static Subject<Vector2> OnSetDirection = new Subject<Vector2>();
+    public static Subject<Quaternion> OnCameraRotate = new Subject<Quaternion>();
     public static MapManager Instance;
     [Header("Name Obj")]
     public string roadName = "Road";
@@ -37,6 +38,7 @@ public class MapManager : MonoBehaviour {
     [Header("Zone")]
     Dictionary<int,Vector3> respawnData;
     Dictionary<int,EndPointData> endpointData;
+    Dictionary<int,Quaternion> camerapointData;
     public Vector3 respawnPosition;
     public bool isDeadzone = false;
 
@@ -58,12 +60,14 @@ public class MapManager : MonoBehaviour {
     public void Init()
     {
         endpointData = new Dictionary<int, EndPointData>();
+        camerapointData = new Dictionary<int, Quaternion>();
         respawnData = new Dictionary<int, Vector3>();
         MapModelGenerator.Instance.GenerateMap();
         localSpawnPosition = MapModelGenerator.Instance.localSpawnPosition;
         spawnPointsPosition = MapModelGenerator.Instance.spawnPointsPosition.ToArray();
         MapModelGenerator.Instance.Dispose();
         SetDeadZone();
+        SetCameraZone();
         SubscribeEvent();
         GetComponent<UI_PlayersDistance>().enabled = true;
         GetComponent<GameNetwork>().enabled = true;
@@ -120,18 +124,23 @@ public class MapManager : MonoBehaviour {
         }
     }
     public void GetZone(int zoneInstanceID){
-        Debug.Log("Respawn Count "+respawnData.Count);
-        Debug.Log("Getzone "+zoneInstanceID);
+        // Debug.Log("Respawn Count "+respawnData.Count);
+        // Debug.Log("Getzone "+zoneInstanceID);
         Debug.Assert(respawnData.ContainsKey(zoneInstanceID),"get responseZone");
         respawnPosition = respawnData[zoneInstanceID];
+    }
+    public void GetCameraZone(int cameraInstanceID){
+        Debug.Assert(camerapointData.ContainsKey(cameraInstanceID),"get responseZone");
+        OnCameraRotate.OnNext(camerapointData[cameraInstanceID]);
     }
     public void PassDeadZone(bool _isdeadzone){
         isDeadzone = _isdeadzone;
     }
     private void SetDeadZone(){
-        Debug.Log("SetDeadZone==========> ");
+        endpointData.Clear();
+        //Debug.Log("SetDeadZone==========> ");
         GameObject[] objZone = GameObject.FindGameObjectsWithTag(TagKeys.Zone);//zoneObject.GetComponentsInChildren<Transform>();
-        Debug.Log("OBJ Zone length "+objZone.Length);
+        //Debug.Log("OBJ Zone length "+objZone.Length);
         foreach (var gameObj in objZone)
         {
             var trans = gameObj.GetComponentsInChildren<Transform>();
@@ -146,9 +155,10 @@ public class MapManager : MonoBehaviour {
                     if(!respawnData.ContainsKey(deadZoneTarget.GetInstanceID()))
                         respawnData.Add(deadZoneTarget.GetInstanceID(),respawnTarget.position);
                 }
-
                 if(item.gameObject.tag == TagKeys.ENDPOINT){
                     var endpoint = item.gameObject.GetComponent<Collider>();
+                    // print(Depug.Log("Get in object name "+item.name,Color.blue));
+                    // print(Depug.Log("instanceid "+item.transform.GetInstanceID(),Color.red));
                     if(!endpointData.ContainsKey(item.transform.GetInstanceID())){
                         var rawdata = new EndPointData{
                             instanceId = item.transform.GetInstanceID(),
@@ -156,36 +166,68 @@ public class MapManager : MonoBehaviour {
                             collider = endpoint,
                             position = item.position.x
                         };
-                        Debug.Log("endpoint raw data "+rawdata.position);
+                        //print(Depug.Log("endpoint raw data "+rawdata.position,Color.white));
                         endpointData.Add(item.transform.GetInstanceID(),rawdata);
                     }  
                 }
             }
         }
-        Debug.Log("SetDeadZone 1 ");
+        //Debug.Log("SetDeadZone 1 ");
         var sort = from enrty in endpointData orderby enrty.Value.position ascending select enrty;
         var firstEndPoint = sort.ElementAtOrDefault(0);
         var lastEndpoint = sort.ElementAtOrDefault(sort.Count()-1);
-        Debug.Log("xxxxxxxxxxxxxxxxxxxxxx "+firstEndPoint+" "+lastEndpoint);
         if(lastEndpoint.Value != null && firstEndPoint.Value != null){
-             Debug.Log("ccccccccccccccc "+firstEndPoint+" "+lastEndpoint);
             startPoint = firstEndPoint.Value.position;
             finishPoint = lastEndpoint.Value.position;
-            Debug.Log("StartEndpoint "+startPoint);
-            Debug.Log("finish "+finishPoint);
             //OnSetDirection.OnNext(new Vector2(firstEndPoint.Value.position,lastEndpoint.Value.position));
         }else
         {
             Debug.LogError("Cannot found firstEndpoint or last endpoint");
         }
-        Debug.Log("SetDeadZone 2");
+        //Debug.Log("SetDeadZone 2  Endpoint DAta "+endpointData.Count);
         GameplayManager.Instance.SetTotalRound(endpointData.Count);
 
-        foreach (var item in respawnData)
+        // foreach (var item in respawnData)
+        // {
+        //     Debug.Log(string.Format("Key {0} Value {1}",item.Key,item.Value));
+        // }
+        // Debug.Log("TotalCount "+respawnData.Count);
+    }
+    void SetCameraZone(){
+        camerapointData.Clear();
+        GameObject[] objZone = GameObject.FindGameObjectsWithTag(TagKeys.CAMERAZONE);//zoneObject.GetComponentsInChildren<Transform>();
+        //Debug.Log("OBJ Zone length "+objZone.Length);
+        foreach (var gameObj in objZone)
         {
-            Debug.Log(string.Format("Key {0} Value {1}",item.Key,item.Value));
+            var trans = gameObj.GetComponentsInChildren<Transform>();
+            foreach (var cameraTrans in trans)
+            {
+                var childTransform = cameraTrans.GetComponentsInChildren<Transform>();
+                foreach (var child in childTransform)
+                {
+                    if(child.tag == TagKeys.CAMERAPOINT){
+                        if(!camerapointData.ContainsKey(cameraTrans.GetInstanceID())){
+                            Debug.Log("------ "+child.gameObject.name);
+                            Debug.Log("Rotation "+child.rotation.eulerAngles);
+                            Debug.Log("basic "+child.rotation);
+                            Debug.Log("local "+child.localRotation);
+                            Debug.Log("local euler "+child.localRotation.eulerAngles);
+                            Debug.Log("rotation euler "+child.rotation.eulerAngles);
+                            Quaternion rotate = Quaternion.Euler(child.localRotation.eulerAngles.x,child.localRotation.eulerAngles.y-180,child.localRotation.eulerAngles.z);
+                            //this.transform.localRotation = Quaternion.Euler(cameraTrans.localRotation);
+                            //Quaternion aaa = Quaternion.(cameraTrans.localRotation.eulerAngles);
+                            //Debug.Log("aaaa "+aaa);
+                            Debug.Log("Rotate =========+++++++ "+rotate);
+                            Debug.Log("Rotate =========+++++++ "+child.rotation.eulerAngles.x);
+                            Debug.Log("Rotate =========+++++++ "+child.rotation.eulerAngles.y);
+                            Debug.Log("Rotate =========+++++++ "+child.rotation.eulerAngles.z);
+                            camerapointData.Add(cameraTrans.GetInstanceID(),rotate);
+                        }
+                    }
+                }
+            }
+
         }
-        Debug.Log("TotalCount "+respawnData.Count);
     }
 
    

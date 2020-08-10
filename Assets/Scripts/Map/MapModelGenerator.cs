@@ -41,18 +41,11 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
         ClearMap();
 
         gamePath = "Map/"+GameDataManager.Instance.gameLevel.gameStageData.themeName+"/";
-
         var mapRoot = new GameObject("MapRoot");
         poolCount = mapLocationData.startPositionDatas.Count;
         var prefabTerrain = GameDataManager.Instance.gameLevel.gameStageData.themeName+""+GameDataManager.Instance.gameLevel.gameStageData.stageName;
-        Debug.Log("prefabTerrain "+prefabTerrain);
-
         var terrainResource = Resources.Load<GameObject>(gamePath+prefabTerrain);
-        Debug.Log("prefabterrain "+prefabTerrain);
-        Debug.Log("templateTerrain "+terrainResource);
-
         var templateTerrain = Instantiate(terrainResource);
-        Debug.Log("templateTerrain "+templateTerrain);
 
         if(templateTerrain != null){
             templateTerrain.gameObject.SetActive(true);
@@ -60,9 +53,6 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
             templateTerrain.transform.position = Vector3.zero;
             templateTerrain.transform.rotation = Quaternion.Euler(0,180,0);
         }
-
-        // Add prefab terrainset
-
         var environment = new GameObject("Environment");
         environment.transform.position = Vector3.zero;
         environment.transform.SetParent(templateTerrain.transform);
@@ -73,7 +63,6 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
 
         foreach (var objectData in mapLocationData.objectTerrainDatas)
         {
-            Debug.Log("Prefab name "+objectData.prefabName);
             var objectPath = gamePath+objectData.prefabName;
             ObjectPool.Instance.CreatePool(objectPath,1);
             var prefab = ObjectPool.Instance.GetObjectFormPool(objectPath);
@@ -92,14 +81,10 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
             terrainInstance.transform.position = positionData;
             mapList.Add(terrainInstance);
         }
+        templateTerrain.gameObject.SetActive(false);
+        terrainResource.gameObject.SetActive(false);
         Destroy(templateTerrain);
         Resources.UnloadAsset(terrainResource);
-        //terrainResource.gameObject.SetActive(false);
-    
-
-
-
-        //ObjectPool.Instance.CreatePool("Map/Forest/"+prefabTerrain,poolCount);
         
     }
     public void GenerateObject(){

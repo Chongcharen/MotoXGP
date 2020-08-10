@@ -40,8 +40,14 @@ public class SmoothFollow : MonoBehaviour {
 	float elapsed = 0;
 
 	float boostChangeCameraTime = 1f;
+
+
+	[Header("CameraRotate")]
+	public float cameraRotateTime = 1f;
+	Quaternion baseCameraRotation;
 	
 	private void Start() {
+		baseCameraRotation = transform.rotation;
 		AbikeChopSystem.OnBoostTime.Subscribe(timeChange =>{
 			elapsed = timeChange;
 			isBoost = true;
@@ -56,6 +62,12 @@ public class SmoothFollow : MonoBehaviour {
 		AbikeChopSystem.OnPlayerCrash.Subscribe(isCrash =>{
 			playerCrash = isCrash;
 		}).AddTo(this);	
+		MapManager.OnCameraRotate.Subscribe(rotation =>{
+			transform.DOLocalRotateQuaternion(rotation,cameraRotateTime).SetAutoKill();
+		}).AddTo(this);
+		ZoneDetecter.OnCameraZoneExit.Subscribe(_=>{
+			transform.DOLocalRotateQuaternion(baseCameraRotation,cameraRotateTime).SetAutoKill();
+		}).AddTo(this);
 	}
 	IEnumerator closetime(float time){
 		yield return new WaitForSeconds(time);

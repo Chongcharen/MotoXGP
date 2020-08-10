@@ -31,7 +31,7 @@ Shader "Shader Forge/AlphaBlendLocation" {
             #include "UnityCG.cginc"
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
-            #pragma target 3.5
+            #pragma target 2.0
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform float4 _TintColor;
             uniform float _Alpha;

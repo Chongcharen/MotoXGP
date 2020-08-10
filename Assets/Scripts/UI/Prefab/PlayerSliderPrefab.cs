@@ -17,6 +17,12 @@ public class PlayerSliderPrefab : MonoBehaviourPunCallbacks
     Color baseColor;
     bool isBaseColor = true;
     void Start(){
+        AbikeChopSystem.OnBoostTime.Subscribe(time =>{
+            Debug.Log("Boost time "+time);
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(img_glow.DOFade(1,1)).Join(img_glow.DOFade(0,1)).SetDelay(time);
+            sequence.Play();
+        }).AddTo(this);
     }
     public void SetUpData(Hashtable _playerData,Color rankColor){
         img_pin.color = rankColor;

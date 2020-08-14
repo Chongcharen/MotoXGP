@@ -76,7 +76,7 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
         var round = 0;
         foreach (var positionData in mapLocationData.startPositionDatas)
         {
-            if(round > GameDataManager.Instance.gameLevel.level)break;
+            if(round > GameDataManager.Instance.gameLevel.level && round >1)break;
             var terrainInstance = Instantiate(templateTerrain);
             terrainInstance.transform.SetParent(mapRoot.transform);
             terrainInstance.transform.position = positionData;

@@ -47,28 +47,28 @@ public class UI_HUD_Glowing : MonoBehaviour
         glow_left.DOFade(0,0.5f);
         glow_right.DOFade(0,0.5f);
         glow_acc.DOFade(0,0.5f);
+        glow_back.DOFade(0,0.5f);
     }
 
     private void OnMovement(InputAction.CallbackContext value)
     {
-        if(value.ReadValue<Vector2>().x < 0){
+        var movement = value.ReadValue<Vector2>();
+        if((int)movement.x < 0){
             glow_left.DOFade(1,0.5f);
             glow_right.DOFade(0,0.5f);
         }
-        else if(value.ReadValue<Vector2>().x > 0){
+        else if((int)movement.x > 0){
             glow_right.DOFade(1,0.5f);
             glow_left.DOFade(0,0.5f);
-        }else if(value.ReadValue<Vector2>().x == 0){
+        }else if((int)movement.x == 0){
             glow_right.DOFade(0,0.5f);
             glow_left.DOFade(0,0.5f);
         }
-
-        if(value.ReadValue<Vector2>().y > 0){
+        if((int)movement.y > 0){
             glow_acc.DOFade(1,0.5f);
-        }else if(value.ReadValue<Vector2>().y <= 0){
+            glow_back.DOFade(0,0.5f);
+        }else if((int)movement.y < 0){
             glow_acc.DOFade(0,0.5f);
-        }
-        if(value.ReadValue<Vector2>().y < 0){
             glow_back.DOFade(1,0.5f);
         }
         

@@ -73,13 +73,15 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
                 prefab.transform.rotation = Quaternion.Euler(0,180,0);
             }
         }
-
+        var round = 0;
         foreach (var positionData in mapLocationData.startPositionDatas)
         {
+            if(round > GameDataManager.Instance.gameLevel.level)break;
             var terrainInstance = Instantiate(templateTerrain);
             terrainInstance.transform.SetParent(mapRoot.transform);
             terrainInstance.transform.position = positionData;
             mapList.Add(terrainInstance);
+            round ++;
         }
         templateTerrain.gameObject.SetActive(false);
         terrainResource.gameObject.SetActive(false);

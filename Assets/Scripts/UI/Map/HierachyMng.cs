@@ -14,6 +14,7 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
     [SerializeField]Button b_EnterLevel;
     [SerializeField]Button b_forest,b_desert,b_beach;
     [SerializeField]Toggle t_forest,t_desert,t_sea;
+    [SerializeField]ToggleGroup toggleGroup;
     //Mockupdata
      MapMockupData mapMockupData;
 
@@ -62,15 +63,20 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
 
     bool isRunning = false;
     int themeIndex = 0;
+    int levelStar = 0;
+    bool firstInit = true;
+
     // Use this for initialization
     void Start () {
         mapCanvas.ObserveEveryValueChanged(c => mapCanvas.enabled).Subscribe(active =>{
             if(active){
-                Init();
+                SetupMapChoose();
+                //Init();
             }
             else{
                 ClearChildren();
                 isRunning = false;
+                firstInit = true;
             }
         });
         b_EnterLevel.OnClickAsObservable().Subscribe(_=>{
@@ -79,8 +85,10 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
             roomOptions.Add(RoomOptionKey.MAP_STAGE,currentFocusIndex);
             PhotonNetworkConsole.Instance.JoinRandomRoom(roomOptions);
             PageManager.Instance.CloseMap();
+            levelStar = Page[currentFocusIndex].GetComponent<MapSwipeObjectPrefab>().GetStar;
+
             //ClearPage();
-            GameDataManager.Instance.SetUpGameLevel(themeIndex,currentFocusIndex);
+            GameDataManager.Instance.SetUpGameLevel(themeIndex,currentFocusIndex,levelStar);
             Debug.Log("thene => "+themeIndex);
             Debug.Log("stage "+currentFocusIndex);
         });
@@ -124,6 +132,23 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
 
         
     }
+    void SetupMapChoose(){
+        m_fCurrentFocusIndex = GameDataManager.Instance.gameLevel.stage;
+        switch(GameDataManager.Instance.gameLevel.theme){
+            case 0:
+                if(t_forest.isOn)
+                    Init();
+                else
+                    t_forest.isOn = true;
+            break;
+            case 1:
+                if(t_desert.isOn)
+                    Init();
+                else
+                    t_desert.isOn = true;
+            break;
+        }
+    }
     void Init(){
         Debug.Log("themeIndex "+themeIndex);
         GenerateMapChoice();
@@ -151,6 +176,10 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         {
             var go = Instantiate(mapSwipeObjectPrefab,Vector3.zero,Quaternion.identity,content);
             go.GetComponent<MapSwipeObjectPrefab>().Setup(themeData.gameStages[i],img_sprite);
+            if(firstInit && i == GameDataManager.Instance.gameLevel.stage){
+                go.GetComponent<MapSwipeObjectPrefab>().SelectStar(GameDataManager.Instance.gameLevel.level);
+                firstInit = false;
+            }
             go.gameObject.SetActive(true);
             go.transform.localRotation = Quaternion.Euler(0,-13,0);
             Page.Add(go.transform);

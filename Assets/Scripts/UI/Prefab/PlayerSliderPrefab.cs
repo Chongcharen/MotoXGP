@@ -20,8 +20,9 @@ public class PlayerSliderPrefab : MonoBehaviourPunCallbacks
         AbikeChopSystem.OnBoostTime.Subscribe(time =>{
             Debug.Log("Boost time "+time);
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(img_glow.DOFade(1,1)).Join(img_glow.DOFade(0,1)).SetDelay(time);
-            sequence.Play();
+            sequence.Append(img_glow.DOFade(0.7f,0.5f))
+            .Join(img_glow.DOFade(0,0.5f).SetDelay(time));
+            sequence.Play().SetAutoKill();
         }).AddTo(this);
     }
     public void SetUpData(Hashtable _playerData,Color rankColor){

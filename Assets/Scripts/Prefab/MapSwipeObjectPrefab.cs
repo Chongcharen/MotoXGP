@@ -15,6 +15,8 @@ public class MapSwipeObjectPrefab : MonoBehaviour
     [SerializeField]Image img_fade;
     [SerializeField]Image[] starImages;
 
+    public int level = 0;
+
     bool isBlock = true;
 
     GameStageData gameStageData;
@@ -24,6 +26,18 @@ public class MapSwipeObjectPrefab : MonoBehaviour
         });
     
     }
+    public void SelectStar(int index){
+        level = index+1;
+        for (int i = 0; i < starImages.Length; i++)
+        {
+            starImages[i].DOFade(0,0).SetAutoKill();
+        }
+        for (int i = 0; i < level; i++)
+        {
+            starImages[i].DOFade(1,0).SetAutoKill();
+        }
+    }
+    public int GetStar{get {return level;}}
     public void Setup(GameStageData _data,Sprite _sprite){
         gameStageData = _data;
         map_name_txt.text = gameStageData.themeName;

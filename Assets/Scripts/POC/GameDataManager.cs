@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq.Expressions;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -11,10 +12,13 @@ public class GameDataManager : MonoSingleton<GameDataManager>
     public GameConfigData gameConfigData;
     GameLevelData gameLevelData;
     public GameLevel gameLevel; //level for choose map
-    public string currentMapChoose = "Forest01";
+    
 
     public void Init(){
         gameLevel = new GameLevel();
+        gameLevel.theme = 0;
+        gameLevel.stage = 0;
+        gameLevel.level = 0;
         mapLocationDatas = new List<MapLocationData>();
 
         SpreadSheetGameConfig.OnUpdateGameConfigData.Subscribe(_ =>{
@@ -23,9 +27,12 @@ public class GameDataManager : MonoSingleton<GameDataManager>
             Debug.Log("gameConfigData "+gameConfigData.photonNetworkConfig.sendRate);
         }).AddTo(this);
     }
-    public void SetUpGameLevel(int themeIndex,int stageIndex){
-        gameLevel.theme = themeIndex;gameLevel.stage = stageIndex;
+    public void SetUpGameLevel(int themeIndex,int stageIndex,int levelIndex){
+        gameLevel.theme = themeIndex;gameLevel.stage = stageIndex;gameLevel.level = levelIndex;
         gameLevel.gameStageData =  gameLevelData.gameThemesData[gameLevel.theme].gameStages[gameLevel.stage];
+        Debug.Log("gametheme "+gameLevel.theme);
+        Debug.Log("game stage "+gameLevel.stage);
+        Debug.Log("game starLevel "+gameLevel.level);
     }
     public void SetUpGameConfigData(string jsonData){
         //gameConfigData = JsonConvert.DeserializeObject<GameConfigData>(jsonData);

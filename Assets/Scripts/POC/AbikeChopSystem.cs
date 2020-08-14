@@ -240,11 +240,18 @@ public class AbikeChopSystem : MonoBehaviour
 
     // Update is called once per frame
     void ForceBrake(){
+        Debug.Log("Forcebrake");
          foreach(WheelComponent component in wheels){
              if(component.collider == null)continue;
              component.collider.brakeTorque = 100000000;
              component.collider.motorTorque = 0f;
          }
+    }
+    void ReleaseTorque(){
+        wheels[0].collider.motorTorque = 0;
+        wheels[1].collider.motorTorque = 0;
+        wheels[0].collider.brakeTorque = 2000;
+        wheels[1].collider.brakeTorque = 2000;
     }
     void Brake(bool brake){
         if(brake){
@@ -295,6 +302,17 @@ public class AbikeChopSystem : MonoBehaviour
                 }
             }
         }
+        if(accel < 0 && (int)speed >0 || accel > 0 && (int)speed < 0){
+            ForceBrake();
+            return;
+        }
+        if(accel == 0 && (int)speed <0){
+            ForceBrake();
+            return;
+        }
+        if(accel == 0){
+            ReleaseTorque();
+        }
         if(isControll&&crash){
             ForceBrake();
             return;
@@ -307,7 +325,7 @@ public class AbikeChopSystem : MonoBehaviour
             // print(Depug.Log("Go to jump force "+forceJump,Color.red));
             // print(Depug.Log("transform  "+(grounded ? transform.up : transform.forward),Color.red));
             //print(Depug.Log("Go to jump force "+((grounded ? transform.up : transform.forward)* myRigidbody.mass*forceJump),Color.green));
-            myRigidbody.AddForce((grounded ? transform.up : new Vector3(0,0.5f,0.5f))* myRigidbody.mass*forceJump);
+            myRigidbody.AddForce((grounded ? new Vector3(0,1.5f,0f) : new Vector3(0,0.5f,0.5f))* myRigidbody.mass*forceJump);
         }
         if(isBoosting){
             if(currentBoostTime < boostTimeLimit){
@@ -351,7 +369,7 @@ public class AbikeChopSystem : MonoBehaviour
                 }
             }
             if(component.drive && accel == 0){
-                 component.collider.brakeTorque = 100;
+                ReleaseTorque();
             }
             // if(!component.drive){
             //     if(brake)

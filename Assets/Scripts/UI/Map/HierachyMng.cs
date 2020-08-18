@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UniRx;
 using Newtonsoft.Json;
+using TMPro;
 public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IPointerDownHandler, IEndDragHandler
 {
 
@@ -15,6 +16,7 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
     [SerializeField]Button b_forest,b_desert,b_beach;
     [SerializeField]Toggle t_forest,t_desert,t_sea;
     [SerializeField]ToggleGroup toggleGroup;
+    [SerializeField]TMP_InputField input_nos;
     //Mockupdata
      MapMockupData mapMockupData;
 
@@ -86,9 +88,11 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
             PhotonNetworkConsole.Instance.JoinRandomRoom(roomOptions);
             PageManager.Instance.CloseMap();
             levelStar = Page[currentFocusIndex].GetComponent<MapSwipeObjectPrefab>().GetStar;
-
+            //mockup input_nos
+            if(string.IsNullOrEmpty(input_nos.text))
+                input_nos.text = "3";
             //ClearPage();
-            GameDataManager.Instance.SetUpGameLevel(themeIndex,currentFocusIndex,levelStar);
+            GameDataManager.Instance.SetUpGameLevel(themeIndex,currentFocusIndex,levelStar,System.Convert.ToInt32(input_nos.text));
             Debug.Log("thene => "+themeIndex);
             Debug.Log("stage "+currentFocusIndex);
         });

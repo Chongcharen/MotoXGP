@@ -26,6 +26,7 @@ public class LayerKeys{
 public class TagKeys{
     public const string GROUND = "Ground";
     public const string ROAD = "Road";
+    public const string PILLAR = "Pillar";
     public const string Zone = "Zone";
     public const string ZonePoint = "ZonePoint";
     public const string DEADZONE = "DeadZone";
@@ -33,6 +34,7 @@ public class TagKeys{
     public const string CAMERAZONE = "CameraZone";
     public const string CAMERAPOINT = "CameraPoint";
     public const string ENDPOINT = "EndPoint";
+    public const string MONOLITH = "Monolith";
     
 }
 public static class RoomOptionKey{
@@ -56,7 +58,6 @@ public static class PlayerPropertiesKey{
     public const string PLAYER_COLOR = "player_color";
     public const string PLAYFAB_PROFILE = "playfab_profile";
 }
-
 public static class PlayerIndexProfileKeys{
     public const string COLOR = "player_color";
     public const string NICKNAME = "nickname";

@@ -16,6 +16,9 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
     public float finishPosition;
 
     string gamePath;
+
+    //Monolith only 
+    int monolithIndex = 0;
     void Start(){
     }
     public void GenerateMap(){
@@ -71,6 +74,11 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
                 prefab.transform.SetParent(environment.transform);
                 prefab.transform.position = objectData.position;
                 prefab.transform.rotation = Quaternion.Euler(0,180,0);
+                Debug.Log("Prefab name "+prefab.name);
+                if(prefab.tag == TagKeys.MONOLITH){
+                    var animator = prefab.gameObject.GetComponent<MonolithAnimatorSetting>().time = monolithIndex;
+                    monolithIndex ++;
+                }
             }
         }
         var round = 0;

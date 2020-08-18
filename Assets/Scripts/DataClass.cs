@@ -75,6 +75,7 @@ public class GameLevel{
     public int theme;
     public int stage;
     public int level;
+    public int nosCount;
     public GameStageData gameStageData;
 }
 //GameLeveldata for choose map

@@ -15,6 +15,7 @@ public class CrashDetecter : MonoBehaviour
            Debug.Log("Crash");
            OnCrash.OnNext(transform.position);
        }
+       //pillar use for monolith and pillar
        if(other.tag == TagKeys.PILLAR){
            OnCrash.OnNext(transform.position);
            OnBump.OnNext(default);

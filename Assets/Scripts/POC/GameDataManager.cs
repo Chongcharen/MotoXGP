@@ -19,6 +19,7 @@ public class GameDataManager : MonoSingleton<GameDataManager>
         gameLevel.theme = 0;
         gameLevel.stage = 0;
         gameLevel.level = 0;
+        gameLevel.nosCount = 3;
         mapLocationDatas = new List<MapLocationData>();
 
         SpreadSheetGameConfig.OnUpdateGameConfigData.Subscribe(_ =>{
@@ -27,9 +28,10 @@ public class GameDataManager : MonoSingleton<GameDataManager>
             Debug.Log("gameConfigData "+gameConfigData.photonNetworkConfig.sendRate);
         }).AddTo(this);
     }
-    public void SetUpGameLevel(int themeIndex,int stageIndex,int levelIndex){
+    public void SetUpGameLevel(int themeIndex,int stageIndex,int levelIndex,int _nosCount){
         gameLevel.theme = themeIndex;gameLevel.stage = stageIndex;gameLevel.level = levelIndex;
         gameLevel.gameStageData =  gameLevelData.gameThemesData[gameLevel.theme].gameStages[gameLevel.stage];
+        gameLevel.nosCount = _nosCount;
         Debug.Log("gametheme "+gameLevel.theme);
         Debug.Log("game stage "+gameLevel.stage);
         Debug.Log("game starLevel "+gameLevel.level);

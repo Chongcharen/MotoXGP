@@ -6,6 +6,8 @@ using UniRx;
 public class ZoneDetecter : MonoBehaviour
 {
     public static Subject<Unit> OnCameraZoneExit = new Subject<Unit>();
+    public static Subject<Transform> OnEnterQuicksand = new Subject<Transform>();
+    public static Subject<Transform> OnExitQuicksand = new Subject<Transform>();
     private void OnTriggerEnter(Collider other)
     {
        if(other.tag == TagKeys.DEADZONE){
@@ -18,10 +20,16 @@ public class ZoneDetecter : MonoBehaviour
        }
        else if(other.tag == TagKeys.CAMERAZONE){
            MapManager.Instance.GetCameraZone(other.transform.GetInstanceID());
+       }else if(other.tag == TagKeys.QUICKSAND){
+           OnEnterQuicksand.OnNext(other.gameObject.transform);
        }
     }
 
     private void OnTriggerExit(Collider other) {
-        OnCameraZoneExit.OnNext(default);
+        if(other.tag == TagKeys.CAMERAZONE){
+            OnCameraZoneExit.OnNext(default);
+        }else if(other.tag == TagKeys.QUICKSAND){
+            OnExitQuicksand.OnNext(other.gameObject.transform);
+        }
     }
 }

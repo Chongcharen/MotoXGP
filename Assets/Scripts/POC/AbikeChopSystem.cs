@@ -10,6 +10,7 @@ using Photon.Pun;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
+using DG.Tweening;
 public class AbikeChopSystem : MonoBehaviour
 {
     public static Subject<int> OnBoostChanged = new Subject<int>();
@@ -51,20 +52,26 @@ public class AbikeChopSystem : MonoBehaviour
 
     public float currentSpeedLimit =0;
     public float speedLimit = 60;
-    public float boostedLimit = 120;
+    public float boostSpeedLimit = 120;
     float axisX;
     public float direction = 0;
     [SerializeField] AnimationCurve motorTorque = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
     [SerializeField] AnimationCurve boostTorque = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
     [SerializeField] Transform centerOfMass;
     [Header("Boost")]
-    [SerializeField]Transform explosionTransform;
-    [SerializeField]float explosionPower;
-    [SerializeField]float explosionRadius;
     [SerializeField] float boostForce = 200;
     [SerializeField] float brakeForce = 5000;
     BoostSystem boostSystem;
-    [SerializeField] int boostLimit = 3;
+    int boostLimit = 3;
+    public int BoostLimit{
+        get{
+            return boostLimit;
+        }
+        set{
+            boostLimit = value;
+            OnBoostChanged.OnNext(boostLimit);
+        }
+    }
     [SerializeField] float boostTimeLimit = 5;
     [SerializeField]float boostDelay =2;
     float currentBoostTime = 0;
@@ -102,6 +109,20 @@ public class AbikeChopSystem : MonoBehaviour
     //respawn by zone
     public Vector3 respawnPosition;
     bool isDeadzone = false;
+    [Header("ExplodeSetting")]
+    public Vector3 positionExplode;
+    public float explosionForce;
+    public float explosionRadius;
+    public float explosionUpward;
+    public float explosionDuration = 1;
+    public ForceMode explosionMode;
+    public Vector2 bodyRotationRageX;
+    public Vector2 bodyRotationRageY;
+    public Vector2 bodyRotationRageZ;
+    [Header("BikeMode")]
+    public bool swimming = false;
+    public Floater floater;
+
     void Awake(){
         myRigidbody = GetComponent<Rigidbody>();
         wheels = new WheelComponent[2];
@@ -149,6 +170,10 @@ public class AbikeChopSystem : MonoBehaviour
                 OnPlayerCrash.OnNext(crash);
                 OnCrash();
             }).AddTo(this);
+            CrashDetecter.OnBump.Subscribe(_=>{
+                ExplodeBump();
+                
+            }).AddTo(this);
             GameplayManager.OnGameEnd.Subscribe(_=>{
                 isControll = false;
                 ForceBrake();
@@ -160,11 +185,37 @@ public class AbikeChopSystem : MonoBehaviour
             GameHUD.OnLowerGear.Subscribe(_=>{
                 myRigidbody.AddForce(transform.forward* myRigidbody.mass*lower_gear_force,ForceMode.Impulse);
             }).AddTo(this);
+            ZoneDetecter.OnEnterQuicksand.Subscribe(_=>{
+                swimming = true;
+                Debug.Log("OnEnterQuicksand "+swimming);
+            }).AddTo(this);
+            ZoneDetecter.OnExitQuicksand.Subscribe(_=>{
+                swimming = false;
+                Debug.Log("OnEnterQuicksand "+swimming);
+            });
         }else{
             RemoveEngine();
         }
     }
-
+    void ExplodeBump(){
+        crash = true;
+               // respawnPosition = new Vector3(crashPosition.x,crashPosition.y+2.5f,startPosition.z);
+            Vector3[] path = new Vector3[]{
+                    new Vector3(transform.position.x,transform.position.y+2f,transform.position.z-3f),
+                    new Vector3(transform.position.x,transform.position.y+0f,transform.position.z-5f),
+                    new Vector3(transform.position.x,transform.position.y-2f,transform.position.z-8),
+            };
+            var ranBodyRotationX = UnityEngine.Random.Range(bodyRotationRageX.x,bodyRotationRageX.y);
+            var ranBodyRotationY = UnityEngine.Random.Range(bodyRotationRageY.x,bodyRotationRageY.y);
+            var ranBodyRotationZ = UnityEngine.Random.Range(bodyRotationRageZ.x,bodyRotationRageZ.y);
+            bikeSetting.MainBody.transform.DORotate(new Vector3(ranBodyRotationX,ranBodyRotationY,ranBodyRotationZ),explosionDuration).SetAutoKill();
+            transform.DOPath(path,explosionDuration,PathType.Linear).SetAutoKill();
+            //myRigidbody.AddExplosionForce(explosionForce,transform.position,explosionRadius,explosionUpward,explosionMode);
+            OnPlayerCrash.OnNext(crash);
+            OnCrash();
+           // transform.DOMoveZ(transform.position.z-5,0.5f);
+        
+    }
     void OnCrash(){
         animator.enabled = false;
         objectDetecter.gameObject.SetActive(false);
@@ -180,6 +231,9 @@ public class AbikeChopSystem : MonoBehaviour
         if(MapManager.Instance.isDeadzone)
             respawnPosition = new Vector3(MapManager.Instance.respawnPosition.x,MapManager.Instance.respawnPosition.y,startPosition.z);
         StopAllCoroutines();
+        transform.DOKill();
+        bikeSetting.MainBody.DOKill();
+        bikeSetting.MainBody.transform.DORotate(new Vector3(0,90,0),0);
         transform.position = respawnPosition;
         transform.rotation = Quaternion.Euler(0,90,0);
         GetComponent<CenterOfMass>().Reset();
@@ -195,12 +249,14 @@ public class AbikeChopSystem : MonoBehaviour
     void RestartPosition(Vector3 newPosition){
         
         if(!isControll)return;
+        bikeSetting.MainBody.transform.rotation = Quaternion.Euler(0,90,0);
         transform.position = newPosition;
         transform.rotation = Quaternion.Euler(0,90,0);
          StopMotor();
     }
     void ResetPosition(){
         if(!isControll)return;
+        bikeSetting.MainBody.transform.rotation = Quaternion.Euler(0,90,0);
         transform.position = new Vector3(transform.position.x,transform.position.y+5,transform.position.z);
         transform.rotation = Quaternion.Euler(0,90,0);
         StopMotor();
@@ -274,6 +330,7 @@ public class AbikeChopSystem : MonoBehaviour
     
     void FixedUpdate(){
         if(!isControll)return;
+        
         if(myRigidbody == null)return;
         speed = transform.InverseTransformDirection(myRigidbody.velocity).z * 3.6f;
         if(isControll){
@@ -286,10 +343,12 @@ public class AbikeChopSystem : MonoBehaviour
             jump = motorControl.isJump;
             isLeft = motorControl.isLeft;
             isRight = motorControl.isRight;
+
             if(motorControl.isBoost&& boostLimit >0 && !isBoosting && !isBoostDelay){
                 
+                isBoosting = true; 
                 boostLimit -- ;    
-                currentSpeedLimit = boostedLimit;
+                currentSpeedLimit = boostSpeedLimit;
                 OnBoostChanged.OnNext(boostLimit);
                 OnBoostTime.OnNext(boostTimeLimit);
                 if(boostSystem != null)
@@ -297,8 +356,6 @@ public class AbikeChopSystem : MonoBehaviour
                 //myRigidbody.AddExplosionForce(explosionPower,explosionTransform.position,explosionRadius,1,ForceMode.Impulse);
                 if(grounded){
                     myRigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
-                    isBoosting = true; 
-                    
                 }
             }
         }
@@ -527,6 +584,13 @@ public class AbikeChopSystem : MonoBehaviour
         
         // Downforce
         myRigidbody.AddForce(-transform.forward * speed * downforce);
+
+        if(swimming)
+            Swim();
+    }
+    void Swim(){
+        Debug.Log("Swim");
+        Debug.Log(accel);
     }
     
     public void RemoveCrashDetecter(){

@@ -35,6 +35,7 @@ public class TagKeys{
     public const string CAMERAPOINT = "CameraPoint";
     public const string ENDPOINT = "EndPoint";
     public const string MONOLITH = "Monolith";
+    public const string QUICKSAND = "QuickSand";
     
 }
 public static class RoomOptionKey{

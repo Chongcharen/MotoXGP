@@ -121,7 +121,6 @@ public class AbikeChopSystem : MonoBehaviour
     public Vector2 bodyRotationRageZ;
     [Header("BikeMode")]
     public bool swimming = false;
-    public Floater floater;
 
     void Awake(){
         myRigidbody = GetComponent<Rigidbody>();
@@ -186,11 +185,13 @@ public class AbikeChopSystem : MonoBehaviour
                 myRigidbody.AddForce(transform.forward* myRigidbody.mass*lower_gear_force,ForceMode.Impulse);
             }).AddTo(this);
             ZoneDetecter.OnEnterQuicksand.Subscribe(_=>{
-                swimming = true;
+                //swimming = true;
+                myRigidbody.drag = 2.5f;
                 Debug.Log("OnEnterQuicksand "+swimming);
             }).AddTo(this);
             ZoneDetecter.OnExitQuicksand.Subscribe(_=>{
                 swimming = false;
+                //myRigidbody.drag = 0.01f;
                 Debug.Log("OnEnterQuicksand "+swimming);
             });
         }else{
@@ -584,13 +585,6 @@ public class AbikeChopSystem : MonoBehaviour
         
         // Downforce
         myRigidbody.AddForce(-transform.forward * speed * downforce);
-
-        if(swimming)
-            Swim();
-    }
-    void Swim(){
-        Debug.Log("Swim");
-        Debug.Log(accel);
     }
     
     public void RemoveCrashDetecter(){

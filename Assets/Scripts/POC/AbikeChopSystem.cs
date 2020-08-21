@@ -119,8 +119,6 @@ public class AbikeChopSystem : MonoBehaviour
     public Vector2 bodyRotationRageX;
     public Vector2 bodyRotationRageY;
     public Vector2 bodyRotationRageZ;
-    [Header("BikeMode")]
-    public bool swimming = false;
 
     void Awake(){
         myRigidbody = GetComponent<Rigidbody>();
@@ -184,16 +182,7 @@ public class AbikeChopSystem : MonoBehaviour
             GameHUD.OnLowerGear.Subscribe(_=>{
                 myRigidbody.AddForce(transform.forward* myRigidbody.mass*lower_gear_force,ForceMode.Impulse);
             }).AddTo(this);
-            ZoneDetecter.OnEnterQuicksand.Subscribe(_=>{
-                //swimming = true;
-                myRigidbody.drag = 2.5f;
-                Debug.Log("OnEnterQuicksand "+swimming);
-            }).AddTo(this);
-            ZoneDetecter.OnExitQuicksand.Subscribe(_=>{
-                swimming = false;
-                //myRigidbody.drag = 0.01f;
-                Debug.Log("OnEnterQuicksand "+swimming);
-            });
+
         }else{
             RemoveEngine();
         }
@@ -297,7 +286,6 @@ public class AbikeChopSystem : MonoBehaviour
 
     // Update is called once per frame
     void ForceBrake(){
-        Debug.Log("Forcebrake");
          foreach(WheelComponent component in wheels){
              if(component.collider == null)continue;
              component.collider.brakeTorque = 100000000;

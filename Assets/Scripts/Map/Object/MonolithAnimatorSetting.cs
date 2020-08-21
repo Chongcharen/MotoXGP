@@ -16,7 +16,7 @@ public class MonolithAnimatorSetting : MonoBehaviour
     }
     IEnumerator Delaytime(){
         yield return new WaitForSeconds(time);
-        Debug.Log("-------------------------> DelayTime "+time);
+       // Debug.Log("-------------------------> DelayTime "+time);
         animator.enabled = true;
         //animator.Play("Take 001");
     }

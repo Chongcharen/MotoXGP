@@ -32,7 +32,7 @@ public class GameNetwork : MonoBehaviourPunCallbacks
         //
         startPosition = MapManager.Instance.localSpawnPosition.x;//spawnPoint[0].position.x;
         Debug.Log("-----------------------------------");
-        var go = PhotonNetwork.Instantiate("POC/BikeV5.9",MapManager.Instance.spawnPointsPosition[playerProfileData.index],Quaternion.Euler(0,90,0));
+        var go = PhotonNetwork.Instantiate("POC/BikeV6.0",MapManager.Instance.spawnPointsPosition[playerProfileData.index],Quaternion.Euler(0,90,0));
         go.name = PhotonNetwork.LocalPlayer.NickName;
         go.GetComponent<PhotonCustomTransformView>().fixPositionZ = go.transform.position.z;
         go.transform.position = new Vector3(go.transform.position.x,go.transform.position.y,MapManager.Instance.localSpawnPosition.z);
@@ -42,6 +42,7 @@ public class GameNetwork : MonoBehaviourPunCallbacks
         cameraFollow.target = go.transform.GetComponent<AbikeChopSystem>().targetForCameraLook;
         cameraFollow.playerCrash = go.transform.GetComponent<AbikeChopSystem>().crash;
         go.GetComponent<BoostSystem>().SetUpMotion(motionBlur);
+        go.GetComponent<BikeCustomize>().RandomBike();
 
 
         var playerComponent = go.GetComponent<PlayerComponents>();

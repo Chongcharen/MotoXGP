@@ -53,7 +53,7 @@ public class GameHUD : MonoBehaviourPunCallbacks
                     gear_count.Value ++;
                 }).AddTo(this);
             }
-            print(Depug.Log("Gear Count "+gear_count,Color.yellow));
+           // print(Depug.Log("Gear Count "+gear_count,Color.yellow));
         });
 
         b_back.OnClickAsObservable().Subscribe(_=>{
@@ -62,7 +62,7 @@ public class GameHUD : MonoBehaviourPunCallbacks
             SceneManager.LoadScene(SceneName.LOBBY);
         });
         b_restart.OnClickAsObservable().Subscribe(_=>{
-             Debug.Log("restart Click");
+            // Debug.Log("restart Click");
             OnRestartPosition.OnNext(default);
         }).AddTo(this);
         GameController.OnMicActive.Subscribe(active =>{
@@ -111,7 +111,7 @@ public class GameHUD : MonoBehaviourPunCallbacks
     }
 
     public void AcceletorLowerGear(){
-        Debug.Log("AcceletorLowerGear ");
+       // Debug.Log("AcceletorLowerGear ");
         if(acceletor_gear_count <= 0){
             acceletor_gear_count++;
         }else{
@@ -119,13 +119,13 @@ public class GameHUD : MonoBehaviourPunCallbacks
                 acceletor_gear_count++;
             }
         }
-        Debug.Log("acceletor_gear_count "+acceletor_gear_count);
+        //Debug.Log("acceletor_gear_count "+acceletor_gear_count);
         timer_accel_touch = Time.time; 
-        Debug.Log("timer_accel_touch "+timer_accel_touch);
+        //Debug.Log("timer_accel_touch "+timer_accel_touch);
         if(acceletor_gear_count >= acceletor_gear_limit){
             if(gear_count.Value >=3){
                 gear_count.Value = 0;
-                Debug.Log("tgear_count "+gear_count.Value);
+                //Debug.Log("tgear_count "+gear_count.Value);
                 OnLowerGear.OnNext(default);
                 img_lower_gear[0].DOFillAmount(0,0.1f);
                 img_lower_gear[1].DOFillAmount(0,0.2f);

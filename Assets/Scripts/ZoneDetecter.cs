@@ -20,16 +20,12 @@ public class ZoneDetecter : MonoBehaviour
        }
        else if(other.tag == TagKeys.CAMERAZONE){
            MapManager.Instance.GetCameraZone(other.transform.GetInstanceID());
-       }else if(other.tag == TagKeys.QUICKSAND){
-           OnEnterQuicksand.OnNext(other.gameObject.transform);
        }
     }
 
     private void OnTriggerExit(Collider other) {
         if(other.tag == TagKeys.CAMERAZONE){
             OnCameraZoneExit.OnNext(default);
-        }else if(other.tag == TagKeys.QUICKSAND){
-            OnExitQuicksand.OnNext(other.gameObject.transform);
         }
     }
 }

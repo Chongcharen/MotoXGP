@@ -32,9 +32,6 @@ public class GameDataManager : MonoSingleton<GameDataManager>
         gameLevel.theme = themeIndex;gameLevel.stage = stageIndex;gameLevel.level = levelIndex;
         gameLevel.gameStageData =  gameLevelData.gameThemesData[gameLevel.theme].gameStages[gameLevel.stage];
         gameLevel.nosCount = _nosCount;
-        Debug.Log("gametheme "+gameLevel.theme);
-        Debug.Log("game stage "+gameLevel.stage);
-        Debug.Log("game starLevel "+gameLevel.level);
     }
     public void SetUpGameConfigData(string jsonData){
         //gameConfigData = JsonConvert.DeserializeObject<GameConfigData>(jsonData);

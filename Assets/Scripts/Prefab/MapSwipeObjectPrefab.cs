@@ -28,6 +28,7 @@ public class MapSwipeObjectPrefab : MonoBehaviour
     }
     public void SelectStar(int index){
         level = index+1;
+        if(level >5)level = 5;
         for (int i = 0; i < starImages.Length; i++)
         {
             starImages[i].DOFade(0,0).SetAutoKill();

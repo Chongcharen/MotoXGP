@@ -2,42 +2,55 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UniRx;
 public class AQuickSand : MonoBehaviour
 {
     [SerializeField]Transform platformTranform;
     Rigidbody rigidbody;
     Vector3 positionTemp;
+    public float rigidbodyDrag = 2;
     public float platformSpeed = 0.001f;
-    public Vector2 velocityLimit = new Vector2(-1,1);
+    public float sandDownSpeed = 1;
     public float speed;
     void Awake(){
         positionTemp = platformTranform.position;
+        AbikeChopSystem.OnPlayerCrash.Subscribe(_=>{
+            //platformTranform.position = positionTemp;
+            if(rigidbody != null){
+                rigidbody.drag = 0.01f;
+                rigidbody = null;
+            }
+        }).AddTo(this);
     }
     void OnTriggerEnter(Collider other){
-        Debug.Log("OnTriggerEnter "+other.gameObject.name);
         if(other.gameObject.name == "PlayerCollider"){
             rigidbody = other.gameObject.transform.parent.GetComponent<Rigidbody>();
-            Debug.Log("Get Rigibody "+rigidbody);
+            Debug.Log("rigidbody "+rigidbody);
+            rigidbody.drag = rigidbodyDrag;
         }
     }
     void OnTriggerExit(Collider other){
          if(other.gameObject.name == "PlayerCollider"){
-             rigidbody = null;
+             if(rigidbody != null){
+                rigidbody.drag = 0.01f;
+                rigidbody = null;
+             }
              platformTranform.position = positionTemp;
          }
     }
 
     void FixedUpdate(){
-        if(rigidbody == null)return;
-        Debug.Log("Rigidbody "+rigidbody);
-        Debug.Log("velocity "+rigidbody.velocity);
+        if(rigidbody == null){
+            if(platformTranform.position.y >= positionTemp.y)return;
+            platformTranform.position += new Vector3(0,platformSpeed,0);
+            return;
+        }
         speed = rigidbody.velocity.x;
-        if(rigidbody.velocity.x <velocityLimit.y && rigidbody.velocity.x >-velocityLimit.x){
-            if(platformTranform.position.y > positionTemp.y)return;
+        if(speed <-sandDownSpeed || speed >sandDownSpeed){
+            if(platformTranform.position.y >= positionTemp.y)return;
             platformTranform.position += new Vector3(0,platformSpeed,0);
         }else{
-            if(platformTranform.position.y < -2)return;
+            if(platformTranform.position.y < platformTranform.position.y-2)return;
             platformTranform.position += new Vector3(0,-platformSpeed,0);
         }
         //if(platformTranform.position.y > positionTemp.y || platformTranform.position.y < -2)return;

@@ -43,6 +43,8 @@ public static class RoomOptionKey{
     public const string HOST_ID = "hostID";
     public const string MAP_THEME = "map_theme";
     public const string MAP_STAGE = "map_stage";
+
+    public const string MAP_LEVEL = "map_level";
     }
 public class RoomPropertyKeys{
     public const string PLAYER_INDEX = "player_index";
@@ -50,7 +52,6 @@ public class RoomPropertyKeys{
     public const string ROOM_DATA = "room_data";
     public const string PLAYER_RESULT = "player_result";
     public const string GAME_START = "game_start";
-
     
 }
 

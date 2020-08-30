@@ -82,17 +82,44 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
             }
         });
         b_EnterLevel.OnClickAsObservable().Subscribe(_=>{
-            ExitGames.Client.Photon.Hashtable roomOptions = new ExitGames.Client.Photon.Hashtable();
-            roomOptions.Add(RoomOptionKey.MAP_THEME,themeIndex);
-            roomOptions.Add(RoomOptionKey.MAP_STAGE,currentFocusIndex);
-            PhotonNetworkConsole.Instance.JoinRandomRoom(roomOptions);
-            PageManager.Instance.CloseMap();
-            levelStar = Page[currentFocusIndex].GetComponent<MapSwipeObjectPrefab>().GetStar;
-            //mockup input_nos
+
             if(string.IsNullOrEmpty(input_nos.text))
                 input_nos.text = "3";
-            //ClearPage();
+            levelStar = Page[currentFocusIndex].GetComponent<MapSwipeObjectPrefab>().GetStar;
+
+
+            // ExitGames.Client.Photon.Hashtable roomOptions = new ExitGames.Client.Photon.Hashtable();
+            // roomOptions.Add(RoomOptionKey.MAP_THEME,themeIndex);
+            // roomOptions.Add(RoomOptionKey.MAP_STAGE,currentFocusIndex);
+           
+            //PhotonNetworkConsole.Instance.JoinRandomRoom(roomOptions);
+            // ProtocolRoomProperty roomProperties = new ProtocolRoomProperty();
+            // roomProperties.stage = currentFocusIndex;
+            // roomProperties.theme = themeIndex;
+            // roomProperties.level =  Page[currentFocusIndex].GetComponent<MapSwipeObjectPrefab>().GetStar;
+
+            var roomProperties = new Bolt.Photon.PhotonRoomProperties();
+            roomProperties.AddRoomProperty(RoomOptionKey.MAP_THEME,currentFocusIndex);
+            roomProperties.AddRoomProperty(RoomOptionKey.MAP_STAGE,themeIndex);
+            roomProperties.AddRoomProperty(RoomOptionKey.MAP_LEVEL,levelStar);
+            roomProperties.IsOpen = true;
+            roomProperties.IsVisible = true;
+            roomProperties.CustomRoomPropertiesInLobby.Add(RoomOptionKey.MAP_THEME);
+            roomProperties.CustomRoomPropertiesInLobby.Add(RoomOptionKey.MAP_STAGE);
+            roomProperties.CustomRoomPropertiesInLobby.Add(RoomOptionKey.MAP_LEVEL);
+            
+            Debug.Log("stage "+roomProperties[RoomOptionKey.MAP_THEME]);
+            Debug.Log("theme "+roomProperties[RoomOptionKey.MAP_STAGE]);
+            Debug.Log("level "+roomProperties[RoomOptionKey.MAP_LEVEL]);
+
             GameDataManager.Instance.SetUpGameLevel(themeIndex,currentFocusIndex,levelStar,System.Convert.ToInt32(input_nos.text));
+            BoltLobbyNetwork.Instance.JoinRandomSession(roomProperties);
+            PageManager.Instance.CloseMap();
+            
+            //mockup input_nos
+            
+            //ClearPage();
+            
             Debug.Log("thene => "+themeIndex);
             Debug.Log("stage "+currentFocusIndex);
         });

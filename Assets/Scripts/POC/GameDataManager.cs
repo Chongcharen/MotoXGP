@@ -73,15 +73,15 @@ public class GameDataManager : MonoSingleton<GameDataManager>
        // gameLevelData.gameThemesData.Find(data =>data)
     }
     public MapLocationData GetLevelMap(string _mapName){
-        Debug.Log("Getlevelmap "+_mapName);
+       // Debug.Log("Getlevelmap "+_mapName);
         foreach (var item in mapLocationDatas)
         {
-            Debug.Log("map name "+item.mapName);
+            //Debug.Log("map name "+item.mapName);
             Debug.Log(item.mapName == _mapName);
         }
         var finder = mapLocationDatas.Find(data => data.mapName == _mapName);
-        Debug.Log("Finder "+finder);
-        Debug.Assert(finder != null,"Mapdata not found in name "+_mapName);
+        //Debug.Log("Finder "+finder);
+        //Debug.Assert(finder != null,"Mapdata not found in name "+_mapName);
         return finder;
     }
     

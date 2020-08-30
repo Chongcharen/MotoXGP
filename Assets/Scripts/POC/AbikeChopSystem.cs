@@ -62,7 +62,7 @@ public class AbikeChopSystem : MonoBehaviour
     [SerializeField] float boostForce = 200;
     [SerializeField] float brakeForce = 5000;
     BoostSystem boostSystem;
-    int boostLimit = 3;
+    int boostLimit = 1000;
     public int BoostLimit{
         get{
             return boostLimit;
@@ -89,7 +89,7 @@ public class AbikeChopSystem : MonoBehaviour
     [SerializeField] float diffGearing = 4.0f;
     [Header("Wheels Setting")]
     [SerializeField]ConnectWheel connectWheel;
-     WheelComponent[] wheels;
+    WheelComponent[] wheels;
 
     [Header("Bike Setting")]
     public BikeWheels bikeWheels;
@@ -154,7 +154,7 @@ public class AbikeChopSystem : MonoBehaviour
 
     public void SetController(bool _isActive){
         Debug.Log("---------------------------->setcontroller "+_isActive);
-        //isControll = _isActive;
+        isControll = _isActive;
         objectDetecter.SetActive(_isActive);
         //biker_joint_obj.SetActive(_isActive);
         //ragdollCollider.EnabledRagDolls(_isActive);

@@ -72,7 +72,7 @@ public class Starter : MonoBehaviour
         Debug.Log("Application.persistentDataPath "+Application.streamingAssetsPath);
         var filePath = Path.Combine(Application.streamingAssetsPath,FilePath.GAME_LEVEL_DATA);
         string jsonString;
-
+        OnNotification.OnNext("jsonString "+filePath);
         if(Application.platform == RuntimePlatform.Android) //Need to extract file from apk first
         {
             WWW reader = new WWW(filePath);
@@ -88,25 +88,33 @@ public class Starter : MonoBehaviour
 
         //OnNotification.OnNext(path);
         //var jsonData = GameUtil.GetTextFromFile(path);
+        OnNotification.OnNext("jsonString .."+jsonString);
         Debug.Log(jsonString);
-        Dictionary<string,object> gameleveldata = JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);
-        GameLevelData levelData = JsonConvert.DeserializeObject<GameLevelData>(jsonString);
+        
+        // Dictionary<string,object> gameleveldata = JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);
+        // GameLevelData levelData = JsonConvert.DeserializeObject<GameLevelData>(jsonString);
+
+        Dictionary<string,object> gameleveldata = JsonUtility.FromJson<Dictionary<string,object>>(jsonString); //JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);
+        GameLevelData levelData = JsonUtility.FromJson<GameLevelData>(jsonString);//JsonConvert.DeserializeObject<GameLevelData>(jsonString);
         GameDataManager.Instance.SetUpGameLeveldata(levelData);
+
+        
         OnNotification.OnNext("LevelData download complete prepareTo Login");
         CheckCopmpletedData(-1);
-        Debug.Log("leveldata "+levelData.version);
-        Debug.Log("leveldata gameThemes"+levelData.gameThemesData.Count);
-        Debug.Log("dic count "+gameleveldata.Count);
-        foreach (var data in levelData.gameThemesData)
-        {
-            Debug.Log(string.Format("themename {0} stageLevel {1}",data.themeName,data.gameStages.Count));
-        }
+        // Debug.Log("leveldata "+levelData.version);
+        // Debug.Log("leveldata gameThemes"+levelData.gameThemesData.Count);
+        // Debug.Log("dic count "+gameleveldata.Count);
+        // foreach (var data in levelData.gameThemesData)
+        // {
+        //     Debug.Log(string.Format("themename {0} stageLevel {1}",data.themeName,data.gameStages.Count));
+        // }
         //Debug.Log("gameleveldata "+gameleveldata.gameThemes);
     }
 
     void CheckCopmpletedData(int instanceID){
         Debug.Log("CheckCompletedData ");
         Debug.Log("all sheet download "+loaderSheetData.All(data =>data.Value == true));
+        OnNotification.OnNext("level data "+GameDataManager.Instance.GameLevelData);
         if(loaderSheetData.ContainsKey(instanceID)){
             loaderSheetData[instanceID] = true;
         }

@@ -518,6 +518,12 @@ public class ABikeSystem : MonoBehaviour
         public WheelSetting setting;
     }
 [System.Serializable]
+    public class BilkWheelSetting
+    {
+        public ConnectWheel wheels;
+        public WheelSetting[] wheelSettings;
+    }
+[System.Serializable]
     public class ConnectWheel
     {
 

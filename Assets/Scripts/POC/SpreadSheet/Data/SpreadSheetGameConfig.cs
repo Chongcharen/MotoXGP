@@ -43,8 +43,11 @@ public class SpreadSheetGameConfig :SpreadSheetDataConverter
                         classInstance.Add(data,value);
                 }
             }
-        var jsonSerialize = JsonConvert.SerializeObject(baseData);
-        var gameConfigData = JsonConvert.DeserializeObject<GameConfigData>(jsonSerialize);
+        // var jsonSerialize = JsonConvert.SerializeObject(baseData);
+        // var gameConfigData = JsonConvert.DeserializeObject<GameConfigData>(jsonSerialize);
+
+        var jsonSerialize = JsonUtility.ToJson(baseData);
+        var gameConfigData = JsonUtility.FromJson<GameConfigData>(jsonSerialize);
         //var gameConfigData = GetObject<GameConfigData>(baseData);
         Debug.Assert(gameConfigData != null, "game config data has be null ");
         OnUpdateGameConfigData.OnNext(gameConfigData);

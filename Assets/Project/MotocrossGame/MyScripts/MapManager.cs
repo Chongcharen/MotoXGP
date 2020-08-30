@@ -69,9 +69,9 @@ public class MapManager : MonoBehaviour {
         SetDeadZone();
         SetCameraZone();
         SubscribeEvent();
-        GetComponent<UI_PlayersDistance>().enabled = true;
-        GetComponent<GameNetwork>().enabled = true;
-        PhotonVoiceConsole.Instance.CreateVoiceView();
+        //GetComponent<UI_PlayersDistance>().enabled = true;
+        //GetComponent<GameNetwork>().enabled = true;
+        //PhotonVoiceConsole.Instance.CreateVoiceView();
     }
     void SubscribeEvent(){
         respawnData.ObserveEveryValueChanged(data => data.Count).Subscribe( vale =>{
@@ -114,7 +114,7 @@ public class MapManager : MonoBehaviour {
         }
     }
     public void GetEndPoint(int endPointId){
-        //Debug.Log("GetEndpoint");
+        Debug.Log("GetEndpoint");
         Debug.Assert(endpointData.ContainsKey(endPointId));
         var endpointRawdata = endpointData[endPointId];
         if(!endpointRawdata.isPass){
@@ -139,6 +139,7 @@ public class MapManager : MonoBehaviour {
     private void SetDeadZone(){
         endpointData.Clear();
         //Debug.Log("SetDeadZone==========> ");
+        print(Depug.Log("Set DeadZone",Color.blue));
         GameObject[] objZone = GameObject.FindGameObjectsWithTag(TagKeys.Zone);//zoneObject.GetComponentsInChildren<Transform>();
         //Debug.Log("OBJ Zone length "+objZone.Length);
         foreach (var gameObj in objZone)
@@ -194,6 +195,7 @@ public class MapManager : MonoBehaviour {
         // Debug.Log("TotalCount "+respawnData.Count);
     }
     void SetCameraZone(){
+        print(Depug.Log("Set Camera Zone",Color.blue));
         camerapointData.Clear();
         GameObject[] objZone = GameObject.FindGameObjectsWithTag(TagKeys.CAMERAZONE);//zoneObject.GetComponentsInChildren<Transform>();
         //Debug.Log("OBJ Zone length "+objZone.Length);

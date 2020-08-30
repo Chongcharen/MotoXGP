@@ -24,6 +24,7 @@ public class GameplayManager : InstanceClass<GameplayManager>
         
     }
     public void IncreaseRound(){
+        Debug.Log("IncreaseRound ");
         round.Value ++;
         if(round.Value > totalRound.Value){
             isEnd.Value = true;

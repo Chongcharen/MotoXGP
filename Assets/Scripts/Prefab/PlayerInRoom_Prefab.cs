@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,14 +8,20 @@ using TMPro;
 using Photon.Realtime;
 using PlayFab.ClientModels;
 using ExitGames.Client.Photon;
-public class PlayerInRoom_Prefab : MonoBehaviour
+using Bolt;
+public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
 {
+    public static Subject<PlayerInRoom_Prefab> OnDestroyed = new Subject<PlayerInRoom_Prefab>();
     [SerializeField]TextMeshProUGUI playername_text;
-    [SerializeField]Image player_avatar,bg_image,image_flag_nation;
+    [SerializeField]RawImage player_avatar;
+    [SerializeField]Image bg_image,image_flag_nation;
     [SerializeField]Button b_chat,b_kick;
     public string userId;
     public Color playerColor;
     PlayerProfileModel profilemodel;
+    // properties
+    string avatarURL;
+    string flag;
     void Start(){
         // b_chat.OnClickAsObservable().Subscribe(_=>{
 
@@ -22,6 +29,21 @@ public class PlayerInRoom_Prefab : MonoBehaviour
         // b_kick.OnClickAsObservable().Subscribe(_=>{
 
         // });
+    }
+    public override void Attached(){
+        state.AddCallback("Name",()=>playername_text.text = state.Name);
+        state.AddCallback("Avatar",()=>avatarURL = state.Avatar);
+        state.AddCallback("Color",()=> playerColor = state.Color);
+        state.AddCallback("Flag",()=> flag = state.Flag);
+    }
+    public override void ControlGained(){
+        print(Depug.Log("ControlGained",Color.cyan));
+        profilemodel = PlayFabController.Instance.playerProfileModel;
+        SetupPlayer();
+    }
+    public void SetColor(Color _color){
+        playerColor = _color;
+        playername_text.color = playerColor;
     }
     public void SetData(Player playerData,Color color){
         Debug.Log("player "+playerData.CustomProperties);
@@ -38,5 +60,20 @@ public class PlayerInRoom_Prefab : MonoBehaviour
         playername_text.text = profilemodel.DisplayName;
         playerColor = color;
        // bg_image.color = color;
+    }
+    public override void Detached(){
+        print(Depug.Log("Playerinroom prefab Detached",Color.red));
+        OnDestroyed.OnNext(this);
+    }
+    public void SetupPlayer(){
+        print(Depug.Log("SetupPlayer",Color.green));
+        playername_text.text = profilemodel.DisplayName;
+        //var playerObject = BikePlayerRegistry.GetBikePlayer(entity.Source);
+        b_kick.gameObject.SetActive(false);
+    }
+    public void SetupOtherPlayer(){
+        print(Depug.Log("SetupOtherPlayer",Color.blue));
+        //var playerObject = BikePlayerRegistry.GetBikePlayer(entity.Source);
+        b_kick.gameObject.SetActive(BoltNetwork.IsServer);
     }
 }

@@ -50,7 +50,9 @@ public class UI_Login : MonoBehaviour
         PlayFabController.OnPlayFabLoginComplete.Subscribe(_=>{
            // root.gameObject.SetActive(false);
           // PhotonNetworkConsole.Instance.Connect(input_name.text);\
-            PhotonNetworkConsole.Instance.Connect();
+          
+            //PhotonNetworkConsole.Instance.Connect();
+            BoltLobbyNetwork.Instance.Connect();
         });
         PlayFabController.OnLogout.Subscribe(_=>{
             root.gameObject.SetActive(true);

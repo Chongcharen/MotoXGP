@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,31 +18,58 @@ public class UI_Room : MonoBehaviourPunCallbacks
 {
     [SerializeField]GameObject root;
     [SerializeField]Button b_leave,b_playGame;
-    [SerializeField]GameObject playerinroomPrefab;
-    [SerializeField]Transform content;
+    [SerializeField]Transform contentTransform;
     [SerializeField]PlayerInRoom_Prefab[] playersData;
     [SerializeField]Color[] playerColor;
-    
+    List<PlayerInRoom_Prefab> players = new List<PlayerInRoom_Prefab>();
     // Start is called before the first frame update
     void Start()
     {
         Debug.Log("UI Room start");
         b_leave.OnClickAsObservable().Subscribe(_=>{
-            PhotonNetwork.LeaveRoom(); 
-        });
+            //PhotonNetwork.LeaveRoom(); 
+            // if(BoltNetwork.IsServer){
+            //     BoltLobbyNetwork.Instance.Shutdown(ConnectionType.Disconnect);
+            // }else{
+                
+            // }
+            BoltLobbyNetwork.Instance.Shutdown(ConnectionType.Disconnect);
+        }).AddTo(this);
         b_playGame.OnClickAsObservable().Subscribe(_=>{
             PrepareTostartGame();
             // Start To gameplay Scene
-        });
+        }).AddTo(this);
         root.ObserveEveryValueChanged(r =>r.gameObject.activeSelf).Subscribe(active =>{
             Debug.Log("UI_Room Active "+active);
-        });
+            b_playGame.gameObject.SetActive(BoltNetwork.IsServer);
+        }).AddTo(this);
+        PlayerInRoom_Prefab.OnDestroyed.Subscribe(player =>{
+            RemovePlayer(player);
+        }).AddTo(this);
     }
     /*
         sample Node =>   RoomHashtable
                             playerHashtable
                             playerindexHashtable
     */
+    public void AddPlayer(PlayerInRoom_Prefab player){
+        if(player == null)return;
+        if(players.Contains(player))return;
+        
+        players.Add(player);
+        player.transform.SetParent(contentTransform,false);
+        player.transform.SetAsLastSibling();
+        player.SetColor(playerColor[players.Count]);
+    }
+    public void RemovePlayer(PlayerInRoom_Prefab _player){
+        if(players.Contains(_player))
+            players.Remove(_player);
+        
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].SetColor(playerColor[i]);
+        }
+    }
     public void UpdatePlayerInroom(){
         ClearData();
         Debug.Log("Updatepayerinroom ");
@@ -93,20 +121,20 @@ public class UI_Room : MonoBehaviourPunCallbacks
         b_playGame.gameObject.SetActive(PhotonNetwork.CurrentRoom.masterClientId == PhotonNetwork.LocalPlayer.ActorNumber);
     }
     void PrepareTostartGame(){
-        Hashtable data = new Hashtable(); // data Hash in customproperty (RoomHashtableData)
-        Hashtable playerDatas = new Hashtable(); 
-        Hashtable playerIndex = new Hashtable();
-        //Set UserID เอานะ
-        if(data.ContainsKey(RoomPropertyKeys.PLAYER_INDEX)){
-            data[RoomPropertyKeys.PLAYER_INDEX] = null;
-        }
-        data.Add(RoomPropertyKeys.PLAYER_DATA,playerDatas);
-        //data.Add(RoomPropertyKeys.GAME_START,true);
-        PhotonNetwork.CurrentRoom.SetCustomProperties(data);
-        PhotonNetwork.CurrentRoom.IsVisible = false;
+        // Hashtable data = new Hashtable(); // data Hash in customproperty (RoomHashtableData)
+        // Hashtable playerDatas = new Hashtable(); 
+        // Hashtable playerIndex = new Hashtable();
+        // //Set UserID เอานะ
+        // if(data.ContainsKey(RoomPropertyKeys.PLAYER_INDEX)){
+        //     data[RoomPropertyKeys.PLAYER_INDEX] = null;
+        // }
+        // data.Add(RoomPropertyKeys.PLAYER_DATA,playerDatas);
+        // //data.Add(RoomPropertyKeys.GAME_START,true);
+        // PhotonNetwork.CurrentRoom.SetCustomProperties(data);
+        // PhotonNetwork.CurrentRoom.IsVisible = false;
 
-        PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
-
+        //PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
+        BoltNetwork.LoadScene(SceneName.GAMEPLAY);
         //PhotonNetwork.CurrentRoom.SetCustomProperties();
     }
 
@@ -141,26 +169,26 @@ public class UI_Room : MonoBehaviourPunCallbacks
         }
          
     }
-    public override void OnLeftRoom(){
-        if(root != null)
-            root.gameObject.SetActive(false);
-        PageManager.Instance.OpenLobby();
-    }
+    // public override void OnLeftRoom(){
+    //     if(root != null)
+    //         root.gameObject.SetActive(false);
+    //     PageManager.Instance.OpenLobby();
+    // }
     //other joined room
-    public override void OnPlayerEnteredRoom(Player newPlayer){
-        Debug.Log("playerenterroom ++++"+newPlayer.UserId);
-        Debug.Log("PlayerCount ++++"+PhotonNetwork.CurrentRoom.PlayerCount);
-        PhotonNetwork.CurrentRoom.AddPlayer(newPlayer);
-        UpdatePlayerInroom();
-    }
-    public override void OnPlayerLeftRoom(Player otherPlayer){
-        UpdatePlayerInroom();
-    }
-    // local joined Room;
-    public override void OnJoinedRoom(){
-        PhotonNetwork.CurrentRoom.AddPlayer(PhotonNetwork.LocalPlayer);
-        UpdatePlayerInroom();
-    }
+    // public override void OnPlayerEnteredRoom(Player newPlayer){
+    //     Debug.Log("playerenterroom ++++"+newPlayer.UserId);
+    //     Debug.Log("PlayerCount ++++"+PhotonNetwork.CurrentRoom.PlayerCount);
+    //     PhotonNetwork.CurrentRoom.AddPlayer(newPlayer);
+    //     UpdatePlayerInroom();
+    // }
+    // public override void OnPlayerLeftRoom(Player otherPlayer){
+    //     UpdatePlayerInroom();
+    // }
+    // // local joined Room;
+    // public override void OnJoinedRoom(){
+    //     PhotonNetwork.CurrentRoom.AddPlayer(PhotonNetwork.LocalPlayer);
+    //     UpdatePlayerInroom();
+    // }
     
     void ClearData(){
         Debug.Log("clear data ");

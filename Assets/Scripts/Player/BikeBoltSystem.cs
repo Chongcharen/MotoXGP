@@ -176,7 +176,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     void FixedUpdate(){
         PollKey();
-        UpdateWheel();
+        //UpdateWheel();
     }
     void PollKey(){
         if(!isControll || !isReady)return;
@@ -186,31 +186,31 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         isLeft = motorControl.isLeft;
         isRight = motorControl.isRight;
     }
-    // public override void SimulateController(){
-    //     PollKey();
-    //     IBikePlayerCommandInput input = BikePlayerCommand.Create();
-    //     input.accel = (int)accel;
-    //     input.brake = brake;
-    //     input.jump = jump;
-    //     input.left = isLeft;
-    //     input.right = isRight;
-    //     entity.QueueInput(input);
-    // }
+    public override void SimulateController(){
+        PollKey();
+        IBikePlayerCommandInput input = BikePlayerCommand.Create();
+        input.accel = (int)accel;
+        input.brake = brake;
+        input.jump = jump;
+        input.left = isLeft;
+        input.right = isRight;
+        entity.QueueInput(input);
+    }
     
-    // public override void ExecuteCommand(Command command, bool resetState){
-    //     BikePlayerCommand cmd = (BikePlayerCommand)command;
+    public override void ExecuteCommand(Command command, bool resetState){
+        BikePlayerCommand cmd = (BikePlayerCommand)command;
        
-    //     if(resetState){
-    //         print(Depug.Log("resetState  "+resetState,Color.white));
-    //     }else{
-    //         accel = cmd.Input.accel;
-    //         brake = cmd.Input.brake;
-    //         jump = cmd.Input.jump;
-    //         isLeft = cmd.Input.left;
-    //         isRight = cmd.Input.right;
-    //         UpdateWheel();
-    //     }
-    // }
+        if(resetState){
+            print(Depug.Log("resetState  "+resetState,Color.white));
+        }else{
+            accel = cmd.Input.accel;
+            brake = cmd.Input.brake;
+            jump = cmd.Input.jump;
+            isLeft = cmd.Input.left;
+            isRight = cmd.Input.right;
+            UpdateWheel();
+        }
+    }
     void UpdateWheel(){
         var indexWhell = 0;
         foreach(WheelComponent component in wheels){

@@ -17,31 +17,31 @@ public class GameServerCallback : GlobalEventListener
     }
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){
         print(Depug.Log("GameServerCallback SceneLoadLocalDone ",Color.white));
-        // if(BoltNetwork.IsServer){
-        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,new Vector3(22,5,1),Quaternion.Euler(0,90,0));
-        //     entity.TakeControl();
-        //     // VirtualPlayerCamera.Instantiate();
-        //     // VirtualPlayerCamera.instance.FollowTarget(entity.transform);
-        //     // VirtualPlayerCamera.instance.LookupTarget(entity.transform);
-        // }
+        if(BoltNetwork.IsServer){
+            var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
+            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
+            entity.TakeControl();
+        }
        
     }
     public override void SceneLoadRemoteDone(BoltConnection connection, IProtocolToken token){
         // print(Depug.Log("SceneLoadRemoteDone SceneLoadLocalDone "+BoltNetwork.IsClient,Color.white));
-        // var player = BikePlayerRegistry.GetBikePlayer(connection);
+         var player = BikePlayerRegistry.GetBikePlayer(connection);
         // Debug.Log("Player ????? "+player);
-        // if(player == null)return;
-        // var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,new Vector3(22,5,2),Quaternion.Euler(0,90,0));
-        //     entity.AssignControl(connection);
-            // VirtualPlayerCamera.Instantiate();
-            // VirtualPlayerCamera.instance.FollowTarget(entity.transform);
-            // VirtualPlayerCamera.instance.LookupTarget(entity.transform);
-        // if(BoltNetwork.IsClient){
-        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,new Vector3(22,5,1),Quaternion.Euler(0,90,0));
-        //     entity.AssignControl(connection);
+         if(player == null)return;
+         var position = MapManager.Instance.spawnPointsPosition[BikePlayerRegistry.GetBikePlayer(connection).index];
+         var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,position,Quaternion.Euler(0,90,0));
+             entity.AssignControl(connection);
         //     VirtualPlayerCamera.Instantiate();
         //     VirtualPlayerCamera.instance.FollowTarget(entity.transform);
         //     VirtualPlayerCamera.instance.LookupTarget(entity.transform);
+        // if(BoltNetwork.IsClient){
+        //     var position = MapManager.Instance.spawnPointsPosition[BikePlayerRegistry.GetBikePlayer(connection).index];
+        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,position,Quaternion.Euler(0,90,0));
+        //     entity.AssignControl(connection);
+        //     // VirtualPlayerCamera.Instantiate();
+        //     // VirtualPlayerCamera.instance.FollowTarget(entity.transform);
+        //     // VirtualPlayerCamera.instance.LookupTarget(entity.transform);
         // }
     }
     // public override void ControlOfEntityGained(BoltEntity entity){

@@ -12,27 +12,27 @@ public class GameCallback : GlobalEventListener
     public static Subject<RaceCountdown> OnGameReady = new Subject<RaceCountdown>();
     BoltEntity myEntity;
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){
-        print(Depug.Log("GameCallback SceneLoadLocalDone "+BoltNetwork.IsClient,Color.white));
-        if(BoltNetwork.IsServer){
-            var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
-            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
-            entity.TakeControl();
-            myEntity = entity;
-        }else{
-            Debug.Log("BoltNetwork.Entities.Count() "+BoltNetwork.Entities.Count());
-            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,MapManager.Instance.spawnPointsPosition[BoltNetwork.Entities.Count()+1],Quaternion.Euler(0,90,0));
-            entity.TakeControl();
-            myEntity = entity;
-            var request = PlayerPositionRequest.Create(GlobalTargets.OnlyServer);
-            request.Request = true;
-            request.ToEntity = entity;
-            request.Send();
-            // print(Depug.Log("entity.Source "+entity.Source,Color.red));
-            // print(Depug.Log("entity.Source "+entity.Source.UserData,Color.red));
-            // BikePlayerObject playerObject = entity.Source.UserData as BikePlayerObject;
-            // var newPosition = MapManager.Instance.spawnPointsPosition[playerObject.index-1];
-            // entity.transform.SetPositionAndRotation(newPosition,Quaternion.Euler(0,90,0));
-        }
+        // print(Depug.Log("GameCallback SceneLoadLocalDone "+BoltNetwork.IsClient,Color.white));
+        // if(BoltNetwork.IsServer){
+        //     var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
+        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
+        //     entity.TakeControl();
+        //     myEntity = entity;
+        // }else{
+        //     Debug.Log("BoltNetwork.Entities.Count() "+BoltNetwork.Entities.Count());
+        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,MapManager.Instance.spawnPointsPosition[BoltNetwork.Entities.Count()+1],Quaternion.Euler(0,90,0));
+        //     entity.TakeControl();
+        //     myEntity = entity;
+        //     var request = PlayerPositionRequest.Create(GlobalTargets.OnlyServer);
+        //     request.Request = true;
+        //     request.ToEntity = entity;
+        //     request.Send();
+        //     // print(Depug.Log("entity.Source "+entity.Source,Color.red));
+        //     // print(Depug.Log("entity.Source "+entity.Source.UserData,Color.red));
+        //     // BikePlayerObject playerObject = entity.Source.UserData as BikePlayerObject;
+        //     // var newPosition = MapManager.Instance.spawnPointsPosition[playerObject.index-1];
+        //     // entity.transform.SetPositionAndRotation(newPosition,Quaternion.Euler(0,90,0));
+        // }
     }
     public override void OnEvent(PlayerPositionRequest evnt){
         
@@ -64,9 +64,6 @@ public class GameCallback : GlobalEventListener
         var playerReadyEvent = PlayerReadyEvent.Create(GlobalTargets.OnlyServer);
         playerReadyEvent.Ready = true;
         playerReadyEvent.Send();
-    }
-    void ChangePlayerLine(){
-        
     }
     public override void OnEvent(PlayerReadyEvent evnt){
         Debug.Log("PlayerReadyEvent Receive");

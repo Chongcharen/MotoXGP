@@ -19,19 +19,26 @@ public class GameServerCallback : GlobalEventListener
         print(Depug.Log("GameServerCallback SceneLoadLocalDone ",Color.white));
         if(BoltNetwork.IsServer){
             var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
-            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
+            var entity = BoltNetwork.Instantiate(BoltPrefabs.Test_Sphere,positionPlayer,Quaternion.Euler(0,90,0));
+            entity.TakeControl();
+        }else{
+            var positionPlayer = MapManager.Instance.spawnPointsPosition[BoltNetwork.Entities.Count()+1];
+            var entity = BoltNetwork.Instantiate(BoltPrefabs.Test_Sphere,positionPlayer,Quaternion.Euler(0,90,0));
             entity.TakeControl();
         }
+            //entity.GetComponent<Rigidbody>().isKinematic = false;
+        
        
     }
     public override void SceneLoadRemoteDone(BoltConnection connection, IProtocolToken token){
         // print(Depug.Log("SceneLoadRemoteDone SceneLoadLocalDone "+BoltNetwork.IsClient,Color.white));
-         var player = BikePlayerRegistry.GetBikePlayer(connection);
-        // Debug.Log("Player ????? "+player);
-         if(player == null)return;
-         var position = MapManager.Instance.spawnPointsPosition[BikePlayerRegistry.GetBikePlayer(connection).index];
-         var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,position,Quaternion.Euler(0,90,0));
-             entity.AssignControl(connection);
+        //  var player = BikePlayerRegistry.GetBikePlayer(connection);
+        // // Debug.Log("Player ????? "+player);
+        //  if(player == null)return;
+        //  var position = MapManager.Instance.spawnPointsPosition[BikePlayerRegistry.GetBikePlayer(connection).index];
+        //  var entity = BoltNetwork.Instantiate(BoltPrefabs.Test_Sphere,position,Quaternion.Euler(0,90,0));
+        //      entity.AssignControl(connection);
+        //entity.GetComponent<Rigidbody>().isKinematic = false;
         //     VirtualPlayerCamera.Instantiate();
         //     VirtualPlayerCamera.instance.FollowTarget(entity.transform);
         //     VirtualPlayerCamera.instance.LookupTarget(entity.transform);

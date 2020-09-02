@@ -97,6 +97,11 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         wheels = new WheelComponent[2];
         wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.AxleFront,false,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0]);
         wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
+        GameCallback.OnGameReady.Subscribe(raceCountdown =>{
+            if(BoltNetwork.IsClient){
+                GetComponent<Rigidbody>().isKinematic = true;
+            }
+        }).AddTo(this);
     }
     private WheelComponent SetWheelComponent(Transform wheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting)
     {
@@ -157,7 +162,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     public override void Attached(){
         state.SetTransforms(state.Transform, transform);
-        //state.AddCallback("Rotation",()=>transform.rotation = state.Rotation);
+       // state.AddCallback("Rotation",()=>transform.rotation = state.Rotation);
     }
     public override void Detached(){
 
@@ -201,14 +206,30 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         BikePlayerCommand cmd = (BikePlayerCommand)command;
        
         if(resetState){
-            print(Depug.Log("resetState  "+resetState,Color.white));
+            // print(Depug.Log("resetState  "+resetState,Color.white));
+            // print(Depug.Log("cmd.Result.Position  "+cmd.Result.Position,Color.yellow));
+            // print(Depug.Log("cmd.Result.Rotation  "+cmd.Result.Rotation,Color.yellow));
+            // print(Depug.Log("cmd.Result.Velocity  "+cmd.Result.Velocity,Color.yellow));
+            // print(Depug.Log("cmd.Result.accel  "+cmd.Input.accel,Color.yellow));
+            //transform.position = cmd.Result.Position;
+            //transform.rotation = cmd.Result.Rotation;
+            //Rigidbody.velocity = cmd.Result.Velocity;
+            // accel = cmd.Input.accel;
+            // brake = cmd.Input.brake;
+            // jump = cmd.Input.jump;
+            // isLeft = cmd.Input.left;
+            // isRight = cmd.Input.right;
+            // UpdateWheel();
         }else{
             accel = cmd.Input.accel;
             brake = cmd.Input.brake;
             jump = cmd.Input.jump;
             isLeft = cmd.Input.left;
             isRight = cmd.Input.right;
-            UpdateWheel();
+           // UpdateWheel();
+            cmd.Result.Position = transform.position;
+            cmd.Result.Rotation = transform.rotation;
+            cmd.Result.Velocity = Rigidbody.velocity;
         }
     }
     void UpdateWheel(){

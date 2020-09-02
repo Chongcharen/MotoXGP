@@ -3687,25 +3687,25 @@
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeTransform, bolt.compiler",
             "PositionSelection": 6,
-            "RotationSelection": 14,
+            "RotationSelection": 2,
             "PositionCompression": [
               {
                 "MinValue": -1024,
                 "MaxValue": 1024,
-                "Accuracy": 0.01,
-                "Pack": 100.0,
-                "Read": 0.01,
+                "Accuracy": 0.1,
+                "Pack": 10.0,
+                "Read": 0.1,
                 "Shift": 1024.0,
-                "BitsRequired": 18
+                "BitsRequired": 15
               },
               {
                 "MinValue": -1024,
                 "MaxValue": 1024,
-                "Accuracy": 0.01,
-                "Pack": 100.0,
-                "Read": 0.01,
+                "Accuracy": 0.1,
+                "Pack": 10.0,
+                "Read": 0.1,
                 "Shift": 1024.0,
-                "BitsRequired": 18
+                "BitsRequired": 15
               },
               {
                 "MinValue": -1024,
@@ -3720,10 +3720,10 @@
             "RotationCompression": [
               {
                 "MaxValue": 360,
-                "Accuracy": 0.01,
-                "Pack": 100.0,
-                "Read": 0.01,
-                "BitsRequired": 16
+                "Accuracy": 0.1,
+                "Pack": 10.0,
+                "Read": 0.1,
+                "BitsRequired": 12
               },
               {
                 "MaxValue": 360,
@@ -3762,6 +3762,7 @@
         {
           "Name": "Rotation",
           "Enabled": true,
+          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
@@ -3802,6 +3803,7 @@
           },
           "AssetSettings": {
             "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
+            "SmoothingAlgorithm": 1,
             "ExtrapolationErrorTolerance": 0.25,
             "_ExtrapolationCorrectionFrames": 6,
             "ExtrapolationMaxFrames": 9,
@@ -4103,11 +4105,12 @@
         {
           "Name": "Position",
           "Enabled": true,
+          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeVector, bolt.compiler",
-            "Selection": 14,
+            "Selection": 6,
             "Compression": [
               {
                 "MinValue": -1024,
@@ -4139,7 +4142,56 @@
             ]
           },
           "AssetSettings": {
-            "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler"
+            "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler",
+            "SmoothCorrection": true,
+            "SnapMagnitude": 10.0
+          }
+        },
+        {
+          "Name": "Rotation",
+          "Enabled": true,
+          "Expanded": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeQuaternion, bolt.compiler",
+            "Selection": 2,
+            "EulerCompression": [
+              {
+                "MaxValue": 360,
+                "Accuracy": 1.0,
+                "Pack": 1.0,
+                "Read": 1.0,
+                "BitsRequired": 9
+              },
+              {
+                "MaxValue": 360,
+                "Accuracy": 1.0,
+                "Pack": 1.0,
+                "Read": 1.0,
+                "BitsRequired": 9
+              },
+              {
+                "MaxValue": 360,
+                "Accuracy": 1.0,
+                "Pack": 1.0,
+                "Read": 1.0,
+                "BitsRequired": 9
+              }
+            ],
+            "QuaternionCompression": {
+              "MinValue": -1,
+              "MaxValue": 1,
+              "Accuracy": 0.01,
+              "Pack": 100.0,
+              "Read": 0.01,
+              "Shift": 1.0,
+              "BitsRequired": 8
+            }
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyCommandSettings, bolt.compiler",
+            "SmoothCorrection": true
           }
         },
         {
@@ -4213,6 +4265,8 @@
         }
       ],
       "SmoothFrames": 30,
+      "EnableInputDeltaCompression": true,
+      "EnableResultDeltaCompression": true,
       "Properties": [],
       "Name": "BikePlayerCommand",
       "Guid": "146347b7-0e6e-4407-a290-97d8f384d0e8",

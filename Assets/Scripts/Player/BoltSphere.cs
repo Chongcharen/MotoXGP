@@ -35,15 +35,14 @@ public class BoltSphere : EntityBehaviour<IPlayerBikeState>
         PollKey();
         IBikePlayerCommandInput input = BikePlayerCommand.Create();
         input.accel = accel;
-        entity.QueueInput(input);
-        //UpdateTransform();
+        //entity.QueueInput(input);
+        UpdateTransform();
     }
     public override void MissingCommand(Command previous){
         
     }
     public override void ExecuteCommand(Command command, bool resetState){
         BikePlayerCommand cmd = (BikePlayerCommand)command;
-       
         if(resetState){
             // print(Depug.Log("resetState  "+resetState,Color.white));
             // print(Depug.Log("cmd .Accel  "+cmd.Input.accel,Color.yellow));
@@ -61,7 +60,8 @@ public class BoltSphere : EntityBehaviour<IPlayerBikeState>
             // isRight = cmd.Input.right;
             // UpdateWheel();
 
-            //transform.position = cmd.Result.Position;
+            transform.localPosition = cmd.Result.Position;
+            transform.localRotation = cmd.Result.Rotation;
             //transform.rotation = cmd.Result.Rotation;
             //playerState.position = cmd.Result.Position;
             //playerState.rotation = cmd.Result.Rotation;
@@ -87,6 +87,8 @@ public class BoltSphere : EntityBehaviour<IPlayerBikeState>
             
             //cmd.Result.Position = transform.position;
             //cmd.Result.Rotation = transform.rotation;
+            cmd.Result.Position = transform.localPosition;
+            cmd.Result.Rotation = transform.localRotation;
         }
         //UpdateTransform();
     }

@@ -8,6 +8,7 @@ using UniRx;
 [RequireComponent(typeof(Rigidbody))]
 public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 {
+    public static Subject<bool> OnControllGained = new Subject<bool>();
     #region Bike Property
     [Header("Body Setting")]
     
@@ -98,9 +99,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.AxleFront,false,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0]);
         wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
         GameCallback.OnGameReady.Subscribe(raceCountdown =>{
-            if(BoltNetwork.IsClient){
-                GetComponent<Rigidbody>().isKinematic = true;
-            }
+            // if(BoltNetwork.IsClient){
+            //     GetComponent<Rigidbody>().isKinematic = true;
+            // }
         }).AddTo(this);
     }
     private WheelComponent SetWheelComponent(Transform wheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting)
@@ -162,6 +163,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     public override void Attached(){
         state.SetTransforms(state.Transform, transform);
+        
+
        // state.AddCallback("Rotation",()=>transform.rotation = state.Rotation);
     }
     public override void Detached(){
@@ -169,6 +172,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     public override void ControlGained(){
         isControll = true;
+        GetComponent<Rigidbody>().isKinematic = false;
+        ragdollObject.gameObject.SetActive(true);
+        OnControllGained.OnNext(true);
         VirtualPlayerCamera.Instantiate();
         VirtualPlayerCamera.instance.FollowTarget(transform);
         VirtualPlayerCamera.instance.LookupTarget(transform);
@@ -179,7 +185,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             isReady = raceCountdown.RaceStart;
         }).AddTo(this);
     }
-    void FixedUpdate(){
+    void Update(){
         PollKey();
         //UpdateWheel();
     }
@@ -190,6 +196,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         jump = motorControl.isJump;
         isLeft = motorControl.isLeft;
         isRight = motorControl.isRight;
+        UpdateWheel();
     }
     public override void SimulateController(){
         PollKey();
@@ -226,11 +233,23 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             jump = cmd.Input.jump;
             isLeft = cmd.Input.left;
             isRight = cmd.Input.right;
-           // UpdateWheel();
-            cmd.Result.Position = transform.position;
-            cmd.Result.Rotation = transform.rotation;
-            cmd.Result.Velocity = Rigidbody.velocity;
+            UpdateWheel();
+            // cmd.Result.Position = transform.position;
+            // cmd.Result.Rotation = transform.rotation;
+            // cmd.Result.Velocity = Rigidbody.velocity;
         }
+    }
+    public override void MissingCommand(Command previous){
+        // BikePlayerCommand cmd = (BikePlayerCommand)previous;
+        // accel = cmd.Input.accel;
+        //     brake = cmd.Input.brake;
+        //     jump = cmd.Input.jump;
+        //     isLeft = cmd.Input.left;
+        //     isRight = cmd.Input.right;
+        //     UpdateWheel();
+        //     cmd.Result.Position = transform.position;
+        //     cmd.Result.Rotation = transform.rotation;
+        //     cmd.Result.Velocity = Rigidbody.velocity;
     }
     void UpdateWheel(){
         var indexWhell = 0;

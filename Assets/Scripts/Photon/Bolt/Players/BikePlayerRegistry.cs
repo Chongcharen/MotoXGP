@@ -66,6 +66,15 @@ public static class BikePlayerRegistry
 
         return (BikePlayerObject) connection.UserData;
     }
+    public static BikePlayerObject GetBikePlayer(BoltEntity entity)
+    {
+        if (entity.Source == null)
+        {
+            return ServerPlayer;
+        }
+
+        return (BikePlayerObject) entity.Source.UserData;
+    }
     public static void Dispose(){
        players.Clear();
     }

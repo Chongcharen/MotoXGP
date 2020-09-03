@@ -12,13 +12,17 @@ public class BoltSphere : EntityBehaviour<IPlayerBikeState>
     }
     public override void Attached(){
         Debug.Log("Sphere Attached");
-        state.SetTransforms(state.Transform, transform,transform);
+        state.SetTransforms(state.Transform, transform);
+        state.AddCallback("Transform",()=> transform.position = state.Transform.Position);
         controller = GetComponent<GameController>();
     }
     public override void ControlGained(){
         VirtualPlayerCamera.Instantiate();
         VirtualPlayerCamera.instance.FollowTarget(transform);
         VirtualPlayerCamera.instance.LookupTarget(transform);
+    }
+    void Update(){
+        PollKey();
     }
     void PollKey(){
         accel = controller.accelerator;
@@ -35,8 +39,11 @@ public class BoltSphere : EntityBehaviour<IPlayerBikeState>
         PollKey();
         IBikePlayerCommandInput input = BikePlayerCommand.Create();
         input.accel = accel;
-        //entity.QueueInput(input);
-        UpdateTransform();
+        entity.QueueInput(input);
+        //UpdateTransform();
+    }
+    public override void SimulateOwner(){
+        //UpdateTransform();
     }
     public override void MissingCommand(Command previous){
         
@@ -60,8 +67,8 @@ public class BoltSphere : EntityBehaviour<IPlayerBikeState>
             // isRight = cmd.Input.right;
             // UpdateWheel();
 
-            transform.localPosition = cmd.Result.Position;
-            transform.localRotation = cmd.Result.Rotation;
+           // transform.localPosition = cmd.Result.Position;
+            //transform.localRotation = cmd.Result.Rotation;
             //transform.rotation = cmd.Result.Rotation;
             //playerState.position = cmd.Result.Position;
             //playerState.rotation = cmd.Result.Rotation;
@@ -75,7 +82,7 @@ public class BoltSphere : EntityBehaviour<IPlayerBikeState>
             // if(entity.IsOwner){
             //     print(Depug.Log("UpdateTransform  "+resetState,Color.white));
             // }
-            UpdateTransform();
+            //UpdateTransform();
             // brake = cmd.Input.brake;
             // jump = cmd.Input.jump;
             // isLeft = cmd.Input.left;
@@ -87,6 +94,7 @@ public class BoltSphere : EntityBehaviour<IPlayerBikeState>
             
             //cmd.Result.Position = transform.position;
             //cmd.Result.Rotation = transform.rotation;
+            UpdateTransform();
             cmd.Result.Position = transform.localPosition;
             cmd.Result.Rotation = transform.localRotation;
         }
@@ -94,8 +102,8 @@ public class BoltSphere : EntityBehaviour<IPlayerBikeState>
     }
 
     void UpdateTransform(){
-        Debug.Log("UpdateTransform "+entity.NetworkId);
-        //transform.Translate(Vector3.forward*accel*Time.deltaTime);
-        GetComponent<Rigidbody>().AddTorque(-Vector3.forward*accel);
+        //Debug.Log("UpdateTransform "+entity.NetworkId);
+        transform.Translate(Vector3.forward*accel*2*BoltNetwork.FrameDeltaTime);
+        //GetComponent<Rigidbody>().AddTorque(-Vector3.forward*accel*2);
     }
 }

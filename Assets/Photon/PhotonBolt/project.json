@@ -3692,20 +3692,20 @@
               {
                 "MinValue": -1024,
                 "MaxValue": 1024,
-                "Accuracy": 0.1,
-                "Pack": 10.0,
-                "Read": 0.1,
+                "Accuracy": 0.01,
+                "Pack": 100.0,
+                "Read": 0.01,
                 "Shift": 1024.0,
-                "BitsRequired": 15
+                "BitsRequired": 18
               },
               {
                 "MinValue": -1024,
                 "MaxValue": 1024,
-                "Accuracy": 0.1,
-                "Pack": 10.0,
-                "Read": 0.1,
+                "Accuracy": 0.01,
+                "Pack": 100.0,
+                "Read": 0.01,
                 "Shift": 1024.0,
-                "BitsRequired": 15
+                "BitsRequired": 18
               },
               {
                 "MinValue": -1024,
@@ -3720,10 +3720,10 @@
             "RotationCompression": [
               {
                 "MaxValue": 360,
-                "Accuracy": 0.1,
-                "Pack": 10.0,
-                "Read": 0.1,
-                "BitsRequired": 12
+                "Accuracy": 0.01,
+                "Pack": 100.0,
+                "Read": 0.01,
+                "BitsRequired": 16
               },
               {
                 "MaxValue": 360,
@@ -4265,8 +4265,6 @@
         }
       ],
       "SmoothFrames": 30,
-      "EnableInputDeltaCompression": true,
-      "EnableResultDeltaCompression": true,
       "Properties": [],
       "Name": "BikePlayerCommand",
       "Guid": "146347b7-0e6e-4407-a290-97d8f384d0e8",
@@ -4432,6 +4430,44 @@
       ],
       "Name": "PlayerPositionRequest",
       "Guid": "d92ae37a-62b9-49c8-b91f-b74675b4b0cf",
+      "Groups": [
+        "samples"
+      ]
+    },
+    {
+      "$type": "Bolt.Compiler.EventDefinition, bolt.compiler",
+      "Properties": [
+        {
+          "Name": "TrankIndex",
+          "Enabled": true,
+          "Expanded": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeInteger, bolt.compiler",
+            "MaxValue": 255
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyEventSettings, bolt.compiler"
+          }
+        },
+        {
+          "Name": "ToNetworkId",
+          "Enabled": true,
+          "Expanded": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeNetworkId, bolt.compiler"
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyEventSettings, bolt.compiler"
+          }
+        }
+      ],
+      "GlobalSenders": 1,
+      "Name": "RaceTrackEvent",
+      "Guid": "cccd8638-79c9-4524-9190-20c76c0c1d5c",
       "Groups": [
         "samples"
       ]

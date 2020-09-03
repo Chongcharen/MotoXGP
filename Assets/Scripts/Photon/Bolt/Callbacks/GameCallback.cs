@@ -33,6 +33,35 @@ public class GameCallback : GlobalEventListener
         //     // var newPosition = MapManager.Instance.spawnPointsPosition[playerObject.index-1];
         //     // entity.transform.SetPositionAndRotation(newPosition,Quaternion.Euler(0,90,0));
         // }
+        if(BoltNetwork.IsServer){
+            var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
+            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
+            entity.TakeControl();
+        }else
+        {
+           
+        }
+    }
+    // public override void EntityAttached(BoltEntity entity){
+    //     if(BoltNetwork.IsServer){
+    //         var racetrackevent = RaceTrackEvent.Create()
+    //         racetrackevent.
+    //     }
+    // }
+    public override void SceneLoadRemoteDone(BoltConnection connection){
+        if(!BoltNetwork.IsServer)return;
+        var player = BikePlayerRegistry.GetBikePlayer(connection);
+        //BikePlayerRegistry
+        var raceTrackEvent = RaceTrackEvent.Create(connection);
+        raceTrackEvent.TrankIndex = player.index;
+        raceTrackEvent.Send();
+        //BoltNetwork.Connections.
+    }
+    public override void OnEvent(RaceTrackEvent evnt){
+        print(Depug.Log("RaceTrackEvent "+evnt.TrankIndex,Color.green));
+         var positionPlayer = MapManager.Instance.spawnPointsPosition[evnt.TrankIndex];
+            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
+            entity.TakeControl();
     }
     public override void OnEvent(PlayerPositionRequest evnt){
         
@@ -51,12 +80,6 @@ public class GameCallback : GlobalEventListener
             var newPosition = MapManager.Instance.spawnPointsPosition[evnt.Index];
             myEntity.transform.SetPositionAndRotation(newPosition,Quaternion.Euler(0,90,0));
         }
-    }
-    public override void SceneLoadRemoteDone(BoltConnection connection, IProtocolToken token){
-        // var bikePlayerObject = connection.UserData as BikePlayerObject;
-        // var positionPlayer = MapManager.Instance.spawnPointsPosition[bikePlayerObject.index];
-        // var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
-        //     entity.AssignControl(connection);
     }
     public override void ControlOfEntityGained(BoltEntity entity){
         print(Depug.Log("ControlOfEntityGained "+BikePlayerRegistry.AllPlayerReadys,Color.green));

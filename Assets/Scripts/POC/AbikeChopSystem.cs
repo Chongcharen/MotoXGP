@@ -47,6 +47,8 @@ public class AbikeChopSystem : MonoBehaviour
     public bool crash = false;
     bool[] isGround = new bool[2]{true,true};
     public bool isControll = false;
+    public bool isTesting = false;
+
     [Header ("Speed Setting")]
     public float speed;
 
@@ -150,6 +152,11 @@ public class AbikeChopSystem : MonoBehaviour
             // }).AddTo(this);
         }
         boostSystem = GetComponent<BoostSystem>();
+        if(isTesting){
+            SetController(true);
+            isControll = true;
+            startPosition = transform.position;
+        }
     }
 
     public void SetController(bool _isActive){
@@ -218,23 +225,42 @@ public class AbikeChopSystem : MonoBehaviour
     void RestartPosition(){
         Debug.Log("restartPosition");
         if(!isControll)return;
-        if(MapManager.Instance.isDeadzone)
-            respawnPosition = new Vector3(MapManager.Instance.respawnPosition.x,MapManager.Instance.respawnPosition.y,startPosition.z);
-        StopAllCoroutines();
-        transform.DOKill();
-        bikeSetting.MainBody.DOKill();
-        bikeSetting.MainBody.transform.DORotate(new Vector3(0,90,0),0);
-        transform.position = respawnPosition;
-        transform.rotation = Quaternion.Euler(0,90,0);
-        GetComponent<CenterOfMass>().Reset();
-        crash = false;
-        
-        objectDetecter.gameObject.SetActive(true);
-        OnReset.OnNext(default);
-        animator.enabled = true;
-        animator.gameObject.transform.localPosition = bikerStartPosition;
-        OnPlayerCrash.OnNext(crash);
-        StopMotor();
+        if(isTesting){
+            StopAllCoroutines();
+            transform.DOKill();
+            bikeSetting.MainBody.DOKill();
+            bikeSetting.MainBody.transform.DORotate(new Vector3(0,-90,0),0);
+            transform.position = respawnPosition;
+            transform.rotation = Quaternion.Euler(0,-90,0);
+            GetComponent<CenterOfMass>().Reset();
+            crash = false;
+            
+            objectDetecter.gameObject.SetActive(true);
+            OnReset.OnNext(default);
+            animator.enabled = true;
+            animator.gameObject.transform.localPosition = bikerStartPosition;
+            OnPlayerCrash.OnNext(crash);
+            StopMotor();
+        }else
+        {
+            if(MapManager.Instance.isDeadzone)
+                respawnPosition = new Vector3(MapManager.Instance.respawnPosition.x,MapManager.Instance.respawnPosition.y,startPosition.z);
+            StopAllCoroutines();
+            transform.DOKill();
+            bikeSetting.MainBody.DOKill();
+            bikeSetting.MainBody.transform.DORotate(new Vector3(0,90,0),0);
+            transform.position = respawnPosition;
+            transform.rotation = Quaternion.Euler(0,90,0);
+            GetComponent<CenterOfMass>().Reset();
+            crash = false;
+            
+            objectDetecter.gameObject.SetActive(true);
+            OnReset.OnNext(default);
+            animator.enabled = true;
+            animator.gameObject.transform.localPosition = bikerStartPosition;
+            OnPlayerCrash.OnNext(crash);
+            StopMotor();
+        }
     }
     void RestartPosition(Vector3 newPosition){
         

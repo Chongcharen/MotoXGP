@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using System.Linq;
 public class RagdollCollider : MonoBehaviour
 {
     // Start is called before the first frame update
     [SerializeField]Collider[] colliders;
+    List<Rigidbody> Rigidbodies = new List<Rigidbody>();
     [SerializeField]PhysicMaterial material;
     
     void Start()
     {
         SetRagdoll();
+        //EnableKinematic(false);
         CrashDetecter.OnCrash.Subscribe(_=>{
              foreach(Collider coll in colliders){
                 if(coll == null)continue;
@@ -41,6 +44,9 @@ public class RagdollCollider : MonoBehaviour
                 EnabledRagDolls(true);
              }
         });
+        BikeBoltSystem.OnControllGained.Subscribe(_=>{
+            EnableKinematic(_);
+        });
     }
     public void SetRagdoll(){
         colliders  = GetComponentsInChildren<Collider>();
@@ -54,12 +60,18 @@ public class RagdollCollider : MonoBehaviour
             rigidbody.drag = 0;
             rigidbody.angularDrag = 0;
             rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
+            Rigidbodies.Add(rigidbody);
         }
     }
     public void EnabledRagDolls(bool active){
         foreach(Collider coll in colliders){
             coll.enabled = active;
         }
+    }
+    public void EnableKinematic(bool active){
+        Debug.Log("EnableKinematic "+active);
+        //Rigidbodies.cas
+       // Rigidbodies.ForEach(r =>r.isKinematic = active);
     }
 
 }

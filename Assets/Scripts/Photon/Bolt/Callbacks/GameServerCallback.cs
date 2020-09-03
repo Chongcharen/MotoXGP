@@ -16,21 +16,29 @@ public class GameServerCallback : GlobalEventListener
         print(Depug.Log("GameServerCallback Awake "+BikePlayerRegistry.AllPlayers.Count(),Color.white));
     }
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){
-        print(Depug.Log("GameServerCallback SceneLoadLocalDone ",Color.white));
-        if(BoltNetwork.IsServer){
-            var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
-            var entity = BoltNetwork.Instantiate(BoltPrefabs.Test_Sphere,positionPlayer,Quaternion.Euler(0,90,0));
-            entity.TakeControl();
-        }else{
-            var positionPlayer = MapManager.Instance.spawnPointsPosition[BoltNetwork.Entities.Count()+1];
-            var entity = BoltNetwork.Instantiate(BoltPrefabs.Test_Sphere,positionPlayer,Quaternion.Euler(0,90,0));
-            entity.TakeControl();
-        }
+        // print(Depug.Log("GameServerCallback SceneLoadLocalDone ",Color.white));
+        // if(BoltNetwork.IsServer){
+        //     var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
+        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.Test_Sphere,positionPlayer,Quaternion.Euler(0,90,0));
+        //     entity.TakeControl();
+        // }else{
+        //     Debug.Log("BoltNetwork "+BoltNetwork.Entities.Count());
+            
+        // }
+        // var positionPlayer = MapManager.Instance.spawnPointsPosition[BoltNetwork.Entities.Count()+1];
+        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.Test_Sphere,positionPlayer,Quaternion.Euler(0,90,0));
+        //     entity.TakeControl();
             //entity.GetComponent<Rigidbody>().isKinematic = false;
         
        
     }
     public override void SceneLoadRemoteDone(BoltConnection connection, IProtocolToken token){
+        // var positionPlayer = MapManager.Instance.spawnPointsPosition[BoltNetwork.Entities.Count()+1];
+        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.Test_Sphere,positionPlayer,Quaternion.Euler(0,90,0));
+        //     entity.AssignControl(connection);
+
+    
+
         // print(Depug.Log("SceneLoadRemoteDone SceneLoadLocalDone "+BoltNetwork.IsClient,Color.white));
         //  var player = BikePlayerRegistry.GetBikePlayer(connection);
         // // Debug.Log("Player ????? "+player);

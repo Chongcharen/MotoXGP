@@ -44,6 +44,23 @@ public class RagdollCollider : MonoBehaviour
                 EnabledRagDolls(true);
              }
         });
+        BikeBoltSystem.OnReset.Subscribe(_=>{
+            foreach(Collider coll in colliders){
+                if(coll == null)continue;
+                EnabledRagDolls(false);
+
+                var rigidbody = coll.GetComponent<Rigidbody>();
+                rigidbody.mass = 0;
+                rigidbody.drag = 0;
+                rigidbody.angularDrag = 0;
+                rigidbody.velocity = Vector3.zero;
+                rigidbody.angularVelocity = Vector3.zero;
+                rigidbody.sleepThreshold = 0.005f;
+                rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
+                rigidbody.WakeUp();
+                EnabledRagDolls(true);
+             }
+        });
         BikeBoltSystem.OnControllGained.Subscribe(_=>{
             EnableKinematic(_);
         });

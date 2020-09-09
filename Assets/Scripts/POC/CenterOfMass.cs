@@ -69,7 +69,6 @@ public class CenterOfMass : MonoBehaviour
          //sphere.transform.localPosition = newMass;
          isLeft = gameController.isLeft;
          isRight = gameController.isRight;
-
          if(isLeft){
             currentMass = Mathf.Clamp(currentMass-massIncrease,-limit,limit);
             newMass = new Vector3(rigidbody.centerOfMass.x,rigidbody.centerOfMass.y,defaultMass.z+currentMass);

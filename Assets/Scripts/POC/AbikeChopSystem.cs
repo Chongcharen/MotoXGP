@@ -159,7 +159,7 @@ public class AbikeChopSystem : MonoBehaviour
         //biker_joint_obj.SetActive(_isActive);
         //ragdollCollider.EnabledRagDolls(_isActive);
         ragdollObject.SetActive(_isActive);
-       // RemoveEngine();
+       // RemoveEngine();startPosition
         if(_isActive){
             CrashDetecter.OnCrash.Subscribe(crashPosition=>{
                 crash = true;

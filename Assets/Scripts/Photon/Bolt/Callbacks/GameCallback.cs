@@ -12,27 +12,6 @@ public class GameCallback : GlobalEventListener
     public static Subject<RaceCountdown> OnGameReady = new Subject<RaceCountdown>();
     BoltEntity myEntity;
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){
-        // print(Depug.Log("GameCallback SceneLoadLocalDone "+BoltNetwork.IsClient,Color.white));
-        // if(BoltNetwork.IsServer){
-        //     var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
-        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
-        //     entity.TakeControl();
-        //     myEntity = entity;
-        // }else{
-        //     Debug.Log("BoltNetwork.Entities.Count() "+BoltNetwork.Entities.Count());
-        //     var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,MapManager.Instance.spawnPointsPosition[BoltNetwork.Entities.Count()+1],Quaternion.Euler(0,90,0));
-        //     entity.TakeControl();
-        //     myEntity = entity;
-        //     var request = PlayerPositionRequest.Create(GlobalTargets.OnlyServer);
-        //     request.Request = true;
-        //     request.ToEntity = entity;
-        //     request.Send();
-        //     // print(Depug.Log("entity.Source "+entity.Source,Color.red));
-        //     // print(Depug.Log("entity.Source "+entity.Source.UserData,Color.red));
-        //     // BikePlayerObject playerObject = entity.Source.UserData as BikePlayerObject;
-        //     // var newPosition = MapManager.Instance.spawnPointsPosition[playerObject.index-1];
-        //     // entity.transform.SetPositionAndRotation(newPosition,Quaternion.Euler(0,90,0));
-        // }
         if(BoltNetwork.IsServer){
             var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
             var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
@@ -42,12 +21,6 @@ public class GameCallback : GlobalEventListener
            
         }
     }
-    // public override void EntityAttached(BoltEntity entity){
-    //     if(BoltNetwork.IsServer){
-    //         var racetrackevent = RaceTrackEvent.Create()
-    //         racetrackevent.
-    //     }
-    // }
     public override void SceneLoadRemoteDone(BoltConnection connection){
         if(!BoltNetwork.IsServer)return;
         var player = BikePlayerRegistry.GetBikePlayer(connection);
@@ -55,7 +28,6 @@ public class GameCallback : GlobalEventListener
         var raceTrackEvent = RaceTrackEvent.Create(connection);
         raceTrackEvent.TrankIndex = player.index;
         raceTrackEvent.Send();
-        //BoltNetwork.Connections.
     }
     public override void OnEvent(RaceTrackEvent evnt){
         print(Depug.Log("RaceTrackEvent "+evnt.TrankIndex,Color.green));

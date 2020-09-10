@@ -405,7 +405,6 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                 wheels[1].collider.brakeTorque = 0;
                 wheels[0].collider.brakeTorque = 0;
                 OnBoostDelay.OnNext(boostDelay);
-                print(Depug.Log("Boost end "+isBoosting,Color.yellow));
             }
         }
     }

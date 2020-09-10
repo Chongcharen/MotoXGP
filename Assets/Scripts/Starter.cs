@@ -31,6 +31,8 @@ public class Starter : MonoBehaviour
     private void Start() {
         Debug.Log("aaaaaaaaaaabbbbb");
         Debug.Log("******************Initial******************");
+        GUIDebug.Instance.Init();
+        GUIDebug.Log("GUIDebug init");
         SceneFlow.Instance.StartScene();
         Application.targetFrameRate = 60;
         PhotonVoiceConsole.Instance.Init();
@@ -115,6 +117,7 @@ public class Starter : MonoBehaviour
         Debug.Log("CheckCompletedData ");
         Debug.Log("all sheet download "+loaderSheetData.All(data =>data.Value == true));
         OnNotification.OnNext("level data "+GameDataManager.Instance.GameLevelData);
+        //.OnNext("level data "+GameDataManager.Instance.GameLevelData.gameThemesData[0].gameStages.Count);
         if(loaderSheetData.ContainsKey(instanceID)){
             loaderSheetData[instanceID] = true;
         }

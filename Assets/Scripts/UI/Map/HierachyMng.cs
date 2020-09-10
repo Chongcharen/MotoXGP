@@ -108,10 +108,6 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
             roomProperties.CustomRoomPropertiesInLobby.Add(RoomOptionKey.MAP_STAGE);
             roomProperties.CustomRoomPropertiesInLobby.Add(RoomOptionKey.MAP_LEVEL);
             
-            Debug.Log("stage "+roomProperties[RoomOptionKey.MAP_THEME]);
-            Debug.Log("theme "+roomProperties[RoomOptionKey.MAP_STAGE]);
-            Debug.Log("level "+roomProperties[RoomOptionKey.MAP_LEVEL]);
-
             GameDataManager.Instance.SetUpGameLevel(themeIndex,currentFocusIndex,levelStar,System.Convert.ToInt32(input_nos.text));
             BoltLobbyNetwork.Instance.JoinRandomSession(roomProperties);
             PageManager.Instance.CloseMap();
@@ -164,6 +160,8 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         
     }
     void SetupMapChoose(){
+        GUIDebug.Log("SetupMapChoose state "+ GameDataManager.Instance.gameLevel.stage);
+        GUIDebug.Log("SetupMapChoose  theme count"+ GameDataManager.Instance.GameLevelData.gameThemesData.Count);
         m_fCurrentFocusIndex = GameDataManager.Instance.gameLevel.stage;
         switch(GameDataManager.Instance.gameLevel.theme){
             case 0:
@@ -195,18 +193,22 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
         Page.Clear();
     }
     void GenerateMapChoice(){
+         GUIDebug.Log("GenerateMapChoice");
         ClearPage();
         MapMockupData mapMockupData = new MapMockupData();
         mapMockupData.Generatedata();
-        var serialized = JsonConvert.SerializeObject(mapMockupData.choiceMockupData);
-
+        //var serialized = JsonConvert.SerializeObject(mapMockupData.choiceMockupData);
+        //JsonUtility.FromJson<GameLevelData>(jsonString);
+        //var serialized = JsonUtility.ToJson(mapMockupData.choiceMockupData);//JsonConvert.SerializeObject(mapMockupData.choiceMockupData);
         var themeData = GameDataManager.Instance.GameLevelData.gameThemesData[themeIndex];
         var texture_map = Resources.Load<Texture2D>("Image/Forest");
         var img_sprite = Sprite.Create(texture_map,new Rect(0,0,texture_map.width,texture_map.height),new Vector2(0.5f,0.5f));
+        GUIDebug.Log("themeData.gameStages.Count "+themeData.gameStages.Count);
         for (int i = 0; i < themeData.gameStages.Count; i++)
         {
             var go = Instantiate(mapSwipeObjectPrefab,Vector3.zero,Quaternion.identity,content);
             go.GetComponent<MapSwipeObjectPrefab>().Setup(themeData.gameStages[i],img_sprite);
+             GUIDebug.Log("go "+go.name);
             if(firstInit && i == GameDataManager.Instance.gameLevel.stage){
                 go.GetComponent<MapSwipeObjectPrefab>().SelectStar(GameDataManager.Instance.gameLevel.level);
                 firstInit = false;

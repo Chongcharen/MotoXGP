@@ -35,6 +35,8 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
         state.AddCallback("Avatar",()=>avatarURL = state.Avatar);
         state.AddCallback("Color",()=> playerColor = state.Color);
         state.AddCallback("Flag",()=> flag = state.Flag);
+        // check bike customtoken;
+        print(Depug.Log("Get token "+entity.AttachToken,Color.cyan));
     }
     public override void ControlGained(){
         print(Depug.Log("ControlGained",Color.cyan));

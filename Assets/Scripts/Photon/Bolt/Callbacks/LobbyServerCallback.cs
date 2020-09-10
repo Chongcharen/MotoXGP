@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Bolt;
 using System.Linq;
+using UdpKit;
+
 [BoltGlobalBehaviour(BoltNetworkModes.Server,SceneName.LOBBY)]
 public class LobbyServerCallback : GlobalEventListener{
     void Awake(){
@@ -18,6 +20,10 @@ public class LobbyServerCallback : GlobalEventListener{
             entity.AssignControl(bikePlayerObject.connection);
         }
     }
+    public override void ConnectRequest(UdpEndPoint endpoint, IProtocolToken token)
+        {
+           Debug.Log("Connectionrequest "+endpoint+ " token "+token);
+        }
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){
         print(Depug.Log("SceneLoadLocalDone ",Color.white));
     }
@@ -26,13 +32,21 @@ public class LobbyServerCallback : GlobalEventListener{
     }
     public override void SessionCreatedOrUpdated(UdpKit.UdpSession session){
         print(Depug.Log("----------SessionCreatedOrUpdated--------"+session,Color.blue));
-        var entity = BoltNetwork.Instantiate(BoltPrefabs.RoomPlayerInfo);//1
+
+        /// test protocol token only
+            var bikecustomToken = new ProtocolPlayerCustomize();
+            bikecustomToken.bike_body_id = 2;
+            bikecustomToken.bike_body_id =5;    
+        /// 
+        var entity = BoltNetwork.Instantiate(BoltPrefabs.RoomPlayerInfo,bikecustomToken);//1
         entity.TakeControl();
         print(Depug.Log("All players "+BikePlayerRegistry.AllPlayers.Count(),Color.blue));
          if(BoltNetwork.IsServer){
             var logEvent = LogEvent.Create(GlobalTargets.Everyone);
             logEvent.Message = "Server Take control!!!!!!";
             logEvent.Send();
+
+            //BoltNetwork.CreateStreamChannel()
         }
     }
     public override void BoltShutdownBegin(AddCallback registerDoneCallback, UdpKit.UdpConnectionDisconnectReason disconnectReason){

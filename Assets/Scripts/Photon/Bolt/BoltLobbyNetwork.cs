@@ -36,6 +36,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         print(Depug.Log("BoltStartBegin RegisterTokenClass",Color.blue));
         BoltNetwork.RegisterTokenClass<ProtocolRoomProperty>();
         BoltNetwork.RegisterTokenClass<Bolt.Photon.PhotonRoomProperties>();
+        BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
     }
 
     public void Connect(){
@@ -48,9 +49,33 @@ public class BoltLobbyNetwork : GlobalEventListener
         filter[RoomOptionKey.MAP_THEME] = GameDataManager.Instance.gameLevel.theme;
         filter[RoomOptionKey.MAP_STAGE] = GameDataManager.Instance.gameLevel.stage;
         filter[RoomOptionKey.MAP_LEVEL] = GameDataManager.Instance.gameLevel.level;
-        BoltMatchmaking.JoinRandomSession(filter);
+
+        var playerCustomize = new ProtocolPlayerCustomize();
+        playerCustomize.bike_body_id = 1;
+        playerCustomize.bike_texture_id = 1;
+
+        BoltMatchmaking.JoinRandomSession(filter,playerCustomize);
     }
-    
+    public override void StreamDataReceived(BoltConnection connection, UdpStreamData data)
+    {
+        base.StreamDataReceived(connection, data);
+        print(Depug.Log("StreamDataReceived "+data,Color.blue));
+    }
+    public override void StreamDataStarted(BoltConnection connection, UdpChannelName channel, ulong streamID)
+    {
+        base.StreamDataStarted(connection, channel, streamID);
+        print(Depug.Log("StreamDataStarted "+streamID,Color.blue));
+    }
+    public override void StreamDataProgress(BoltConnection connection, UdpChannelName channel, ulong streamID, float progress)
+    {
+        base.StreamDataProgress(connection, channel, streamID, progress);
+        print(Depug.Log("StreamDataProgress "+streamID,Color.blue));
+    }
+    public override void StreamDataAborted(BoltConnection connection, UdpChannelName channel, ulong streamID)
+    {
+        base.StreamDataAborted(connection, channel, streamID);
+        print(Depug.Log("StreamDataAborted "+streamID,Color.blue));
+    }
     public override void BoltStartDone(){
         if(connectionType == ConnectionType.Disconnect){
             connectionType = BoltNetwork.IsClient ? ConnectionType.Client : ConnectionType.Server;
@@ -81,8 +106,11 @@ public class BoltLobbyNetwork : GlobalEventListener
         //     roomtoken.IsVisible = true; // set if the room will be visible
         //     roomtoken.AddRoomProperty("t", 1); // custom property
         //     roomtoken.AddRoomProperty("m", 2); // cu
+        var playerCustom = new ProtocolPlayerCustomize();
+        playerCustom.bike_body_id = 2;
+        playerCustom.bike_texture_id = 2;
         BoltMatchmaking.CreateSession(
-            sessionID: matchName,token:customToken
+            sessionID: matchName,token:customToken,null,customToken
         );
     }
     

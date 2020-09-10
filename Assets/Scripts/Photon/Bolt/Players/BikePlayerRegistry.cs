@@ -13,6 +13,7 @@ public static class BikePlayerRegistry
       players.Add(player);
       if(player.connection != null){
         player.index = players.Count;
+        
         player.connection.UserData = player;
         playersReady.Add(connection.ConnectionId,false);
       }

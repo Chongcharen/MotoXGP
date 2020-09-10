@@ -16,18 +16,19 @@ public class GameCallback : GlobalEventListener
             var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
             var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
             entity.TakeControl();
-        }else
-        {
-           
         }
     }
     public override void SceneLoadRemoteDone(BoltConnection connection){
         if(!BoltNetwork.IsServer)return;
+        // var player = BikePlayerRegistry.GetBikePlayer(connection);
+        // //BikePlayerRegistry
+        // var raceTrackEvent = RaceTrackEvent.Create(connection);
+        // raceTrackEvent.TrankIndex = player.index;
+        // raceTrackEvent.Send();
         var player = BikePlayerRegistry.GetBikePlayer(connection);
-        //BikePlayerRegistry
-        var raceTrackEvent = RaceTrackEvent.Create(connection);
-        raceTrackEvent.TrankIndex = player.index;
-        raceTrackEvent.Send();
+        var positionPlayer = MapManager.Instance.spawnPointsPosition[0];
+        var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_POC,positionPlayer,Quaternion.Euler(0,90,0));
+        entity.AssignControl(connection);
     }
     public override void OnEvent(RaceTrackEvent evnt){
         print(Depug.Log("RaceTrackEvent "+evnt.TrankIndex,Color.green));
@@ -70,6 +71,7 @@ public class GameCallback : GlobalEventListener
             //Show countdown in log event!!!!
             CreateRaceCountdown(3);
         }
+    
     }
     
     void CreateRaceCountdown(int countTime){

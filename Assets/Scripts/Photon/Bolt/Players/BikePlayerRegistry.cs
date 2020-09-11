@@ -7,6 +7,7 @@ public static class BikePlayerRegistry
 
    public static List<BikePlayerObject> players = new List<BikePlayerObject>();
    public static Dictionary<uint,bool> playersReady = new Dictionary<uint, bool>();
+   public static Dictionary<uint,ProtocolPlayerCustomize> playersCustom = new Dictionary<uint, ProtocolPlayerCustomize>();
    static BikePlayerObject CreatePlayer(BoltConnection connection){
       BikePlayerObject player = new BikePlayerObject();
       player.connection = connection;

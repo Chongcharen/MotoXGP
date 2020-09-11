@@ -13,6 +13,7 @@ public class LobbyServerCallback : GlobalEventListener{
     }
     public override void Connected(BoltConnection connection){
         print(Depug.Log("LobbyServerCallback connection ",Color.white));
+        print(Depug.Log("LobbyServerCallback connection "+connection.AcceptToken,Color.white));
         var bikePlayerObject = BikePlayerRegistry.CreateClientPlayer(connection);
         print(Depug.Log("LobbyServerCallback connection "+bikePlayerObject,Color.white));
         if(bikePlayerObject.IsClient){

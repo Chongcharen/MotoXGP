@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Bolt;
@@ -109,9 +108,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     [SerializeField]Canvas canvas;
     [SerializeField]TextMeshProUGUI playerName_txt;
     #endregion
+    #region Bike Custom
+    BikeCustomize bikeCustomize;
+    #endregion  
+    ProtocolPlayerCustomize playerCustomize;
     void Awake(){
         Rigidbody = GetComponent<Rigidbody>();
-        
+        bikeCustomize = GetComponent<BikeCustomize>();
         wheels = new WheelComponent[2];
         wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.AxleFront,false,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0]);
         wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
@@ -120,6 +123,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             //     GetComponent<Rigidbody>().isKinematic = true;
             // }
         }).AddTo(this);
+       // Debug.Log("Token "+(ProtocolPlayerCustomize)entity.AttachToken);
     }
     
     
@@ -207,7 +211,15 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     
     #region  Bolt Network
     public override void Attached(){
+         //change bike model // Random // ต้องไปเอาจาก หน้า custom
+        state.PlayerCustomize.BikeId = Mathf.FloorToInt(Random.Range(1,6));
+        state.PlayerCustomize.BikeTextureId = Mathf.FloorToInt(Random.Range(1,9));
+        //
         state.SetTransforms(state.Transform, transform);
+        state.AddCallback("PlayerCustomize",()=>bikeCustomize.SetUpBike(state.PlayerCustomize));
+
+       
+
         startPosition = transform.position;
         respawnPosition = startPosition;
         bikerStartPosition = bikeSetting.bikerMan.transform.localPosition;
@@ -397,7 +409,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                 wheels[0].collider.brakeTorque = 3000;
                 isBoostDelay = true;
                 isBoosting = false;
-                Observable.Timer(TimeSpan.FromSeconds(boostDelay)).Subscribe(_=>{
+                Observable.Timer(System.TimeSpan.FromSeconds(boostDelay)).Subscribe(_=>{
                     isBoostDelay = false;
                 }).AddTo(this);
                 currentSpeedLimit = speedLimit;
@@ -408,7 +420,6 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
         }
     }
-
     #endregion
     
 
@@ -469,8 +480,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         //result.sphereCollider = wheel.gameObject.AddComponent<SphereCollider>();
 
         return result;
-
     }
-
     #endregion
+
+    #region AddCallback
+    #endregion
+
 }

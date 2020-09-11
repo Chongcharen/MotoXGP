@@ -6,50 +6,44 @@ using UnityEngine;
 using System.Linq;
 using Photon.Pun;
 
-[RequireComponent(typeof(PhotonView))]
-public class BikeCustomize : Photon.Pun.MonoBehaviourPun, IPunObservable{
+
+public class BikeCustomize : MonoBehaviour{
     GameObject body;
     public GameObject[] bikeBodys;
     [Range(1,9)]
     public int bodyTextureCount = 9;
-    public int randomBodyIndex;
-    public int randomTextureBodyIndex;
+
+    // index 
+    public int bikeId;
+    public int bikeTextureId;
 
     public bool firstTake;
 
     public string texturePath = "Bike/Texture";
     public void RandomBike(){
-        randomBodyIndex = Mathf.FloorToInt(Random.Range(1,bikeBodys.Length));
-        randomTextureBodyIndex = Mathf.FloorToInt(Random.Range(1,bodyTextureCount));
+        bikeId = Mathf.FloorToInt(Random.Range(1,bikeBodys.Length));
+        bikeTextureId = Mathf.FloorToInt(Random.Range(1,bodyTextureCount));
         ChangeBody();
     }
     void ChangeBody(){
         Debug.Log("--------------> changebody");
+        print(Depug.Log("ChangeBody "+bikeId+" texture "+bikeTextureId,Color.yellow));
         bikeBodys.FirstOrDefault(b => b.activeSelf == true).SetActive(false);
-        body = bikeBodys[randomBodyIndex].gameObject;
+        body = bikeBodys[bikeId].gameObject;
         body.gameObject.SetActive(true);
-        var bodyIndex = randomBodyIndex < 10 ? "0"+(randomBodyIndex+1).ToString() : (randomBodyIndex+1).ToString();
-        var textureIndex = randomTextureBodyIndex < 10 ? "0"+randomTextureBodyIndex.ToString() : randomTextureBodyIndex.ToString();
+        var bodyIndex = bikeId < 10 ? "0"+(bikeId+1).ToString() : (bikeId+1).ToString();
+        var textureIndex = bikeTextureId < 10 ? "0"+bikeTextureId.ToString() : bikeTextureId.ToString();
         var textureName = "B200CC_Body"+bodyIndex+"_"+textureIndex;
         var texture = Resources.Load<Texture>(Path.Combine(texturePath,textureName));
         Debug.Assert(texture != null,"Texture name "+textureName + "not found");
         body.GetComponent<Renderer>().material.mainTexture = texture;
     }
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if(stream.IsWriting){
-            stream.SendNext(randomBodyIndex);
-            stream.SendNext(randomTextureBodyIndex);
-        }else{  
-            if(!firstTake)return;
-            randomBodyIndex = (int)stream.ReceiveNext();
-            randomTextureBodyIndex = (int)stream.ReceiveNext();
-            firstTake = false;
-            ChangeBody();
-        }
+
+    public void SetUpBike(PlayerCustomize playerCustomize){
+        print(Depug.Log("SetupBike "+playerCustomize,Color.yellow));
+        bikeId = playerCustomize.BikeId;
+        bikeTextureId = playerCustomize.BikeTextureId;
+        ChangeBody();
     }
-    void OnEnable()
-        {
-            firstTake = true;
-        }
+
 }

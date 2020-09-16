@@ -8,7 +8,9 @@ using Bolt.Photon;
 using Bolt.Matchmaking;
 using UdpKit;
 using UniRx;
-
+using UdpKit.Platform.Photon;
+using Newtonsoft.Json;
+using Facebook.MiniJSON;
 public enum ConnectionType{
     Server,Client,ToCreateServer,ToClient,ToServer,Disconnect,Session
 }
@@ -37,6 +39,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         BoltNetwork.RegisterTokenClass<ProtocolRoomProperty>();
         BoltNetwork.RegisterTokenClass<Bolt.Photon.PhotonRoomProperties>();
         BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
+        BoltNetwork.RegisterTokenClass<PlayerProfileToken>();
     }
 
     public void Connect(){
@@ -50,11 +53,18 @@ public class BoltLobbyNetwork : GlobalEventListener
         filter[RoomOptionKey.MAP_STAGE] = GameDataManager.Instance.gameLevel.stage;
         filter[RoomOptionKey.MAP_LEVEL] = GameDataManager.Instance.gameLevel.level;
 
-        var playerCustomize = new ProtocolPlayerCustomize();
-        playerCustomize.bike_body_id = 1;
-        playerCustomize.bike_texture_id = 1;
+        // var playerCustomize = new ProtocolPlayerCustomize();//connectionToken
+        // playerCustomize.bike_body_id = 2;
+        // playerCustomize.bike_texture_id = 5;
 
-        BoltMatchmaking.JoinRandomSession(filter,playerCustomize);
+        var playerData = new PlayerProfileToken();
+        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
+        playerData.RandomBikeData();
+        BoltMatchmaking.JoinRandomSession(filter,playerData);
+    }
+    public void JoinSession(UdpKit.UdpSession session){
+
+        BoltMatchmaking.JoinSession(session);
     }
     public override void StreamDataReceived(BoltConnection connection, UdpStreamData data)
     {
@@ -98,6 +108,19 @@ public class BoltLobbyNetwork : GlobalEventListener
         customToken.AddRoomProperty(RoomOptionKey.MAP_THEME,GameDataManager.Instance.gameLevel.theme);
         customToken.AddRoomProperty(RoomOptionKey.MAP_STAGE,GameDataManager.Instance.gameLevel.stage);
         customToken.AddRoomProperty(RoomOptionKey.MAP_LEVEL,GameDataManager.Instance.gameLevel.level);
+        var playerProfiles = new Dictionary<int,PlayerProfileToken>();
+        //var json = JsonUtility.ToJson(playerProfiles);
+        var json = JsonConvert.SerializeObject(playerProfiles);
+        //var json = Json.Serialize(playerProfiles);
+        Debug.Log("json "+json);
+        customToken.AddRoomProperty(RoomOptionKey.PLAYERS_RANK,json);
+        customToken.IsOpen = true;
+        customToken.IsVisible = true;
+         foreach (var item in playerProfiles)
+        {
+            Debug.LogFormat("Key : {0} , Value : {1}",item.Key,item.Value);
+            GUIDebug.Log("Entity Attached !!!!!! 1111111 Key : "+item.Key+" , Value : "+item.Value);
+        }
         // customToken[RoomOptionKey.MAP_THEME] = GameDataManager.Instance.gameLevel.theme;
         // customToken[RoomOptionKey.MAP_STAGE] = GameDataManager.Instance.gameLevel.stage;
         // customToken[RoomOptionKey.MAP_LEVEL] = GameDataManager.Instance.gameLevel.level;
@@ -106,9 +129,15 @@ public class BoltLobbyNetwork : GlobalEventListener
         //     roomtoken.IsVisible = true; // set if the room will be visible
         //     roomtoken.AddRoomProperty("t", 1); // custom property
         //     roomtoken.AddRoomProperty("m", 2); // cu
-        var playerCustom = new ProtocolPlayerCustomize();
-        playerCustom.bike_body_id = 2;
-        playerCustom.bike_texture_id = 2;
+        // var playerCustom = new ProtocolPlayerCustomize(); // connectionToken 
+        // playerCustom.bike_body_id = 2;
+        // playerCustom.bike_texture_id = 3;
+
+        var playerData = new PlayerProfileToken();
+        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
+        playerData.RandomBikeData();
+
+        // token เป็น playerdata แล้ว join ห้องเดียวกันไมไ่ด้ งง
         BoltMatchmaking.CreateSession(
             sessionID: matchName,token:customToken,null,customToken
         );
@@ -135,10 +164,25 @@ public class BoltLobbyNetwork : GlobalEventListener
     }
     
     public override void SessionCreatedOrUpdated(UdpKit.UdpSession session){
-        // Debug.Log("----------SessionCreatedOrUpdated--------"+session);
+        Debug.Log("----------SessionCreatedOrUpdated--------"+session);
+        
         // var entity = BoltNetwork.Instantiate(BoltPrefabs.RoomPlayerInfo);//1
         // entity.TakeControl();//3
-        // print(Depug.Log("All players "+BikePlayerRegistry.AllPlayers.Count(),Color.blue));
+        print(Depug.Log("HostData "+session.HostData.Length,Color.blue));
+        print(Depug.Log("HostData "+session.HostObject,Color.blue));
+        
+        //print(Depug.Log("HostData "+ps.Properties.Count,Color.blue));
+
+        PhotonSession photonSession = BoltMatchmaking.CurrentSession as PhotonSession;
+        photonSession.Properties["t"] = "Bavaria";
+        foreach (var ss in photonSession.Properties) {
+            Debug.LogFormat("Key : {0} , Value : {1}",ss.Key,ss.Value);
+           // GUIDebug.Log("Key : "+ss.Key+" , Value : "+ss.Value);
+        }
+        // print(Depug.Log("LobbyServerCallback connection ",Color.white));
+        // print(Depug.Log("LobbyServerCallback Server "+BoltNetwork.Server,Color.white));
+        // print(Depug.Log("LobbyServerCallback ConnectToken "+BoltNetwork.Server.ConnectToken,Color.white));
+        // print(Depug.Log("LobbyServerCallback AcceptToken "+BoltNetwork.Server.AcceptToken,Color.white));
     }
     public override void EntityAttached(BoltEntity entity)
         {

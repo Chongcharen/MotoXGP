@@ -10,15 +10,23 @@ public class PlayerRankGameplay : MonoBehaviour
     [SerializeField]Image img_flagNation;
     [SerializeField]Image img_PlayerAvatar;
     [SerializeField]TextMeshProUGUI player_name_txt,player_time_txt;
-    PlayerIndexProfileData profileData;
+    //PlayerIndexProfileData profileData;
+    PlayerProfileToken profileData;
     PlayerProfileModel profileModel;
-    public void SetUp(PlayerIndexProfileData _data){
+    public void SetUp(PlayerProfileToken _data){
         profileData = _data;
-        Debug.Assert(!string.IsNullOrEmpty(profileData.profileModel));
-        profileModel = GameUtil.ConvertToPlayFabPlayerProfilemodel(profileData.profileModel);
+        Debug.Log("Setup "+_data);
+        GUIDebug.Log("--------------------->PlayerRankGameplay Setup 222222222 "+_data);
+        //Debug.Assert(!profileData.playerProfileModel);
+        //Debug.Log("profileData.playerBikeData.playerFinishTime "+profileData.playerBikeData.playerFinishTime);
+        profileModel = profileData.playerProfileModel;
         player_name_txt.text = profileModel.DisplayName;
-        Debug.Log(player_name_txt.text + "time "+profileData.playerFinishTime);
-        var TimeSpan = System.TimeSpan.FromTicks(System.Convert.ToInt64(profileData.playerFinishTime));
-        player_time_txt.text = TimeSpan.ToString(@"mm\:ss\:fff");
+        var TimeSpan = System.TimeSpan.FromTicks(System.Convert.ToInt64(profileData.playerBikeData.playerFinishTime));
+        var timeText = TimeSpan.ToString(@"mm\:ss\:fff");
+        if(!timeText.Equals("00:00:000")){
+            player_time_txt.text = timeText;
+        }else{
+            player_time_txt.text = "Driving";
+        }
     }
 }

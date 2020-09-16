@@ -10,7 +10,7 @@ public class GUIDebug : MonoSingleton<GUIDebug>
     GUIStyle style;
     GUIStyle messageStyle;
 
-    bool showGUI = false;
+    bool showGUI = true;
     public void Init(){
         style = new GUIStyle();
         style.fontSize = 15;

@@ -5,22 +5,27 @@ using System.Linq;
 public static class BikePlayerRegistry
 {
 
-   public static List<BikePlayerObject> players = new List<BikePlayerObject>();
-   public static Dictionary<uint,bool> playersReady = new Dictionary<uint, bool>();
-   public static Dictionary<uint,ProtocolPlayerCustomize> playersCustom = new Dictionary<uint, ProtocolPlayerCustomize>();
-   static BikePlayerObject CreatePlayer(BoltConnection connection){
+    public static List<BikePlayerObject> players = new List<BikePlayerObject>();
+    public static Dictionary<uint,bool> playersReady = new Dictionary<uint, bool>();
+
+    //public static Dictionary<>
+    static BikePlayerObject CreatePlayer(BoltConnection connection){
       BikePlayerObject player = new BikePlayerObject();
-      player.connection = connection;
+      player.connection = (connection == null) ? BoltNetwork.Server : connection;
       players.Add(player);
+
+        //Server Only
+
+        //Client
       if(player.connection != null){
-        player.index = players.Count;
         
+        player.index = players.Count;
         player.connection.UserData = player;
         playersReady.Add(connection.ConnectionId,false);
       }
       
       return player;
-   }
+    }
    public static void RemovePlayer(BoltConnection connection){
         var playerFinder = players.Find(p => p.connection == connection);
         if(playersReady.ContainsKey(connection.ConnectionId))

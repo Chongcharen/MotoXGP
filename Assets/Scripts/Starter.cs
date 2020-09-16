@@ -96,8 +96,8 @@ public class Starter : MonoBehaviour
         // Dictionary<string,object> gameleveldata = JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);
         // GameLevelData levelData = JsonConvert.DeserializeObject<GameLevelData>(jsonString);
 
-        Dictionary<string,object> gameleveldata = JsonUtility.FromJson<Dictionary<string,object>>(jsonString); //JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);
-        GameLevelData levelData = JsonUtility.FromJson<GameLevelData>(jsonString);//JsonConvert.DeserializeObject<GameLevelData>(jsonString);
+        Dictionary<string,object> gameleveldata = JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);//JsonUtility.FromJson<Dictionary<string,object>>(jsonString); //JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);
+        GameLevelData levelData = JsonConvert.DeserializeObject<GameLevelData>(jsonString);//JsonUtility.FromJson<GameLevelData>(jsonString);//JsonConvert.DeserializeObject<GameLevelData>(jsonString);
         GameDataManager.Instance.SetUpGameLeveldata(levelData);
 
         

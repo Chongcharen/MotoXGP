@@ -2,20 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
-using Photon.Realtime;
-using Photon.Pun;
-using ExitGames.Client.Photon;
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-public class UI_GameResult : MonoBehaviourPunCallbacks
+using UdpKit.Platform.Photon;
+using Bolt.Matchmaking;
+using ExitGames.Client.Photon;
+using Bolt;
+
+public class UI_GameResult : MonoBehaviour
 {
     [SerializeField]GameObject root;
     [SerializeField]List<PlayerRankGameplay> playerRanks;
     [SerializeField]Button b_leaveRoom;
     Dictionary<string,PlayerRankGameplay> playerRanksBinding;
     public List<PlayerIndexProfileData> playerDataSort = new List<PlayerIndexProfileData>();
+    void Awake(){
+        
+    }
     void Start(){
         GameplayManager.OnGameEnd.Subscribe(_=>{
             root.gameObject.SetActive(true);
@@ -25,36 +30,71 @@ public class UI_GameResult : MonoBehaviourPunCallbacks
             ObjectPool.Instance.Dispose();
             SceneManager.LoadScene(SceneName.LOBBY);
         }).AddTo(this);
+        // BikeBoltSystem.OnPlayerFinishLine.Subscribe(jsonData =>{
+        //     UpdatePlayerRanking(jsonData);
+        // }).AddTo(this);
+        // PhotonSession photonSession = BoltMatchmaking.CurrentSession as PhotonSession;
+        // photonSession.Properties.ObserveEveryValueChanged(p =>p).Subscribe(p =>{
+        //     GUIDebug.Log("--------------------->Properties Update !!!!!! "+p[RoomOptionKey.PLAYERS_RANK]);
+        //      print(Depug.Log("Properties "+p,Color.green));
+        //      UpdatePlayerRanking(p.ToString());
+        // }).AddTo(this);
+        GameCallback.OnPlayerRanksUpdate.Subscribe(BoltEnties =>{
+            //Debug.Log("Playerrankupdate "+jsonString);
+            UpdatePlayerRanking(BoltEnties);
+        }).AddTo(this);
+        GameCallback.OnplayerRankJsonUpdate.Subscribe(json =>{
+            UpdateJsonPlayerRanking(json);
+        }).AddTo(this);
     }
-    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged){
-        var roomProperties = PhotonNetwork.CurrentRoom.CustomProperties as Hashtable;
-        var playerIndexProperties = roomProperties[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
-        foreach (var property in propertiesThatChanged)
-        {
-            //Debug.Log(string.Format("key {0} value {1}",property.Key,property.Value));
-            if(!playerIndexProperties.ContainsKey(property.Key))return;
-            UpdatePlayerRanking(property.Value.ToString());
-        }
-    }
-    void UpdatePlayerRanking(string JSonprofileData){
-        
-        Debug.Log("UpdatePlayerRAnking " +JSonprofileData);
-        var playerIndexProfileData = JsonConvert.DeserializeObject<PlayerIndexProfileData>(JSonprofileData);
-        var findPlayer = playerDataSort.FirstOrDefault(p => p.userId == playerIndexProfileData.userId);
-        if(string.IsNullOrEmpty(playerIndexProfileData.playerFinishTime))return;
-        if(findPlayer == null){
-            Debug.Log("not findplayer "+playerIndexProfileData.nickName);
-            playerDataSort.Add(playerIndexProfileData);
-        }else{
-            Debug.Log("findPlayer "+findPlayer.nickName);
-            findPlayer = playerIndexProfileData;
-        }
-        Debug.Log("playerDataSort count "+playerDataSort.Count);
-        playerDataSort = playerDataSort.OrderBy(p => p.playerFinishTime).ToList();
-        for (int i = 0; i < playerDataSort.Count; i++)
+    void UpdateJsonPlayerRanking(string jsonData){
+        Debug.Log("UpdateJsonPlayerRanking : "+jsonData);
+        var playerProfilesDic = JsonConvert.DeserializeObject<Dictionary<int,PlayerProfileToken>>(jsonData); 
+        playerProfilesDic = playerProfilesDic.OrderByDescending(p =>p.Value.playerBikeData.playerFinishTime).ToDictionary(k => k.Key,v =>v.Value);
+        for (int i = 0; i < playerProfilesDic.Count; i++)
         {
             playerRanks[i].gameObject.SetActive(true);
-            playerRanks[i].SetUp(playerDataSort[i]);
+            playerRanks[i].SetUp(playerProfilesDic.ElementAt(i).Value);
         }
     }
+    void UpdatePlayerRanking(List<BoltEntity> entities){
+        //print(Depug.Log("-------------->UpdatePlayerRanking "+JSonprofileData,Color.green));
+        //GUIDebug.Log("--------------------->UpdatePlayerRanking 1111 "+JSonprofileData.ToString());
+        //var playerProfilesDic = JsonConvert.DeserializeObject<Dictionary<int,PlayerProfileToken>>(JSonprofileData); 
+        //var playerProfilesDic = Json.Deserialize(JSonprofileData) as Dictionary<int,PlayerProfileToken>;
+        var sort = entities.OrderByDescending(e => ((PlayerProfileToken)e.AttachToken).playerBikeData.playerFinishTime).ToList();
+        // playerProfilesDic = playerProfilesDic.OrderByDescending(p =>p.Value.playerBikeData.playerFinishTime).ToDictionary(k => k.Key,v =>v.Value);
+        // for (int i = 0; i < playerProfilesDic.Count; i++)
+        // {
+        //     playerRanks[i].gameObject.SetActive(true);
+        //     playerRanks[i].SetUp(playerProfilesDic.ElementAt(i).Value);
+        //     Debug.Log(playerProfilesDic.ElementAt(i));
+        // }
+        for (int i = 0; i < sort.Count; i++)
+        {
+            playerRanks[i].gameObject.SetActive(true);
+            playerRanks[i].SetUp(sort[i].AttachToken as PlayerProfileToken);
+        }
+    }
+    // void UpdatePlayerRanking(string JSonprofileData){
+        
+    //     Debug.Log("UpdatePlayerRAnking " +JSonprofileData);
+    //     var playerIndexProfileData = JsonConvert.DeserializeObject<PlayerIndexProfileData>(JSonprofileData);
+    //     var findPlayer = playerDataSort.FirstOrDefault(p => p.userId == playerIndexProfileData.userId);
+    //     if(string.IsNullOrEmpty(playerIndexProfileData.playerFinishTime))return;
+    //     if(findPlayer == null){
+    //         Debug.Log("not findplayer "+playerIndexProfileData.nickName);
+    //         playerDataSort.Add(playerIndexProfileData);
+    //     }else{
+    //         Debug.Log("findPlayer "+findPlayer.nickName);
+    //         findPlayer = playerIndexProfileData;
+    //     }
+    //     Debug.Log("playerDataSort count "+playerDataSort.Count);
+    //     playerDataSort = playerDataSort.OrderBy(p => p.playerFinishTime).ToList();
+    //     for (int i = 0; i < playerDataSort.Count; i++)
+    //     {
+    //         playerRanks[i].gameObject.SetActive(true);
+    //         playerRanks[i].SetUp(playerDataSort[i]);
+    //     }
+    // }
 }

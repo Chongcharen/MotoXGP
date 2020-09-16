@@ -1,10 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Bolt;
 using TMPro;
 using UniRx;
 using DG.Tweening;
+using UdpKit.Platform.Photon;
+using Bolt.Matchmaking;
+using Newtonsoft.Json;
+
 [RequireComponent(typeof(Rigidbody))]
 public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 {
@@ -14,7 +19,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public static Subject<bool> OnGrouned = new Subject<bool>();
 
     public static Subject<bool> OnPlayerCrash = new Subject<bool>();
-    
+
     public static Subject<bool> OnControllGained = new Subject<bool>();
     public static Subject<Unit> OnReset = new Subject<Unit>();
     #region Respawn
@@ -110,6 +115,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     #endregion
     #region Bike Custom
     BikeCustomize bikeCustomize;
+    public int runningTrack;
     #endregion  
     ProtocolPlayerCustomize playerCustomize;
     void Awake(){
@@ -123,6 +129,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             //     GetComponent<Rigidbody>().isKinematic = true;
             // }
         }).AddTo(this);
+        
        // Debug.Log("Token "+(ProtocolPlayerCustomize)entity.AttachToken);
     }
     
@@ -132,14 +139,52 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             isReady = raceCountdown.RaceStart;
         }).AddTo(this);
         CrashDetecter.OnCrash.Subscribe(crashPosition=>{
-                crash = true;
-                respawnPosition = new Vector3(crashPosition.x,crashPosition.y+2.5f,startPosition.z);
-                OnPlayerCrash.OnNext(crash);
-                OnCrash();
+                // crash = true;
+                // respawnPosition = new Vector3(crashPosition.x,crashPosition.y+2.5f,startPosition.z);
+                // OnPlayerCrash.OnNext(crash);
+                // OnCrash();
             }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
                 Rigidbody.AddForce(transform.forward* Rigidbody.mass*lower_gear_force,ForceMode.Impulse);
             }).AddTo(this);
+        CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
+            if(tuple.Item1 != gameObject.GetInstanceID())return;
+            crash = true;
+            respawnPosition = new Vector3(tuple.Item2.x,tuple.Item2.y+2.5f,startPosition.z);
+            OnPlayerCrash.OnNext(crash);
+            OnCrash();
+        });
+        GameplayManager.OnGameEnd.Subscribe(_=>{
+            isControll = false;
+            brake = true;
+        });
+        GameplayManager.OnPlayerFinishTime.Subscribe(time=>{
+            var token = entity.AttachToken as PlayerProfileToken;
+            token.playerBikeData.playerFinishTime = time;
+            PlayerRaceFinishEvent finishEvent = PlayerRaceFinishEvent.Create(GlobalTargets.Everyone);
+            finishEvent.Entity = entity;
+            finishEvent.FinishTime = time.ToString();
+            finishEvent.JsonToken = JsonConvert.SerializeObject(token);
+            finishEvent.Send();
+
+
+            // PhotonSession photonSession = BoltMatchmaking.CurrentSession as PhotonSession;
+            // var json = photonSession.Properties[RoomOptionKey.PLAYERS_RANK].ToString();
+            // var playerProfilesDic = JsonConvert.DeserializeObject<Dictionary<int,PlayerProfileToken>>(json);
+            // Debug.Log("name "+playerProfilesDic.ContainsKey(entity.GetInstanceID()));
+            // Debug.Log("playerProfilesDic.ContainsKey(entity.GetInstanceID()) "+playerProfilesDic.ContainsKey(entity.GetInstanceID()));
+            // if(!playerProfilesDic.ContainsKey(entity.GetInstanceID()))return;
+            // playerProfilesDic[entity.GetInstanceID()].playerBikeData.playerFinishTime = time;
+            // photonSession.Properties[RoomOptionKey.PLAYERS_RANK] = JsonConvert.SerializeObject(playerProfilesDic);
+            // PlayerRaceFinishEvent finishEvent = PlayerRaceFinishEvent.Create(GlobalTargets.Everyone);
+            // finishEvent.Entity = entity;
+            // finishEvent.Send();
+
+            //var event = PlayerRaceFinishEvent.Create();
+           // BoltMatchmaking.UpdateSession(photonSession.Properties as IProtocolToken);
+
+            //OnPlayerFinishLine.OnNext(JsonConvert.SerializeObject(playerProfilesDic));
+        });
     }
     void Update(){
         if(!isControll || !isReady)return;
@@ -212,22 +257,28 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     #region  Bolt Network
     public override void Attached(){
          //change bike model // Random // ต้องไปเอาจาก หน้า custom
-        state.PlayerCustomize.BikeId = Mathf.FloorToInt(Random.Range(1,6));
-        state.PlayerCustomize.BikeTextureId = Mathf.FloorToInt(Random.Range(1,9));
+        //state.PlayerCustomize.BikeId = Mathf.FloorToInt(Random.Range(1,6));
+        //state.PlayerCustomize.BikeTextureId = Mathf.FloorToInt(Random.Range(1,9));
         //
+        PlayerProfileToken token = entity.AttachToken as PlayerProfileToken;
+        if(entity.Source != null){
+            Debug.Log(entity.Source.ConnectToken);
+        }
         state.SetTransforms(state.Transform, transform);
-        state.AddCallback("PlayerCustomize",()=>bikeCustomize.SetUpBike(state.PlayerCustomize));
+        //state.AddCallback("PlayerCustomize",()=>bikeCustomize.SetUpBike(token.playerBikeData));
 
-       
-
+        bikeCustomize.SetUpBike(token.playerBikeData);
         startPosition = transform.position;
         respawnPosition = startPosition;
         bikerStartPosition = bikeSetting.bikerMan.transform.localPosition;
         currentSpeedLimit = speedLimit;
         boostSystem = GetComponent<BoostSystem>();
+
+        
     }
     public override void ControlGained(){
         isControll = true;
+        objectDetecter.SetActive(true);
         GetComponent<Rigidbody>().isKinematic = false;
         ragdollObject.gameObject.SetActive(true);
         OnControllGained.OnNext(true);
@@ -377,6 +428,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
         }
     }
+    
     #endregion
 
     #region  Boost NOS
@@ -485,5 +537,4 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 
     #region AddCallback
     #endregion
-
 }

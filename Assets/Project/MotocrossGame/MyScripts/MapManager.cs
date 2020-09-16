@@ -69,7 +69,7 @@ public class MapManager : MonoBehaviour {
         SetDeadZone();
         SetCameraZone();
         SubscribeEvent();
-        //GetComponent<UI_PlayersDistance>().enabled = true;
+        GetComponent<UI_PlayersDistance>().enabled = true;
         //GetComponent<GameNetwork>().enabled = true;
         //PhotonVoiceConsole.Instance.CreateVoiceView();
     }

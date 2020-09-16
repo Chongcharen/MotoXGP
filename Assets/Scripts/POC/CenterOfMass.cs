@@ -44,6 +44,10 @@ public class CenterOfMass : MonoBehaviour
             // newMass = new Vector3(rigidbody.centerOfMass.x,rigidbody.centerOfMass.y,defaultMass.z+currentMass);
         });
         CrashDetecter.OnCrash.Subscribe(_=>{
+            //OnCrash();
+        });
+        CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
+            if(this.gameObject.GetInstanceID() != tuple.Item1)return;
             OnCrash();
         });
 

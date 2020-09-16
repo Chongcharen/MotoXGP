@@ -39,10 +39,10 @@ public class BikeCustomize : MonoBehaviour{
         body.GetComponent<Renderer>().material.mainTexture = texture;
     }
 
-    public void SetUpBike(PlayerCustomize playerCustomize){
+    public void SetUpBike(PlayerBikeData playerCustomize){
         print(Depug.Log("SetupBike "+playerCustomize,Color.yellow));
-        bikeId = playerCustomize.BikeId;
-        bikeTextureId = playerCustomize.BikeTextureId;
+        bikeId = playerCustomize.bikeId;
+        bikeTextureId = playerCustomize.bikeTextureId;
         ChangeBody();
     }
 

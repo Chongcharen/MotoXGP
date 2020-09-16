@@ -36,7 +36,14 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
         state.AddCallback("Color",()=> playerColor = state.Color);
         state.AddCallback("Flag",()=> flag = state.Flag);
         // check bike customtoken;
-        print(Depug.Log("Get token "+entity.AttachToken,Color.cyan));
+        if(BoltNetwork.IsClient){
+            print(Depug.Log("Get token "+entity.AttachToken,Color.cyan));
+            print(Depug.Log("Get server connection "+BoltNetwork.Server,Color.cyan));
+            print(Depug.Log("Get server ConnectionId "+BoltNetwork.Server.ConnectionId,Color.cyan));
+            print(Depug.Log("Get server AcceptToken "+BoltNetwork.Server.AcceptToken,Color.cyan));
+            print(Depug.Log("Get server ConnectToken "+BoltNetwork.Server.ConnectToken,Color.cyan));
+        }
+
     }
     public override void ControlGained(){
         print(Depug.Log("ControlGained",Color.cyan));

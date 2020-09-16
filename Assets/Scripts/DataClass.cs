@@ -123,3 +123,12 @@ public class PhotonNetworkConfigData{
     public int serializationRate;
     public float keepAliveInBackground;
 }
+
+//PlayerData
+[System.Serializable]
+public class PlayerBikeData{
+    public int bikeId;
+    public int bikeTextureId;
+    public int runningTrack;
+    public long playerFinishTime;
+}

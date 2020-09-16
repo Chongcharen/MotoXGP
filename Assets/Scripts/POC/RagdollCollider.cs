@@ -9,13 +9,28 @@ public class RagdollCollider : MonoBehaviour
     [SerializeField]Collider[] colliders;
     List<Rigidbody> Rigidbodies = new List<Rigidbody>();
     [SerializeField]PhysicMaterial material;
-    
+    public GameObject rootObject;
     void Start()
     {
         SetRagdoll();
         //EnableKinematic(false);
         CrashDetecter.OnCrash.Subscribe(_=>{
-             foreach(Collider coll in colliders){
+            //  foreach(Collider coll in colliders){
+            //     if(coll == null)continue;
+            //     var rigidbody = coll.GetComponent<Rigidbody>();
+            //     rigidbody.mass = 50;
+            //     rigidbody.drag = 1f;
+            //     rigidbody.angularDrag = 0.05f;
+            //     rigidbody.velocity = Vector3.zero;
+            //     rigidbody.angularVelocity = Vector3.zero;
+            //     rigidbody.sleepThreshold = 0;
+            //     rigidbody.constraints = RigidbodyConstraints.FreezePositionZ|RigidbodyConstraints.FreezeRotationY;
+            //  }
+        });
+
+        CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
+            if(tuple.Item1 != rootObject.GetInstanceID())return;
+            foreach(Collider coll in colliders){
                 if(coll == null)continue;
                 var rigidbody = coll.GetComponent<Rigidbody>();
                 rigidbody.mass = 50;

@@ -45,6 +45,8 @@ public static class RoomOptionKey{
     public const string MAP_STAGE = "map_stage";
 
     public const string MAP_LEVEL = "map_level";
+
+    public const string PLAYERS_RANK = "players_rank";
     }
 public class RoomPropertyKeys{
     public const string PLAYER_INDEX = "player_index";

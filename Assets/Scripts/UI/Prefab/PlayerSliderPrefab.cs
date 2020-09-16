@@ -29,6 +29,10 @@ public class PlayerSliderPrefab : MonoBehaviourPunCallbacks
         img_pin.color = rankColor;
         baseColor = rankColor;
     }
+    public void SetUpData(Color rankColor){
+        img_pin.color = rankColor;
+        baseColor = rankColor;
+    }
     public void SetValue(float _vale){
         slider.value = _vale;
     }

@@ -9,6 +9,7 @@ using UniRx;
 public class UI_Gameplay : MonoBehaviour
 {
     [SerializeField]TextMeshProUGUI time_txt;
+    [SerializeField]TextMeshProUGUI speed_txt;
     bool stopTimer = true;
     bool isEnd = false;
     long playerTime;
@@ -25,6 +26,9 @@ public class UI_Gameplay : MonoBehaviour
         }).AddTo(this);
         GameplayManager.Instance.isStart.ObserveEveryValueChanged(s =>s.Value).Subscribe(start =>{
             stopTimer = !start;
+        }).AddTo(this);
+        BikeBoltSystem.OnShowSpeed.Subscribe(speed =>{
+            speed_txt.text = speed.ToString();
         }).AddTo(this);
     }
 

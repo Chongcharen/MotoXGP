@@ -21,6 +21,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public static Subject<bool> OnPlayerCrash = new Subject<bool>();
 
     public static Subject<bool> OnControllGained = new Subject<bool>();
+    public static Subject<int> OnShowSpeed = new Subject<int>();
     public static Subject<Unit> OnReset = new Subject<Unit>();
     #region Respawn
     public Vector3 startPosition;
@@ -124,13 +125,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         wheels = new WheelComponent[2];
         wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.AxleFront,false,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0]);
         wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
-        GameCallback.OnGameReady.Subscribe(raceCountdown =>{
-            // if(BoltNetwork.IsClient){
-            //     GetComponent<Rigidbody>().isKinematic = true;
-            // }
-        }).AddTo(this);
-        
-       // Debug.Log("Token "+(ProtocolPlayerCustomize)entity.AttachToken);
+
     }
     
     
@@ -138,12 +133,6 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         GameCallback.OnGameReady.Subscribe(raceCountdown =>{
             isReady = raceCountdown.RaceStart;
         }).AddTo(this);
-        CrashDetecter.OnCrash.Subscribe(crashPosition=>{
-                // crash = true;
-                // respawnPosition = new Vector3(crashPosition.x,crashPosition.y+2.5f,startPosition.z);
-                // OnPlayerCrash.OnNext(crash);
-                // OnCrash();
-            }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
                 Rigidbody.AddForce(transform.forward* Rigidbody.mass*lower_gear_force,ForceMode.Impulse);
             }).AddTo(this);
@@ -166,34 +155,22 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             finishEvent.FinishTime = time.ToString();
             finishEvent.JsonToken = JsonConvert.SerializeObject(token);
             finishEvent.Send();
-
-
-            // PhotonSession photonSession = BoltMatchmaking.CurrentSession as PhotonSession;
-            // var json = photonSession.Properties[RoomOptionKey.PLAYERS_RANK].ToString();
-            // var playerProfilesDic = JsonConvert.DeserializeObject<Dictionary<int,PlayerProfileToken>>(json);
-            // Debug.Log("name "+playerProfilesDic.ContainsKey(entity.GetInstanceID()));
-            // Debug.Log("playerProfilesDic.ContainsKey(entity.GetInstanceID()) "+playerProfilesDic.ContainsKey(entity.GetInstanceID()));
-            // if(!playerProfilesDic.ContainsKey(entity.GetInstanceID()))return;
-            // playerProfilesDic[entity.GetInstanceID()].playerBikeData.playerFinishTime = time;
-            // photonSession.Properties[RoomOptionKey.PLAYERS_RANK] = JsonConvert.SerializeObject(playerProfilesDic);
-            // PlayerRaceFinishEvent finishEvent = PlayerRaceFinishEvent.Create(GlobalTargets.Everyone);
-            // finishEvent.Entity = entity;
-            // finishEvent.Send();
-
-            //var event = PlayerRaceFinishEvent.Create();
-           // BoltMatchmaking.UpdateSession(photonSession.Properties as IProtocolToken);
-
-            //OnPlayerFinishLine.OnNext(JsonConvert.SerializeObject(playerProfilesDic));
         });
     }
     void Update(){
         if(!isControll || !isReady)return;
         PollKey();
+        UpdateWheel();
         BoostChecker();
         BoostUpdate();
         SetPlayerAnimator();
         UpdatePlayerRoll();
         CheckGround();
+        CheckSpeed();
+    }
+    void CheckSpeed(){
+        if(isControll)
+            OnShowSpeed.OnNext((int)speed);
     }
     
     
@@ -294,7 +271,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         jump = motorControl.isJump;
         isLeft = motorControl.isLeft;
         isRight = motorControl.isRight;
-        UpdateWheel();
+        
     }
     public override void SimulateController(){
         PollKey();
@@ -355,11 +332,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     #region  Bike Movement
     void UpdateWheel(){
         var indexWhell = 0;
+        speed = transform.InverseTransformDirection(Rigidbody.velocity).z * 3.6f;
         foreach(WheelComponent component in wheels){
             WheelHit hit;
             if(speed > currentSpeedLimit && !isBoosting){
                 speed = currentSpeedLimit;
             }
+            
             if(component.drive && grounded&&!brake){
                 if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
                     var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
@@ -369,7 +348,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                 }
             }
             if(component.drive && accel == 0){
-               // ReleaseTorque();
+                ReleaseTorque();
             }
 
 
@@ -405,8 +384,14 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             indexWhell++;
             
         }
+        Rigidbody.AddForce(-transform.forward * speed * downforce);
     }
-    
+    void ReleaseTorque(){
+        wheels[0].collider.motorTorque = 0;
+        wheels[1].collider.motorTorque = 0;
+        wheels[0].collider.brakeTorque = 2000;
+        wheels[1].collider.brakeTorque = 2000;
+    }
     void CheckGround(){
         if(grounded != (isGround[0] && isGround[1])){
             grounded = !grounded;
@@ -537,4 +522,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 
     #region AddCallback
     #endregion
+
+    void OnDestroy(){
+        
+    }
 }

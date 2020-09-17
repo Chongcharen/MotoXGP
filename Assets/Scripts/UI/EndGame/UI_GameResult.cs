@@ -26,22 +26,15 @@ public class UI_GameResult : MonoBehaviour
             root.gameObject.SetActive(true);
         }).AddTo(this);
         b_leaveRoom.OnClickAsObservable().Subscribe(_=>{
-            PhotonNetworkConsole.Instance.LeaveRoom();
+            //PhotonNetworkConsole.Instance.LeaveRoom();
+            //BoltMatchmaking.CurrentSession.
+            BoltLauncher.Shutdown();
             ObjectPool.Instance.Dispose();
             SceneManager.LoadScene(SceneName.LOBBY);
         }).AddTo(this);
-        // BikeBoltSystem.OnPlayerFinishLine.Subscribe(jsonData =>{
-        //     UpdatePlayerRanking(jsonData);
-        // }).AddTo(this);
-        // PhotonSession photonSession = BoltMatchmaking.CurrentSession as PhotonSession;
-        // photonSession.Properties.ObserveEveryValueChanged(p =>p).Subscribe(p =>{
-        //     GUIDebug.Log("--------------------->Properties Update !!!!!! "+p[RoomOptionKey.PLAYERS_RANK]);
-        //      print(Depug.Log("Properties "+p,Color.green));
-        //      UpdatePlayerRanking(p.ToString());
-        // }).AddTo(this);
-        GameCallback.OnPlayerRanksUpdate.Subscribe(BoltEnties =>{
-            //Debug.Log("Playerrankupdate "+jsonString);
-            UpdatePlayerRanking(BoltEnties);
+
+        GameCallback.OnPlayerRanksUpdate.Subscribe(BoltEntities =>{
+            UpdatePlayerRanking(BoltEntities);
         }).AddTo(this);
         GameCallback.OnplayerRankJsonUpdate.Subscribe(json =>{
             UpdateJsonPlayerRanking(json);

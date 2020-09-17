@@ -23,6 +23,11 @@ public class UI_Login : MonoBehaviour
         }
     }
     void Start(){
+        Debug.Log("BoltNetwork.IsConnected "+BoltNetwork.IsConnected);
+        if(BoltNetwork.IsConnected){
+            OpenLobby();
+            BoltLobbyNetwork.Instance.Connect();
+        }
         // b_connect.OnClickAsObservable().Subscribe(_=>{
         //     if(string.IsNullOrEmpty(input_name.text))return;
         //     PhotonNetworkConsole.Instance.Connect(input_name.text);
@@ -33,9 +38,7 @@ public class UI_Login : MonoBehaviour
         //         b_google_login.gameObject.SetActive(false);
         // });
         PhotonNetworkConsole.OnConnectedServer.Subscribe(connected =>{
-            if(root != null)
-                root.gameObject.SetActive(false);
-            PageManager.Instance.OpenLobby();
+            OpenLobby();
         });
         
         // b_google_login.OnClickAsObservable().Subscribe(_=>{
@@ -48,15 +51,16 @@ public class UI_Login : MonoBehaviour
             PlayFabController.Instance.LoginWithDeviceId();
         });
         PlayFabController.OnPlayFabLoginComplete.Subscribe(_=>{
-           // root.gameObject.SetActive(false);
-          // PhotonNetworkConsole.Instance.Connect(input_name.text);\
-          
-            //PhotonNetworkConsole.Instance.Connect();
             BoltLobbyNetwork.Instance.Connect();
         });
         PlayFabController.OnLogout.Subscribe(_=>{
             root.gameObject.SetActive(true);
         });
 
+    }
+    void OpenLobby(){
+        if(root != null)
+                root.gameObject.SetActive(false);
+            PageManager.Instance.OpenLobby();
     }
 }

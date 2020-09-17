@@ -334,7 +334,6 @@ public class AbikeChopSystem : MonoBehaviour
             isRight = motorControl.isRight;
 
             if(motorControl.isBoost&& boostLimit >0 && !isBoosting && !isBoostDelay){
-                
                 isBoosting = true; 
                 boostLimit -- ;    
                 currentSpeedLimit = boostSpeedLimit;
@@ -342,7 +341,6 @@ public class AbikeChopSystem : MonoBehaviour
                 OnBoostTime.OnNext(boostTimeLimit);
                 if(boostSystem != null)
                     boostSystem.StartBoostEffect(boostTimeLimit);
-                //myRigidbody.AddExplosionForce(explosionPower,explosionTransform.position,explosionRadius,1,ForceMode.Impulse);
                 if(grounded){
                     myRigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
                 }

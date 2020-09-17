@@ -84,5 +84,9 @@ public class GameDataManager : MonoSingleton<GameDataManager>
         //Debug.Assert(finder != null,"Mapdata not found in name "+_mapName);
         return finder;
     }
-    
+    void OnApplicationQuit(){
+        if(gameObject != null){
+            Destroy(gameObject);
+        }
+    }
 }

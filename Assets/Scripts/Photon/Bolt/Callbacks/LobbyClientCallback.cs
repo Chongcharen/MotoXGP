@@ -8,6 +8,16 @@ using UniRx;
 public class LobbyClientCallback : GlobalEventListener
 {
     public static Subject<Unit> OnJoinSession = new Subject<Unit>();
+    public static Subject<Unit> OnBoltStart = new Subject<Unit>();
+     public override void BoltStartBegin(){
+        //register protocolToken 
+        print(Depug.Log("BoltStartBegin RegisterTokenClass",Color.blue));
+        BoltNetwork.RegisterTokenClass<ProtocolRoomProperty>();
+        BoltNetwork.RegisterTokenClass<Bolt.Photon.PhotonRoomProperties>();
+        BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
+        BoltNetwork.RegisterTokenClass<PlayerProfileToken>();
+        OnBoltStart.OnNext(default);
+    }
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){
         // if(BoltNetwork.IsServer){
         //     var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer,new Vector3(22,1.5f,0),Quaternion.Euler(0,90,0));

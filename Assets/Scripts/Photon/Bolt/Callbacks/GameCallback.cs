@@ -224,4 +224,10 @@ public class GameCallback : GlobalEventListener
         base.SessionListUpdated(sessionList);
         Debug.Log("SessionListUpdated "+sessionList);
     }
+    public override void BoltShutdownBegin(AddCallback registerDoneCallback, UdpConnectionDisconnectReason disconnectReason)
+    {
+        base.BoltShutdownBegin(registerDoneCallback, disconnectReason);
+        Debug.Log("BoltShutdownBegin "+disconnectReason);
+        //BoltLauncher.StartClient();
+    }
 }

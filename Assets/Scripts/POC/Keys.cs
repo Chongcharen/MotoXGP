@@ -96,3 +96,9 @@ public static class SpreadSheetKeys{
     public const string HEADER_DATA = "Data";
     public const string HEADER_VALE = "Vale";
 }
+
+public static class PopupKeys{
+    public const string POPUP_BOLT_CONNECT = "popup_bolt_connect";
+    public const string PARAMETER_MESSAGE = "parameter_message";
+    public const string PARAMETER_POPUP_HEADER = "parameter_popup_header";
+}

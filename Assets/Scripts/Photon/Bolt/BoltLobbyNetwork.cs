@@ -44,6 +44,10 @@ public class BoltLobbyNetwork : GlobalEventListener
 
     public void Connect(){
         Debug.Log("Connect-++++++++++++++++++++");
+        var parameter = new Dictionary<string,object>();
+        parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Connect Server");
+        parameter.Add(PopupKeys.PARAMETER_MESSAGE,"Connect Client");
+        Popup_BoltConnect.Launch(parameter);
         BoltLauncher.StartClient();
     }
     public void JoinRandomSession(Bolt.Photon.PhotonRoomProperties roomProperties){
@@ -60,6 +64,9 @@ public class BoltLobbyNetwork : GlobalEventListener
         var playerData = new PlayerProfileToken();
         playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
         playerData.RandomBikeData();
+        Debug.Log("playerdata "+playerData.playerBikeData);
+        Debug.Log("model "+playerData.playerProfileModel);
+        Debug.Log("filter "+filter);
         BoltMatchmaking.JoinRandomSession(filter,playerData);
     }
     public void JoinSession(UdpKit.UdpSession session){

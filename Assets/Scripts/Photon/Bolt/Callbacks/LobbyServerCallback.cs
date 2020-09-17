@@ -4,12 +4,24 @@ using UnityEngine;
 using Bolt;
 using System.Linq;
 using UdpKit;
+using UniRx;
 
 [BoltGlobalBehaviour(SceneName.LOBBY)]
 public class LobbyServerCallback : GlobalEventListener{
+
+    public static Subject<Unit> OnBoltStart = new Subject<Unit>();
     void Awake(){
         print(Depug.Log("CreateServerPlayer ",Color.white));
         //BikePlayerRegistry.CreateServerPlayer();
+    }
+     public override void BoltStartBegin(){
+        //register protocolToken 
+        print(Depug.Log("BoltStartBegin RegisterTokenClass",Color.blue));
+        BoltNetwork.RegisterTokenClass<ProtocolRoomProperty>();
+        BoltNetwork.RegisterTokenClass<Bolt.Photon.PhotonRoomProperties>();
+        BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
+        BoltNetwork.RegisterTokenClass<PlayerProfileToken>();
+        OnBoltStart.OnNext(default);
     }
     public override void Connected(BoltConnection connection){
         if(!BoltNetwork.IsServer)return;

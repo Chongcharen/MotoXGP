@@ -57,7 +57,8 @@ public class GameHUD : MonoBehaviourPunCallbacks
         });
 
         b_back.OnClickAsObservable().Subscribe(_=>{
-            PhotonNetworkConsole.Instance.LeaveRoom();
+            //PhotonNetworkConsole.Instance.LeaveRoom();
+            BoltNetwork.Shutdown();
             ObjectPool.Instance.Dispose();
             SceneManager.LoadScene(SceneName.LOBBY);
         });

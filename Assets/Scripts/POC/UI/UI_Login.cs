@@ -24,9 +24,8 @@ public class UI_Login : MonoBehaviour
     }
     void Start(){
         Debug.Log("BoltNetwork.IsConnected "+BoltNetwork.IsConnected);
-        if(BoltNetwork.IsConnected){
+        if(PlayFabController.Instance.IsLogin){
             OpenLobby();
-            BoltLobbyNetwork.Instance.Connect();
         }
         // b_connect.OnClickAsObservable().Subscribe(_=>{
         //     if(string.IsNullOrEmpty(input_name.text))return;

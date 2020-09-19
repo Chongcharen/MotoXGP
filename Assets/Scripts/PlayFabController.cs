@@ -25,6 +25,7 @@ public class PlayFabController : MonoSingleton<PlayFabController>
     string entityId = string.Empty;
     string entityType = string.Empty;
     public string entityToken = string.Empty;
+    public bool IsLogin = false;
     LoginMode loginMode;
     public PlayerProfileModel playerProfileModel;
     void Start(){
@@ -94,6 +95,7 @@ public class PlayFabController : MonoSingleton<PlayFabController>
         entityId = result.EntityToken.Entity.Id;
         entityType = result.EntityToken.Entity.Type;
         entityToken = result.EntityToken.EntityToken;
+        
         Debug.Log("entityid "+entityId);
         Debug.Log("entityType "+entityType);
         Debug.Log("result playfab id "+result.PlayFabId);
@@ -230,6 +232,7 @@ public class PlayFabController : MonoSingleton<PlayFabController>
                 // Debug.Log("The player's AvatarUrl data is: " + result.PlayerProfile.AvatarUrl);
                 playerProfileModel = result.PlayerProfile;
                 PhotonNetwork.NickName = playerProfileModel.DisplayName;
+                IsLogin = true;
                 //Debug.Log("Change Nickname "+PhotonNetwork.NickName);
                 OnPlayFabLoginComplete.OnNext(default);
             },

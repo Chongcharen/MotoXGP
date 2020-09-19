@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 public class UI_lobby : MonoBehaviourPunCallbacks
 {
     [SerializeField]GameObject root;
-    [SerializeField]Button b_joinRandomRoom,b_mapviewer;
+    [SerializeField]Button b_joinRandomRoom,b_mapviewer,b_playerCustom;
     [SerializeField]Image[] bikeImages;
 
     [SerializeField]float[] bikeStartScale;
@@ -36,7 +36,11 @@ public class UI_lobby : MonoBehaviourPunCallbacks
         });
         b_mapviewer.OnClickAsObservable().Subscribe(_=>{
             SceneManager.LoadScene(SceneName.MAP_VIEWER);
-        });
+        }).AddTo(this);
+        b_playerCustom.OnClickAsObservable().Subscribe(_=>{
+            Debug.Log("BoltNetwork.IsConnected "+BoltNetwork.IsConnected);
+            SceneManager.LoadScene(SceneName.PLAYER_CUSTOM);
+        }).AddTo(this);
     }
     void StartBikeAnimation(){
        // Sequence sequence = DOTween.Sequence();

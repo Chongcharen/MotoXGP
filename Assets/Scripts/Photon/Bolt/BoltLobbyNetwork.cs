@@ -26,6 +26,7 @@ public class BoltLobbyNetwork : GlobalEventListener
             if(_instance == null){
                 var go = new GameObject("BoltSession",typeof(BoltLobbyNetwork));
                 _instance = go.GetComponent<BoltLobbyNetwork>();
+                DontDestroyOnLoad(go);
             }
             return _instance;
         }
@@ -273,4 +274,9 @@ public class BoltLobbyNetwork : GlobalEventListener
         Debug.Log("SessionCreationFailed ............"+session+" reason "+errorReason);
     }
     #endregion
+
+    public void Dispose(){
+        if(gameObject != null)
+            Destroy(gameObject);
+    }
 }

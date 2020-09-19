@@ -6,7 +6,7 @@ using System.Linq;
 using UdpKit;
 using UniRx;
 
-[BoltGlobalBehaviour(SceneName.LOBBY)]
+[BoltGlobalBehaviour(SceneName.LOBBY,SceneName.PLAYER_CUSTOM)]
 public class LobbyServerCallback : GlobalEventListener{
 
     public static Subject<Unit> OnBoltStart = new Subject<Unit>();

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Bolt;
 using UniRx;
-[BoltGlobalBehaviour(SceneName.LOBBY)]
+[BoltGlobalBehaviour(SceneName.LOBBY,SceneName.PLAYER_CUSTOM)]
 public class LobbyClientCallback : GlobalEventListener
 {
     public static Subject<Unit> OnJoinSession = new Subject<Unit>();

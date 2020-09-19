@@ -75,6 +75,7 @@ public static class SceneName{
     public const string LOBBY = "TestNetwork";
     public const string TEST_GENMAP = "MapGenerater";
     public const string MAP_VIEWER = "MapViewer";
+    public const string PLAYER_CUSTOM = "PlayerCustom";
 }
 public static class MapKeys{
     public const string Map_Name = "Map_Name";

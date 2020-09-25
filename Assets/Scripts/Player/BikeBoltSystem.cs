@@ -9,6 +9,7 @@ using DG.Tweening;
 using UdpKit.Platform.Photon;
 using Bolt.Matchmaking;
 using Newtonsoft.Json;
+using System.Linq;
 
 [RequireComponent(typeof(Rigidbody))]
 public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
@@ -142,11 +143,11 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             respawnPosition = new Vector3(tuple.Item2.x,tuple.Item2.y+2.5f,startPosition.z);
             OnPlayerCrash.OnNext(crash);
             OnCrash();
-        });
+        }).AddTo(this);
         GameplayManager.OnGameEnd.Subscribe(_=>{
             isControll = false;
             brake = true;
-        });
+        }).AddTo(this);
         GameplayManager.OnPlayerFinishTime.Subscribe(time=>{
             var token = entity.AttachToken as PlayerProfileToken;
             token.playerBikeData.playerFinishTime = time;
@@ -155,7 +156,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             finishEvent.FinishTime = time.ToString();
             finishEvent.JsonToken = JsonConvert.SerializeObject(token);
             finishEvent.Send();
-        });
+        }).AddTo(this);
     }
     void Update(){
         if(!isControll || !isReady)return;
@@ -350,7 +351,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             if(component.drive && accel == 0){
                 ReleaseTorque();
             }
-
+            
+            if(jump && isGround.Any(g => g == true)){
+                Rigidbody.AddForce((grounded ? new Vector3(0,1.5f,0f) : new Vector3(0,0.5f,0.5f))* Rigidbody.mass*forceJump);
+            }
 
             if(brake){
                 if(!component.drive)

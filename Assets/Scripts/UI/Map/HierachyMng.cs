@@ -85,8 +85,8 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
 
             if(string.IsNullOrEmpty(input_nos.text))
                 input_nos.text = "3";
-            levelStar = Page[currentFocusIndex].GetComponent<MapSwipeObjectPrefab>().GetStar;
-
+            levelStar = Page[currentFocusIndex].GetComponent<MapSwipeObjectPrefab>().GetStar+1;
+            print(Depug.Log("Level "+levelStar,Color.blue));
 
             // ExitGames.Client.Photon.Hashtable roomOptions = new ExitGames.Client.Photon.Hashtable();
             // roomOptions.Add(RoomOptionKey.MAP_THEME,themeIndex);

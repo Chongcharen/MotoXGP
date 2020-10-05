@@ -53,7 +53,7 @@ public class PitchZoom : MonoBehaviour
             Swipe();
         #else
             if(Input.touchCount >1){
-                UpdateZoom();
+                //UpdateZoom();
             }else
             {
                 previousDistance = 0;
@@ -67,11 +67,14 @@ public class PitchZoom : MonoBehaviour
             if(!isDragging){
                 startPosition = Input.mousePosition;
                 startSwipe = Time.time;
+            }else
+            {
+                TestDrag();
+                UpdatePitch();
             }
             isDragging = true;
             
-            TestDrag();
-            UpdatePitch();
+            
         }else if(Input.GetMouseButtonUp(0)){
             isDragging = false;
             mouseXSpeed = 0;
@@ -111,6 +114,7 @@ public class PitchZoom : MonoBehaviour
         
         mouseXSpeed = Input.GetAxis("Mouse X") * Time.fixedDeltaTime*dragSpeed;
         mouseYSpeed = Input.GetAxis("Mouse Y") * Time.fixedDeltaTime*dragSpeed;
+        //Debug.Log("X "+mouseXSpeed);
         CinemachineTransposer.m_FollowOffset.x = Mathf.Clamp(CinemachineTransposer.m_FollowOffset.x+mouseXSpeed,temp.x+rangeOffsetX.x,temp.x+rangeOffsetX.y);
         CinemachineTransposer.m_FollowOffset.y = Mathf.Clamp(CinemachineTransposer.m_FollowOffset.y+mouseYSpeed,temp.y+rangeOffsetY.x,temp.y+rangeOffsetY.y);
         //CinemachineTransposer.m_FollowOffset.z = Mathf.Clamp(pitchOffsetZ,temp.x-rangeOffsetZ.x,temp.x+rangeOffsetZ.y);

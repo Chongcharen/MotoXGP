@@ -4,10 +4,12 @@ using UnityEngine;
 using UniRx;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Cinemachine;
 public class UI_PlayerCustom : MonoBehaviour
 {
     [SerializeField]GameObject root;
     [SerializeField]Button b_back;
+    [SerializeField]CinemachineVirtualCamera virtualCamera;
 
     void Awake(){
         SceneFlow.Instance.StartScene();

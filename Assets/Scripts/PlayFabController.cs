@@ -104,7 +104,9 @@ public class PlayFabController : MonoSingleton<PlayFabController>
     }
     //request authenticate with photon before login complete
     private void RequestPhotonToken(LoginResult result) {
-        Debug.Log("RequestPhotontoken");
+        Debug.Log("RequestPhotontoken "+result.EntityToken);
+        Debug.Log("RequestPhotontoken "+result.PlayFabId);
+        Debug.Log("RequestPhotontoken "+result.SessionTicket);
         Debug.Log("newlycreated "+result.NewlyCreated);
 
         PlayFabId = result.PlayFabId;
@@ -122,6 +124,8 @@ public class PlayFabController : MonoSingleton<PlayFabController>
         
     }
     void GetPhotonAuthenticationToken(){
+        Debug.Log("GetPhotonAuthenticationToken");
+        Debug.Log("PhotonNetwork.PhotonServerSettings.AppSettings.AppIdRealtime ");
         PlayFabClientAPI.GetPhotonAuthenticationToken(new GetPhotonAuthenticationTokenRequest()
         {
             PhotonApplicationId = PhotonNetwork.PhotonServerSettings.AppSettings.AppIdRealtime

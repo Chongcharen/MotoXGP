@@ -10,6 +10,7 @@ public class GameDataManager : MonoSingleton<GameDataManager>
 {
     public List<MapLocationData> mapLocationDatas;
     public GameConfigData gameConfigData;
+    public EquipmentData equipmentData;
     GameLevelData gameLevelData;
     public GameLevel gameLevel; //level for choose map
     
@@ -45,8 +46,11 @@ public class GameDataManager : MonoSingleton<GameDataManager>
         mapLocationDatas = _data.ToList();
     }
     //gamelevel
-    public void SetUpGameLeveldata(GameLevelData _data){
+    public void SetupGameLeveldata(GameLevelData _data){
         gameLevelData = _data;
+    }
+    public void SetupEquipmentData(EquipmentData _data){
+        equipmentData = _data;
     }
     public GameLevelData GameLevelData{get{return gameLevelData;}}
     public string GetStageName(){

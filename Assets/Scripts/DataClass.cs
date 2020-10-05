@@ -132,3 +132,21 @@ public class PlayerBikeData{
     public int runningTrack;
     public long playerFinishTime;
 }
+[System.Serializable]
+public class PartEquipmentData{
+    public int id;
+    public string icon_name;
+    public string model_name;
+    public string texture_name;
+    public bool locked;
+}
+[System.Serializable]
+public class EquipmentData{
+    public Dictionary<string,List<PartEquipmentData>> data;
+}
+[System.Serializable]
+public struct EquipmentTrack{
+    public int id;
+    public string model_name;
+    public string texture_name;
+}

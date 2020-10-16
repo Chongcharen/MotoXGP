@@ -138,6 +138,7 @@ public class PartEquipmentData{
     public string icon_name;
     public string model_name;
     public string texture_name;
+    public int price;
     public bool locked;
 }
 [System.Serializable]

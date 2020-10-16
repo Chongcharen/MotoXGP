@@ -4,10 +4,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UniRx;
+using TMPro;
 public class EquipmentIconPrefab : MonoBehaviour
 {
     public static Subject<EquipmentTrack> OnEquipmentChanged = new Subject<EquipmentTrack>();
-    public Image img_icon;
+    public TextMeshProUGUI price_txt;
+    public Image img_icon,img_overlay,img_coin;
     public Toggle toggle;
     PartEquipmentData data;
     private void Start() {
@@ -16,6 +18,21 @@ public class EquipmentIconPrefab : MonoBehaviour
         // entry.eventID = EventTriggerType.PointerClick;
         // entry.callback.AddListener( (eventData) => { Foo(); } );
         // trigger.triggers.Add(entry);
+        
+    }
+    public void Setup(PartEquipmentData _data,ToggleGroup group){
+        data = _data;
+        toggle.group = group;
+        var atlasSprite = SpriteAtlasManager.Instance.GetAtlas("equipment_helmet");
+        img_icon.sprite = atlasSprite.GetSprite(data.icon_name);
+        if( _data.price > 0){
+            price_txt.text = _data.price.ToString();
+            img_overlay.enabled = true;
+            img_coin.enabled = true;
+        }else{
+            img_coin.enabled = false;
+            img_overlay.enabled = false;
+        }
         toggle.OnValueChangedAsObservable().Subscribe(_ =>{
             if(!_)return;
             var track = new EquipmentTrack();
@@ -24,13 +41,6 @@ public class EquipmentIconPrefab : MonoBehaviour
             track.texture_name = data.texture_name;
             OnEquipmentChanged.OnNext(track);
         }).AddTo(this);
-    }
-    public void Setup(PartEquipmentData _data,ToggleGroup group){
-        data = _data;
-        toggle.group = group;
-        var atlasSprite = SpriteAtlasManager.Instance.GetAtlas("equipment_helmet");
-        img_icon.sprite = atlasSprite.GetSprite(data.icon_name);
-
     }
 
    // public void OnSelect

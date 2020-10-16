@@ -43,7 +43,7 @@ public class BikeCustomize : MonoBehaviour{
         print(Depug.Log("SetupBike "+playerCustomize,Color.yellow));
         bikeId = playerCustomize.bikeId;
         bikeTextureId = playerCustomize.bikeTextureId;
-        ChangeBody();
+        //ChangeBody();
     }
 
 }

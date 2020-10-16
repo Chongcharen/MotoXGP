@@ -7,7 +7,6 @@ using UniRx;
 using System.Linq;
 using Cinemachine;
 using DG.Tweening;
-using System.Linq;
 public class UI_Equipment : MonoBehaviour
 {
     [SerializeField]Button b_clearScreen;

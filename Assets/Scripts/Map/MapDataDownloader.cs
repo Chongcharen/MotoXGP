@@ -56,7 +56,7 @@ public class MapDataDownloader : IDisposable
         var header = Regex.Split(lines[0], SPLIT_REX);
         for (int i = 0; i < lines.Length; i++)
             {
-                        Debug.Log(lines[i]);
+                        //Debug.Log(lines[i]);
             }
         var levelIndex = System.Array.FindIndex(header,(item) => {return item == headerKeys[0];});
         var mapPositionIndex = System.Array.FindIndex(header,(item)=>{return item == headerKeys[1]; });
@@ -75,17 +75,10 @@ public class MapDataDownloader : IDisposable
                 var posX = values[posXindex]; // place
                 var posY = values[posYindex]; // place
                 var posZ = values[posZindex]; // place
-                Debug.Log("Level "+level);
-                Debug.Log("mapStartPositon "+mapStartPositon);
-                 Debug.Log("objectTerrain "+objectTerrain);
-                Debug.Log("objectName "+objectName);
-                Debug.Log("posX "+posX);
-                Debug.Log("posY "+posY);
-                Debug.Log("posZ "+posZ);
                 if(!string.IsNullOrEmpty(level)){
                     targetMapLocationData = new MapLocationData();
                     targetMapLocationData.mapName = level;
-                    Debug.Log("Mapname "+targetMapLocationData.mapName);
+                   // Debug.Log("Mapname "+targetMapLocationData.mapName);
                     targetMapLocationData.startPositionDatas = new List<Vector3>();
                     targetMapLocationData.objectTerrainDatas = new List<ObjectLocationData>();
                     targetMapLocationData.objectLocationDatas = new List<ObjectLocationData>();
@@ -119,8 +112,8 @@ public class MapDataDownloader : IDisposable
                         Debug.LogError("can not found position in startPosition");
                     }else
                     {
-                        Debug.Log("Objectterrain ............");
-                        Debug.Log(string.Format("x {0} y {1} z {0}",posX,posY,posZ));
+                        // Debug.Log("Objectterrain ............");
+                        // Debug.Log(string.Format("x {0} y {1} z {0}",posX,posY,posZ));
                         var position = new Vector3(float.Parse(posX),float.Parse(posY),float.Parse(posZ));
                         var objectLocationData = new ObjectLocationData{prefabName = objectTerrain,position = position , rotation = Quaternion.identity};
                         targetMapLocationData.objectTerrainDatas.Add(objectLocationData);

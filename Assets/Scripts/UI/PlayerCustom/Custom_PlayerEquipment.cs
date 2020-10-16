@@ -9,10 +9,10 @@ public class Custom_PlayerEquipment : MonoBehaviour
         EquipmentIconPrefab.OnEquipmentChanged.Subscribe(tracked =>{
             Debug.Log("track id "+tracked.id);
             Debug.Log("model name "+tracked.model_name);
-            var model = Resources.Load(tracked.model_name) as GameObject;
+            var model = Resources.Load(tracked.model_name) as Mesh;
             var texture = Resources.Load(tracked.texture_name) as Texture;
             Debug.Log("Get model "+model);
-            skinnedMeshRenderers[tracked.id].sharedMesh = model.GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh;
+            skinnedMeshRenderers[tracked.id].sharedMesh = model;//model.GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh;
             skinnedMeshRenderers[tracked.id].material.mainTexture = texture;
         }).AddTo(this);
     }

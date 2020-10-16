@@ -58,6 +58,9 @@ public class Starter : MonoBehaviour
         mapDataDownloader = new MapDataDownloader();
         mapDataDownloader.Start();
         mapDataDownloader.downloadComplete += OnMapDownlodComplete;
+        print(Depug.Log("Loadcustomdata ",Color.blue));
+        
+
     }
 
     private void OnMapDownlodComplete(List<MapLocationData> mapLocationDataList)
@@ -68,8 +71,28 @@ public class Starter : MonoBehaviour
         mapDataDownloader.Dispose();
         mapDataDownloader = null;
         LoadLevelData();
-        LoadEquipmentData();
+        //LoadEquipmentData();
+        LoadGoogleEquipmentData();
         //SceneManager.LoadScene(SceneName.LOBBY);
+    }
+    void LoadGoogleEquipmentData(){
+        var customData = new CustomDataDownloader();
+        EquipmentData equipmentData = new EquipmentData();
+        equipmentData.data = new Dictionary<string, List<PartEquipmentData>>();
+        GameDataManager.Instance.SetupEquipmentData(equipmentData);
+        customData.Start();
+        customData.downloadComplete += jsonString =>{
+            Debug.Log("json "+jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            for (int i = 0; i < equipmentDataList.Count; i++)
+            {
+                Debug.Log(equipmentDataList[i].icon_name);
+            }
+            equipmentData.data.Add("helmet",equipmentDataList);
+        };
+        var jsonequipment = JsonConvert.SerializeObject(equipmentData);
+        Debug.Log("jsonequipment "+jsonequipment);
+        GameDataManager.Instance.SetupEquipmentData(equipmentData);
     }
     void LoadEquipmentData(){
         OnNotification.OnNext("Download LoadEquipmentData..");
@@ -77,32 +100,6 @@ public class Starter : MonoBehaviour
         var filePath = Path.Combine(Application.streamingAssetsPath,FilePath.GAME_EQUIPMENT_DATA);
         string jsonString = "";
         OnNotification.OnNext("jsonString "+filePath);
-        // if(Application.platform == RuntimePlatform.Android) //Need to extract file from apk first
-        // {
-        //     // WWW reader = new WWW(filePath);
-        //     // while (!reader.isDone) { }
-
-        //     // jsonString= reader.text;
-
-        //     UnityWebRequest webRequest = UnityWebRequest.Get(filePath);
-        //     var downloadHandler = new DownloadHandlerBuffer();
-        //     var ops = webRequest.SendWebRequest();
-        //     ops.completed += (AsyncOperation operation) => {
-        //         if(string.IsNullOrEmpty(downloadHandler.text))return;
-        //         JsonSerializerSettings settings = new JsonSerializerSettings();
-        //                 settings.NullValueHandling = NullValueHandling.Ignore;
-        //         jsonString = downloadHandler.text;
-        //         // var response = JsonConvert.DeserializeObject<EquipmentData>(downloadHandler.text,settings);
-        //         // if(response != null){
-        //         //     Debug.Log("response "+response.data);
-        //         // }
-        //     };
-            
-        // }
-        // else
-        // {
-        //     jsonString= GameUtil.GetTextFromFile(filePath);
-        // }
          if(Application.platform == RuntimePlatform.Android) //Need to extract file from apk first
         {
             WWW reader = new WWW(filePath);
@@ -115,36 +112,14 @@ public class Starter : MonoBehaviour
             jsonString= GameUtil.GetTextFromFile(filePath);
         }
 
-        Debug.Log(jsonString);
+        Debug.Log("equipmentdata "+jsonString);
         EquipmentData equipmentData = JsonConvert.DeserializeObject<EquipmentData>(jsonString);
         GameDataManager.Instance.SetupEquipmentData(equipmentData);
-
-        //Debug.Log("equipmentData "+GameDataManager.Instance.equipmentData.data)
         Debug.Log("COUJT "+GameDataManager.Instance.equipmentData.data.Count);
         foreach (var item in GameDataManager.Instance.equipmentData.data)
         {
             Debug.Log(item.Key);
-            foreach (var itemData in item.Value)
-            {
-                Debug.Log(itemData.id);
-                Debug.Log(itemData.locked);
-            }
         }
-        //OnNotification.OnNext(path);
-        //var jsonData = GameUtil.GetTextFromFile(path);
-        // OnNotification.OnNext("jsonString .."+jsonString);
-        // Debug.Log(jsonString);
-        
-        // // Dictionary<string,object> gameleveldata = JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);
-        // // GameLevelData levelData = JsonConvert.DeserializeObject<GameLevelData>(jsonString);
-
-        // Dictionary<string,object> gameleveldata = JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);//JsonUtility.FromJson<Dictionary<string,object>>(jsonString); //JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);
-        // GameLevelData levelData = JsonConvert.DeserializeObject<GameLevelData>(jsonString);//JsonUtility.FromJson<GameLevelData>(jsonString);//JsonConvert.DeserializeObject<GameLevelData>(jsonString);
-        // GameDataManager.Instance.SetUpGameLeveldata(levelData);
-
-        
-        // OnNotification.OnNext("LevelData download complete prepareTo Login");
-        // CheckCopmpletedData(-1);
     }
 
     void LoadLevelData(){

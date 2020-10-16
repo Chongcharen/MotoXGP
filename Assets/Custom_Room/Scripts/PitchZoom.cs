@@ -81,10 +81,10 @@ public class PitchZoom : MonoBehaviour
             mouseYSpeed = 0;
             endPosition = Input.mousePosition;
             swipeTime = Time.time - startSwipe;
-            if(swipeTime < maxSwipeTime){
-                Debug.Log("swipeTime "+swipeTime);
-                Debug.Log("This is swipe");
-            }
+            // if(swipeTime < maxSwipeTime){
+            //     Debug.Log("swipeTime "+swipeTime);
+            //     Debug.Log("This is swipe");
+            // }
         }
     }
     void UpdateZoom(){

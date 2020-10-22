@@ -12,10 +12,11 @@ public class CustomDataDownloader : IDisposable
     public event OnDownloadComplete downloadComplete;
     public string documentKey = "1sxH20vXha8_DsUIoTR9m4-NchUrVatE_92oyVIzotAA";
     public string addressView = "https://docs.google.com/spreadsheets/d/";
-    public string viewFormat = "/edit#gid=0";
+    public string viewFormat = "/edit#gid=";
     public string addressExport = "https://docs.google.com/feeds/download/spreadsheets/Export?key=";  
-    public string exportFormat = "&exportFormat=csv&gid=0";
-
+    public string exportFormat = "&exportFormat=csv&gid=";
+    public string gid = "0";
+    //https://docs.google.com/feeds/download/spreadsheets/Export?key=1sxH20vXha8_DsUIoTR9m4-NchUrVatE_92oyVIzotAA&exportFormat=csv&gid=0
     //https://docs.google.com/spreadsheets/d/1sxH20vXha8_DsUIoTR9m4-NchUrVatE_92oyVIzotAA/edit?usp=sharing
 
     string spreadsheetDownloadUrl = "";
@@ -28,7 +29,11 @@ public class CustomDataDownloader : IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+    }
+    public CustomDataDownloader(string spreadSheetKey,string _gid){
+        documentKey = spreadSheetKey;
+        gid = _gid;
     }
     public void Start(){
         Download(null);
@@ -37,9 +42,9 @@ public class CustomDataDownloader : IDisposable
 
            // headerKeys = _headerKeys.ToArray();
             //headerIndexs = new int[headerKeys.Length];
-            spreadsheetDownloadUrl = addressExport+documentKey+exportFormat;
-            spreadsheetViewUrl = addressView+documentKey+viewFormat;
-            Debug.Log("spreadsheetDownloadUrl "+spreadsheetDownloadUrl);
+            spreadsheetDownloadUrl = addressExport+documentKey+exportFormat+gid;
+            spreadsheetViewUrl = addressView+documentKey+viewFormat+gid;
+            
             var downloadHandler = new DownloadHandlerBuffer();
             var webRequest = new UnityWebRequest(spreadsheetDownloadUrl, "GET", downloadHandler, null);
             var ops = webRequest.SendWebRequest();

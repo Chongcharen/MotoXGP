@@ -76,7 +76,11 @@ public class Starter : MonoBehaviour
         //SceneManager.LoadScene(SceneName.LOBBY);
     }
     void LoadGoogleEquipmentData(){
-        var customData = new CustomDataDownloader();
+        var customData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_HELMET);
+        var suitData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_SUIT);
+        var gloveData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_GLOVE);
+        var bootData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BOOT);
+       // Depug.Log("spreadsheetDownloadUrl "+spreadsheetDownloadUrl,Color.green);
         EquipmentData equipmentData = new EquipmentData();
         equipmentData.data = new Dictionary<string, List<PartEquipmentData>>();
         GameDataManager.Instance.SetupEquipmentData(equipmentData);
@@ -88,11 +92,51 @@ public class Starter : MonoBehaviour
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
-            equipmentData.data.Add("helmet",equipmentDataList);
+            equipmentData.data.Add(EquipmentKeys.HELMET,equipmentDataList);
+            suitData.Start();
+            customData.Dispose();
+            
         };
-        var jsonequipment = JsonConvert.SerializeObject(equipmentData);
-        Debug.Log("jsonequipment "+jsonequipment);
-        GameDataManager.Instance.SetupEquipmentData(equipmentData);
+       
+        suitData.downloadComplete += jsonString =>{
+            
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            for (int i = 0; i < equipmentDataList.Count; i++)
+            {
+                Debug.Log(equipmentDataList[i].icon_name);
+            }
+            equipmentData.data.Add(EquipmentKeys.SUIT,equipmentDataList);
+            gloveData.Start();
+            suitData.Dispose();
+        };
+        gloveData.downloadComplete += jsonString =>{
+            Debug.Log("gloveData json "+jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            for (int i = 0; i < equipmentDataList.Count; i++)
+            {
+                Debug.Log(equipmentDataList[i].icon_name);
+            }
+            equipmentData.data.Add(EquipmentKeys.GLOVE,equipmentDataList);
+            bootData.Start();
+            gloveData.Dispose();
+        };
+        bootData.downloadComplete += jsonString =>{
+            Debug.Log("gloveData json "+jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            for (int i = 0; i < equipmentDataList.Count; i++)
+            {
+                Debug.Log(equipmentDataList[i].icon_name);
+            }
+            equipmentData.data.Add(EquipmentKeys.Boot,equipmentDataList);
+            bootData.Dispose();
+
+            var jsonequipment = JsonConvert.SerializeObject(equipmentData);
+            Debug.Log("jsonequipment "+jsonequipment);
+            GameDataManager.Instance.SetupEquipmentData(equipmentData);
+        };
+        
+        
+       
     }
     void LoadEquipmentData(){
         OnNotification.OnNext("Download LoadEquipmentData..");

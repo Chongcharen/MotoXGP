@@ -11,8 +11,12 @@ public class UI_Equipment : MonoBehaviour
 {
     [SerializeField]Button b_clearScreen;
     [SerializeField]GameObject equipment_window;
+    [SerializeField]GridLayoutGroup layoutGroup;
+    public Vector2 suit_layout;
+    public Vector2 standard_layout;
     [SerializeField]Transform equipment_content;
     [SerializeField]GameObject equipment_prefab;
+    [SerializeField]GameObject equipment_suit_prefab;
     [SerializeField]CinemachineVirtualCamera virtualCamera;
     [SerializeField]GameObject[] ui_panels;
     [SerializeField]Transform character_object;
@@ -25,6 +29,7 @@ public class UI_Equipment : MonoBehaviour
     public ToggleGroup equipment_toggle_group;
     int equipmentIndex=-1;
     bool isClearScreen = false;
+    string equipmentKey = "";
 
     void Start(){
 
@@ -70,6 +75,7 @@ public class UI_Equipment : MonoBehaviour
                 equipment_window.SetActive(_);
                 equipmentIndex = index;
                 var equipmentElement = GameDataManager.Instance.equipmentData.data.ElementAtOrDefault(equipmentIndex);
+
                 SetupEquipmentWindow(equipmentElement);
                 // Debug.Log("equipmentElement "+equipmentElement);
                 // Debug.Log("equipmentElement Key"+equipmentElement.Key);
@@ -80,12 +86,18 @@ public class UI_Equipment : MonoBehaviour
 
         void SetupEquipmentWindow(KeyValuePair<string,List<PartEquipmentData>> equipmentData){
             ClearEquipmentWindow();
-            Debug.Log("start Instantiate");
+            Debug.Log("equipmentData Key "+equipmentData.Key);
+            if(equipmentIndex == 1)
+                    layoutGroup.cellSize = suit_layout;
+            else
+                    layoutGroup.cellSize = standard_layout;
             foreach (var item in equipmentData.Value)
             {
-                var go = Instantiate(equipment_prefab,equipment_content);
+                var prefab = equipmentIndex == 1 ? equipment_suit_prefab : equipment_prefab;
+                
+                var go = Instantiate(prefab,equipment_content);
                 go.transform.localScale = Vector3.one;
-                go.GetComponent<EquipmentIconPrefab>().Setup(item,equipment_toggle_group);
+                go.GetComponent<EquipmentIconPrefab>().Setup(equipmentIndex,"equipment_"+equipmentData.Key,item,equipment_toggle_group);
             }
 
         }

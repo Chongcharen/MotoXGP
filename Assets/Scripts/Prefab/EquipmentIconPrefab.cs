@@ -12,6 +12,7 @@ public class EquipmentIconPrefab : MonoBehaviour
     public Image img_icon,img_overlay,img_coin;
     public Toggle toggle;
     PartEquipmentData data;
+    int equipmentIndex = -1;
     private void Start() {
         // EventTrigger trigger = GetComponentInParent<EventTrigger>();
         // EventTrigger.Entry entry = new EventTrigger.Entry();
@@ -20,10 +21,14 @@ public class EquipmentIconPrefab : MonoBehaviour
         // trigger.triggers.Add(entry);
         
     }
-    public void Setup(PartEquipmentData _data,ToggleGroup group){
+    public void Setup(int _equipmentIndex,string equipmentKey,PartEquipmentData _data,ToggleGroup group){
+        equipmentIndex = _equipmentIndex;
         data = _data;
         toggle.group = group;
-        var atlasSprite = SpriteAtlasManager.Instance.GetAtlas("equipment_helmet");
+        var atlasSprite = SpriteAtlasManager.Instance.GetAtlas(equipmentKey);
+        Debug.Log($"key {equipmentKey}");
+        Debug.Log("atlasSprite "+atlasSprite);
+        Debug.Log("data.icon_name "+data.icon_name);
         img_icon.sprite = atlasSprite.GetSprite(data.icon_name);
         if( _data.price > 0){
             price_txt.text = _data.price.ToString();
@@ -36,7 +41,7 @@ public class EquipmentIconPrefab : MonoBehaviour
         toggle.OnValueChangedAsObservable().Subscribe(_ =>{
             if(!_)return;
             var track = new EquipmentTrack();
-            track.id = 0;
+            track.id = equipmentIndex;
             track.model_name = data.model_name;
             track.texture_name = data.texture_name;
             OnEquipmentChanged.OnNext(track);

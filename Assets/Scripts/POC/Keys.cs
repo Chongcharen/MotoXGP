@@ -92,11 +92,24 @@ public static class FilePath{
 }
 public static class SpreadSheetKeys{
     public const string GAME_CONFIG = "14azNtExST2X1bgVgnHPl1Mfs05FW-8C2JA_egyunDig";
+    public const string EQUIPMENT = "1sxH20vXha8_DsUIoTR9m4-NchUrVatE_92oyVIzotAA";
+
+
+    public const string GID_HELMET = "0";
+    public const string GID_SUIT = "1278015005";
+    public const string GID_GLOVE = "1697254392";
+    public const string GID_BOOT = "432887015";
 
 
     public const string HEADER_NAME = "Name";
     public const string HEADER_DATA = "Data";
     public const string HEADER_VALE = "Vale";
+}
+public static class EquipmentKeys{
+    public const string HELMET = "helmet";
+    public const string SUIT = "suit";
+    public const string GLOVE = "glove";
+    public const string Boot = "boot";
 }
 
 public static class PopupKeys{

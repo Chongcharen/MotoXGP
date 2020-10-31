@@ -38,23 +38,27 @@ public class UI_Login : MonoBehaviour
         // });
         PhotonNetworkConsole.OnConnectedServer.Subscribe(connected =>{
             OpenLobby();
-        });
+        }).AddTo(this);
         
         // b_google_login.OnClickAsObservable().Subscribe(_=>{
         //     PlayFabController.Instance.LoginWithGoogle();
         // });
         b_facebook_login.OnClickAsObservable().Subscribe(_=>{
             PlayFabController.Instance.LoginWithFacebook();
-        });
+        }).AddTo(this);
         b_guest_login.OnClickAsObservable().Subscribe(_=>{
             PlayFabController.Instance.LoginWithDeviceId();
         });
         PlayFabController.OnPlayFabLoginComplete.Subscribe(_=>{
+            AddressableManager.Instance.Init();
+            //BoltLobbyNetwork.Instance.Connect();
+        }).AddTo(this);
+        AddressableManager.OnDownloadDependenciesCompleted.Subscribe(_=>{
             BoltLobbyNetwork.Instance.Connect();
-        });
+        }).AddTo(this);
         PlayFabController.OnLogout.Subscribe(_=>{
             root.gameObject.SetActive(true);
-        });
+        }).AddTo(this);
 
     }
     void OpenLobby(){

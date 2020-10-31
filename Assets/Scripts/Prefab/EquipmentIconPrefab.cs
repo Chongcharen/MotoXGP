@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UniRx;
 using TMPro;
+using UnityEngine.U2D;
+
 public class EquipmentIconPrefab : MonoBehaviour
 {
     public static Subject<EquipmentTrack> OnEquipmentChanged = new Subject<EquipmentTrack>();
@@ -21,14 +23,14 @@ public class EquipmentIconPrefab : MonoBehaviour
         // trigger.triggers.Add(entry);
         
     }
-    public void Setup(int _equipmentIndex,string equipmentKey,PartEquipmentData _data,ToggleGroup group){
+    public void Setup(int _equipmentIndex,SpriteAtlas atlasSprite,PartEquipmentData _data,ToggleGroup group){
         equipmentIndex = _equipmentIndex;
         data = _data;
         toggle.group = group;
-        var atlasSprite = SpriteAtlasManager.Instance.GetAtlas(equipmentKey);
-        Debug.Log($"key {equipmentKey}");
-        Debug.Log("atlasSprite "+atlasSprite);
-        Debug.Log("data.icon_name "+data.icon_name);
+       // var atlasSprite = await AddressableManager.Instance.LoadObject<SpriteAtlas>(equipmentKey);
+        // Debug.Log($"atlas {atlasSprite}");
+        // Debug.Log("atlasSprite "+atlasSprite);
+        // Debug.Log("data.icon_name "+data.icon_name);
         img_icon.sprite = atlasSprite.GetSprite(data.icon_name);
         if( _data.price > 0){
             price_txt.text = _data.price.ToString();

@@ -21,6 +21,7 @@ public class LobbyServerCallback : GlobalEventListener{
         BoltNetwork.RegisterTokenClass<Bolt.Photon.PhotonRoomProperties>();
         BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
         BoltNetwork.RegisterTokenClass<PlayerProfileToken>();
+        BoltNetwork.RegisterTokenClass<PlayerEquipmentToken>();
         OnBoltStart.OnNext(default);
     }
     public override void Connected(BoltConnection connection){

@@ -11,7 +11,7 @@ using Bolt.Matchmaking;
 using Newtonsoft.Json;
 using System.Linq;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Rigidbody),typeof(BikeMiddleware))]
 public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 {
     public static Subject<int> OnBoostChanged = new Subject<int>();
@@ -24,6 +24,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public static Subject<bool> OnControllGained = new Subject<bool>();
     public static Subject<int> OnShowSpeed = new Subject<int>();
     public static Subject<Unit> OnReset = new Subject<Unit>();
+    [Header("MiddleWare")]
+    BikeMiddleware bikeMiddleWare;
     #region Respawn
     public Vector3 startPosition;
     Vector3 respawnPosition;
@@ -120,7 +122,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public int runningTrack;
     #endregion  
     ProtocolPlayerCustomize playerCustomize;
+    PlayerProfileToken playerProfileToken;
     void Awake(){
+        bikeMiddleWare = GetComponent<BikeMiddleware>();
         Rigidbody = GetComponent<Rigidbody>();
         bikeCustomize = GetComponent<BikeCustomize>();
         wheels = new WheelComponent[2];
@@ -144,6 +148,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             OnPlayerCrash.OnNext(crash);
             OnCrash();
         }).AddTo(this);
+         CrashDetecter.OnBump.Subscribe(_=>{
+                ExplodeBump();
+            }).AddTo(this);
         GameplayManager.OnGameEnd.Subscribe(_=>{
             isControll = false;
             brake = true;
@@ -157,6 +164,24 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             finishEvent.JsonToken = JsonConvert.SerializeObject(token);
             finishEvent.Send();
         }).AddTo(this);
+    }
+    void ExplodeBump(){
+        print(Depug.Log("Explode Bump ",Color.red));
+          crash = true;
+               // respawnPosition = new Vector3(crashPosition.x,crashPosition.y+2.5f,startPosition.z);
+            Vector3[] path = new Vector3[]{
+                    new Vector3(transform.position.x,transform.position.y+2f,transform.position.z-3f),
+                    new Vector3(transform.position.x,transform.position.y+0f,transform.position.z-5f),
+                    new Vector3(transform.position.x,transform.position.y-2f,transform.position.z-8),
+            };
+            var ranBodyRotationX = UnityEngine.Random.Range(bodyRotationRageX.x,bodyRotationRageX.y);
+            var ranBodyRotationY = UnityEngine.Random.Range(bodyRotationRageY.x,bodyRotationRageY.y);
+            var ranBodyRotationZ = UnityEngine.Random.Range(bodyRotationRageZ.x,bodyRotationRageZ.y);
+            bikeSetting.MainBody.transform.DORotate(new Vector3(ranBodyRotationX,ranBodyRotationY,ranBodyRotationZ),explosionDuration).SetAutoKill();
+            transform.DOPath(path,explosionDuration,PathType.Linear).SetAutoKill();
+            //myRigidbody.AddExplosionForce(explosionForce,transform.position,explosionRadius,explosionUpward,explosionMode);
+            OnPlayerCrash.OnNext(crash);
+            OnCrash();
     }
     void Update(){
         if(!isControll || !isReady)return;
@@ -238,22 +263,29 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         //state.PlayerCustomize.BikeId = Mathf.FloorToInt(Random.Range(1,6));
         //state.PlayerCustomize.BikeTextureId = Mathf.FloorToInt(Random.Range(1,9));
         //
-        PlayerProfileToken token = entity.AttachToken as PlayerProfileToken;
+        //Depug.Log("-----------------Attached------------",Color.yellow);
+        Debug.Log("-----------------Attached------------");
+        playerProfileToken = entity.AttachToken as PlayerProfileToken;
         if(entity.Source != null){
             Debug.Log(entity.Source.ConnectToken);
         }
         state.SetTransforms(state.Transform, transform);
+        state.AddCallback("Name",()=>playerName_txt.text = state.Name);
+        state.AddCallback("PlayerEquiped",()=> SetUpPlayerEquipment());
+        //state.AddCallback("PlayerEquiped")
+        //state.AddCallback("PlayerCustomize",()=>state.PlayerCustomize);
         //state.AddCallback("PlayerCustomize",()=>bikeCustomize.SetUpBike(token.playerBikeData));
-
-        bikeCustomize.SetUpBike(token.playerBikeData);
+        //bikeCustomize.SetUpBike(playerProfileToken.playerBikeData);
         startPosition = transform.position;
         respawnPosition = startPosition;
         bikerStartPosition = bikeSetting.bikerMan.transform.localPosition;
         currentSpeedLimit = speedLimit;
+        
         boostSystem = GetComponent<BoostSystem>();
 
         
     }
+    
     public override void ControlGained(){
         isControll = true;
         objectDetecter.SetActive(true);
@@ -261,9 +293,44 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         ragdollObject.gameObject.SetActive(true);
         OnControllGained.OnNext(true);
         VirtualPlayerCamera.Instantiate();
-        VirtualPlayerCamera.instance.FollowTarget(transform);
-        VirtualPlayerCamera.instance.LookupTarget(transform);
+        VirtualPlayerCamera.instance.FollowTarget(bikeSetting.bikerMan);
+        VirtualPlayerCamera.instance.LookupTarget(bikeSetting.bikerMan);
+        SetUpPlayerData();
         AddControlEventListener();
+    }
+    void SetUpPlayerData(){
+        //state.PlayerEquiped.Data
+        var playerEquipmentToken = new PlayerEquipmentToken();
+        playerEquipmentToken.playerEquipmentMapper = SaveMockupData.GetEquipment.playerEquipmentMapper;
+        state.PlayerEquiped = playerEquipmentToken;
+        state.Name = playerProfileToken.playerProfileModel.DisplayName;
+        
+        print(Depug.Log("Setup PlayerData ",Color.blue));
+        print(Depug.Log("Display name "+state.Name,Color.blue));
+        foreach (var item in playerEquipmentToken.playerEquipmentMapper)
+        {
+            print(Depug.Log("e_ model "+item.Value.model_name,Color.blue));
+            print(Depug.Log("e_ texture "+item.Value.texture_name,Color.blue));
+            print(Depug.Log("---------------------------------------- "+item.Value.texture_name,Color.blue));
+        }
+    }
+    //if playerequipment has been changed , go process in bikemiddleware
+    public void SetUpPlayerEquipment(){
+        print(Depug.Log("SetUpPlayerEquipment ",Color.green));
+        print(Depug.Log("name "+state.Name,Color.green));
+        PlayerEquipmentToken equipmentToken = state.PlayerEquiped as PlayerEquipmentToken;
+        
+         foreach (var item in equipmentToken.playerEquipmentMapper)
+        {
+            print(Depug.Log("e_ model "+item.Value.model_name,Color.green));
+            print(Depug.Log("e_ texture "+item.Value.texture_name,Color.green));
+            print(Depug.Log("---------------------------------------- "+item.Value.texture_name,Color.green));
+        }
+        bikeMiddleWare.SetupPlayerEquipment(equipmentToken);
+        // foreach (var item in equipmentToken.playerEquipmentMapper)
+        // {
+        //     Debug.Log($"Key : {item.Key} , value : {item.Value}");
+        // }
     }
     void PollKey(){
         if(!isControll || !isReady)return;

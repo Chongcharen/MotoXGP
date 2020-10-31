@@ -68,6 +68,9 @@ public static class PlayerIndexProfileKeys{
     public const string INDEX = "index";
     public const string USERID = "userid";
 } 
+public static class GameConfigKeys{
+    public const string EQUIPMENT = "equipment";
+}
 
 public static class SceneName{
     public const string START = "Initial";
@@ -109,9 +112,14 @@ public static class EquipmentKeys{
     public const string HELMET = "helmet";
     public const string SUIT = "suit";
     public const string GLOVE = "glove";
-    public const string Boot = "boot";
+    public const string BOOT = "boot";
 }
-
+public static class AddressableKeys{
+    public const string LABEL_ATLAS = "Atlas";
+    public const string LABEL_TEXTURE_EQUIPMENT = "Equipment_Texture";
+    public const string LABEL_MODEL_EQUIPMENT = "Equipment_Model";
+    public const string ATLAS_EQUIPMENT = "atlas_equipment_";
+}
 public static class PopupKeys{
     public const string POPUP_BOLT_CONNECT = "popup_bolt_connect";
     public const string PARAMETER_MESSAGE = "parameter_message";

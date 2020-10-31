@@ -10,8 +10,9 @@ using Newtonsoft.Json;
 public class SpreadSheetGameConfig :SpreadSheetDataConverter
 {
     public static Subject<GameConfigData> OnUpdateGameConfigData = new Subject<GameConfigData>();
-    Dictionary<string,object> classInstance;
+    Dictionary<string,object> dictionaryRef;
     Dictionary<string,object> baseData = new Dictionary<string, object>();
+    string stringKey = "";
     public void Start(){
         var gameConfigSheet = new SpreadSheet(SpreadSheetKeys.GAME_CONFIG);
         gameConfigSheet.Download();
@@ -32,22 +33,32 @@ public class SpreadSheetGameConfig :SpreadSheetDataConverter
                 var nameClassIndex = values[nameIndex];
                 var data = values[dataIndex]; // level
                 var value = values[valeIndex]; 
+                Debug.Log("name *******************"+nameClassIndex);
+                Debug.Log("data ****************"+data);
+                Debug.Log("vaslue **************"+value);
                 if(!string.IsNullOrEmpty(nameClassIndex)){
-                    classInstance = new Dictionary<string, object>();
-                    if(!baseData.ContainsKey(nameClassIndex))
-                        baseData.Add(nameClassIndex,classInstance);
+                    if(!baseData.ContainsKey(nameClassIndex)){
+                        var classInstance = new Dictionary<string, object>();
+                        dictionaryRef = classInstance;
+                        baseData.Add(nameClassIndex,dictionaryRef);
+                    }
                     continue;
                 }
                 if(!string.IsNullOrEmpty(data)){
-                    if(!classInstance.ContainsKey(data))
-                        classInstance.Add(data,value);
+                    if(!dictionaryRef.ContainsKey(data))
+                        dictionaryRef.Add(data,value);
                 }
             }
         // var jsonSerialize = JsonConvert.SerializeObject(baseData);
         // var gameConfigData = JsonConvert.DeserializeObject<GameConfigData>(jsonSerialize);
 
-        var jsonSerialize = JsonUtility.ToJson(baseData);
-        var gameConfigData = JsonUtility.FromJson<GameConfigData>(jsonSerialize);
+        
+        var jsonSerialize = JsonConvert.SerializeObject(baseData);
+        Debug.Log("json = "+jsonSerialize);
+        var gameConfigData = JsonConvert.DeserializeObject<GameConfigData>(jsonSerialize);
+        
+        // var jsonSerialize = JsonUtility.ToJson(baseData);
+        // var gameConfigData = JsonUtility.FromJson<GameConfigData>(jsonSerialize);
         //var gameConfigData = GetObject<GameConfigData>(baseData);
         Debug.Assert(gameConfigData != null, "game config data has be null ");
         OnUpdateGameConfigData.OnNext(gameConfigData);

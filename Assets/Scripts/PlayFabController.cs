@@ -222,6 +222,7 @@ public class PlayFabController : MonoSingleton<PlayFabController>
         }, error => Debug.LogError(error.GenerateErrorReport()));
     }
     void GetPlayerProfile(string playFabId) {
+        Debug.Log("Getplayerprofile "+playFabId);
         PlayFabClientAPI.GetPlayerProfile( new GetPlayerProfileRequest() {
             PlayFabId = playFabId,
             ProfileConstraints = new PlayerProfileViewConstraints() {
@@ -237,7 +238,7 @@ public class PlayFabController : MonoSingleton<PlayFabController>
                 playerProfileModel = result.PlayerProfile;
                 PhotonNetwork.NickName = playerProfileModel.DisplayName;
                 IsLogin = true;
-                //Debug.Log("Change Nickname "+PhotonNetwork.NickName);
+                Debug.Log("Change Nickname "+PhotonNetwork.NickName);
                 OnPlayFabLoginComplete.OnNext(default);
             },
         error => Debug.LogError(error.GenerateErrorReport()));

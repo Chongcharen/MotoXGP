@@ -39,7 +39,13 @@ public class UI_lobby : MonoBehaviourPunCallbacks
         }).AddTo(this);
         b_playerCustom.OnClickAsObservable().Subscribe(_=>{
             Debug.Log("BoltNetwork.IsConnected "+BoltNetwork.IsConnected);
-            SceneManager.LoadScene(SceneName.PLAYER_CUSTOM);
+            //SceneManager.LoadScene(SceneName.PLAYER_CUSTOM);
+            SceneDownloadAsset.LoadScene(SceneName.PLAYER_CUSTOM,
+                                            new List<string>{AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.HELMET,
+                                            AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.GLOVE,
+                                            AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.SUIT,
+                                            AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.BOOT
+                                        });
         }).AddTo(this);
     }
     void StartBikeAnimation(){

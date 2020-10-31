@@ -15,8 +15,14 @@ public class UI_PlayerCustom : MonoBehaviour
         SceneFlow.Instance.StartScene();
     }
     void Start(){
+        // AssetsLoader.Load(new List<string>{AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.HELMET,
+        //                                     AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.GLOVE,
+        //                                     AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.SUIT,
+        //                                     AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.BOOT
+
+        //                 });
         b_back.OnClickAsObservable().Subscribe(_=>{
-            SceneManager.LoadScene(SceneName.LOBBY);
+            SceneDownloadAsset.LoadScene(SceneName.LOBBY);
         }).AddTo(this);
     }
 }

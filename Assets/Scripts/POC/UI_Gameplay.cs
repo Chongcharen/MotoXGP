@@ -16,6 +16,10 @@ public class UI_Gameplay : MonoBehaviour
     float timeElapsed;
     string totalTimer;
     TimeSpan timeSpan;
+    private void Awake()
+    {
+        SceneFlow.Instance.StartScene();
+    }
     void Start(){
         GameplayManager.OnGameEnd.Subscribe(_=>{
             isEnd = _;

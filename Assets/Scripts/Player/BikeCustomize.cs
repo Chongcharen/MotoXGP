@@ -23,7 +23,7 @@ public class BikeCustomize : MonoBehaviour{
     public void RandomBike(){
         bikeId = Mathf.FloorToInt(Random.Range(1,bikeBodys.Length));
         bikeTextureId = Mathf.FloorToInt(Random.Range(1,bodyTextureCount));
-        ChangeBody();
+       // ChangeBody();
     }
     void ChangeBody(){
         Debug.Log("--------------> changebody");

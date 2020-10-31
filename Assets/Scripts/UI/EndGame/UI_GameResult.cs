@@ -30,7 +30,8 @@ public class UI_GameResult : MonoBehaviour
             //BoltMatchmaking.CurrentSession.
             BoltLauncher.Shutdown();
             ObjectPool.Instance.Dispose();
-            SceneManager.LoadScene(SceneName.LOBBY);
+            //SceneManager.LoadScene(SceneName.LOBBY);
+            SceneDownloadAsset.LoadScene(SceneName.LOBBY);
         }).AddTo(this);
 
         GameCallback.OnPlayerRanksUpdate.Subscribe(BoltEntities =>{

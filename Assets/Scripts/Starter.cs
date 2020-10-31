@@ -71,12 +71,10 @@ public class Starter : MonoBehaviour
         mapDataDownloader.Dispose();
         mapDataDownloader = null;
         LoadLevelData();
-        //LoadEquipmentData();
         LoadGoogleEquipmentData();
-        //SceneManager.LoadScene(SceneName.LOBBY);
     }
     void LoadGoogleEquipmentData(){
-        var customData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_HELMET);
+        var helmetData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_HELMET);
         var suitData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_SUIT);
         var gloveData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_GLOVE);
         var bootData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BOOT);
@@ -84,8 +82,8 @@ public class Starter : MonoBehaviour
         EquipmentData equipmentData = new EquipmentData();
         equipmentData.data = new Dictionary<string, List<PartEquipmentData>>();
         GameDataManager.Instance.SetupEquipmentData(equipmentData);
-        customData.Start();
-        customData.downloadComplete += jsonString =>{
+        helmetData.Start();
+        helmetData.downloadComplete += jsonString =>{
             Debug.Log("json "+jsonString);
             var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
             for (int i = 0; i < equipmentDataList.Count; i++)
@@ -94,7 +92,7 @@ public class Starter : MonoBehaviour
             }
             equipmentData.data.Add(EquipmentKeys.HELMET,equipmentDataList);
             suitData.Start();
-            customData.Dispose();
+            helmetData.Dispose();
             
         };
        
@@ -127,7 +125,7 @@ public class Starter : MonoBehaviour
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
-            equipmentData.data.Add(EquipmentKeys.Boot,equipmentDataList);
+            equipmentData.data.Add(EquipmentKeys.BOOT,equipmentDataList);
             bootData.Dispose();
 
             var jsonequipment = JsonConvert.SerializeObject(equipmentData);

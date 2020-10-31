@@ -7,6 +7,8 @@ using UniRx;
 using System.Linq;
 using Cinemachine;
 using DG.Tweening;
+using UnityEngine.U2D;
+
 public class UI_Equipment : MonoBehaviour
 {
     [SerializeField]Button b_clearScreen;
@@ -84,20 +86,30 @@ public class UI_Equipment : MonoBehaviour
             }).AddTo(this);
         }
 
-        void SetupEquipmentWindow(KeyValuePair<string,List<PartEquipmentData>> equipmentData){
+        async void SetupEquipmentWindow(KeyValuePair<string,List<PartEquipmentData>> equipmentData){
             ClearEquipmentWindow();
             Debug.Log("equipmentData Key "+equipmentData.Key);
             if(equipmentIndex == 1)
                     layoutGroup.cellSize = suit_layout;
             else
                     layoutGroup.cellSize = standard_layout;
-            foreach (var item in equipmentData.Value)
-            {
-                var prefab = equipmentIndex == 1 ? equipment_suit_prefab : equipment_prefab;
-                
-                var go = Instantiate(prefab,equipment_content);
-                go.transform.localScale = Vector3.one;
-                go.GetComponent<EquipmentIconPrefab>().Setup(equipmentIndex,"equipment_"+equipmentData.Key,item,equipment_toggle_group);
+            var atlastKey = AddressableKeys.ATLAS_EQUIPMENT+equipmentData.Key;
+            var atlasSprite = await AddressableManager.Instance.LoadObject<SpriteAtlas>(atlastKey);
+            if(atlasSprite == null)return;
+            try{
+                if(equipmentData.Value.Count <= 0)return;
+                foreach (var item in equipmentData.Value)
+                {
+                    var prefab = equipmentIndex == 1 ? equipment_suit_prefab : equipment_prefab;
+                    
+                    var go = Instantiate(prefab,equipment_content);
+                    go.transform.localScale = Vector3.one;
+                    var key = AddressableKeys.ATLAS_EQUIPMENT+equipmentData.Key;
+                    Debug.Log("Atlas key "+key);
+                    go.GetComponent<EquipmentIconPrefab>().Setup(equipmentIndex,atlasSprite,item,equipment_toggle_group);
+                }
+            }catch(Exception e){
+                Debug.Log("Error exception "+e.Message);
             }
 
         }

@@ -16,6 +16,7 @@ public class LobbyClientCallback : GlobalEventListener
         BoltNetwork.RegisterTokenClass<Bolt.Photon.PhotonRoomProperties>();
         BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
         BoltNetwork.RegisterTokenClass<PlayerProfileToken>();
+        BoltNetwork.RegisterTokenClass<PlayerEquipmentToken>();
         OnBoltStart.OnNext(default);
     }
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){
@@ -68,6 +69,7 @@ public class LobbyClientCallback : GlobalEventListener
     }
     private void EntityAttachedEventHandler(BoltEntity entity)
         {
+            Depug.Log("EntityAttachedEventHandler "+entity,Color.green);
             OnJoinSession.OnNext(default);
             var lobbyPlayer = entity.gameObject.GetComponent<PlayerInRoom_Prefab>();
             PageManager.Instance.UI_Room.AddPlayer(lobbyPlayer);

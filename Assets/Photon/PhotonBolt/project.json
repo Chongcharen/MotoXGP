@@ -8,7 +8,6 @@
         {
           "Name": "transform",
           "Enabled": true,
-          "Expanded": true,
           "Comment": "This is my transform! yay",
           "Priority": 2,
           "PropertyType": {
@@ -90,7 +89,6 @@
         {
           "Name": "team",
           "Enabled": true,
-          "Expanded": true,
           "ReplicationMode": 1,
           "Comment": "",
           "Priority": 1,
@@ -111,7 +109,6 @@
         {
           "Name": "name",
           "Enabled": true,
-          "Expanded": true,
           "ReplicationMode": 1,
           "Comment": "",
           "Priority": 1,
@@ -155,7 +152,6 @@
         {
           "Name": "weapon",
           "Enabled": true,
-          "Expanded": true,
           "Comment": "",
           "Priority": 1,
           "PropertyType": {
@@ -173,7 +169,6 @@
         {
           "Name": "kills",
           "Enabled": true,
-          "Expanded": true,
           "ReplicationMode": 1,
           "Comment": "",
           "Priority": 1,
@@ -246,7 +241,6 @@
         {
           "Name": "health",
           "Enabled": true,
-          "Expanded": true,
           "ReplicationMode": 1,
           "Comment": "",
           "Priority": 1,
@@ -266,7 +260,6 @@
         {
           "Name": "MoveZ",
           "Enabled": true,
-          "Expanded": true,
           "Comment": "",
           "Priority": 1,
           "PropertyType": {
@@ -294,7 +287,6 @@
         {
           "Name": "MoveX",
           "Enabled": true,
-          "Expanded": true,
           "Comment": "",
           "Priority": 1,
           "PropertyType": {
@@ -322,7 +314,6 @@
         {
           "Name": "Jump",
           "Enabled": true,
-          "Expanded": true,
           "Comment": "",
           "Priority": 1,
           "PropertyType": {
@@ -340,7 +331,6 @@
         {
           "Name": "Aiming",
           "Enabled": true,
-          "Expanded": true,
           "Comment": "",
           "Priority": 1,
           "PropertyType": {
@@ -358,7 +348,6 @@
         {
           "Name": "Fire",
           "Enabled": true,
-          "Expanded": true,
           "Comment": "",
           "Priority": 1,
           "PropertyType": {
@@ -3681,30 +3670,32 @@
         {
           "Name": "Transform",
           "Enabled": true,
+          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeTransform, bolt.compiler",
             "PositionSelection": 6,
             "RotationSelection": 2,
+            "Space": 1,
             "PositionCompression": [
               {
                 "MinValue": -1024,
                 "MaxValue": 1024,
-                "Accuracy": 0.01,
-                "Pack": 100.0,
-                "Read": 0.01,
+                "Accuracy": 0.1,
+                "Pack": 10.0,
+                "Read": 0.1,
                 "Shift": 1024.0,
-                "BitsRequired": 18
+                "BitsRequired": 15
               },
               {
                 "MinValue": -1024,
                 "MaxValue": 1024,
-                "Accuracy": 0.01,
-                "Pack": 100.0,
-                "Read": 0.01,
+                "Accuracy": 0.1,
+                "Pack": 10.0,
+                "Read": 0.1,
                 "Shift": 1024.0,
-                "BitsRequired": 18
+                "BitsRequired": 15
               },
               {
                 "MinValue": -1024,
@@ -3719,10 +3710,10 @@
             "RotationCompression": [
               {
                 "MaxValue": 360,
-                "Accuracy": 0.01,
-                "Pack": 100.0,
-                "Read": 0.01,
-                "BitsRequired": 16
+                "Accuracy": 0.1,
+                "Pack": 10.0,
+                "Read": 0.1,
+                "BitsRequired": 12
               },
               {
                 "MaxValue": 360,
@@ -3739,6 +3730,7 @@
                 "BitsRequired": 16
               }
             ],
+            "PositionStrictCompare": true,
             "RotationCompressionQuaternion": {
               "MinValue": -1,
               "MaxValue": 1,
@@ -3755,12 +3747,13 @@
             "ExtrapolationErrorTolerance": 0.25,
             "_ExtrapolationCorrectionFrames": 6,
             "ExtrapolationMaxFrames": 9,
-            "SnapMagnitude": 10.0
+            "SnapMagnitude": 100.0
           }
         },
         {
           "Name": "Rotation",
           "Enabled": true,
+          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
@@ -3894,7 +3887,6 @@
         {
           "Name": "Ready",
           "Enabled": true,
-          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
@@ -3909,14 +3901,77 @@
           }
         },
         {
-          "Name": "PlayerCustomize",
+          "Name": "Saddle",
+          "Enabled": true,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeBool, bolt.compiler"
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
+            "ExtrapolationErrorTolerance": 0.25,
+            "_ExtrapolationCorrectionFrames": 6,
+            "ExtrapolationMaxFrames": 9,
+            "MecanimMode": 1,
+            "SnapMagnitude": 10.0
+          }
+        },
+        {
+          "Name": "OffensiveIdle",
+          "Enabled": true,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeTrigger, bolt.compiler"
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
+            "ExtrapolationErrorTolerance": 0.25,
+            "_ExtrapolationCorrectionFrames": 6,
+            "ExtrapolationMaxFrames": 9,
+            "MecanimMode": 1,
+            "SnapMagnitude": 10.0
+          }
+        },
+        {
+          "Name": "PlayerEquiped",
+          "Enabled": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeProtocolToken, bolt.compiler"
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
+            "ExtrapolationErrorTolerance": 0.25,
+            "_ExtrapolationCorrectionFrames": 6,
+            "ExtrapolationMaxFrames": 9,
+            "SnapMagnitude": 10.0
+          }
+        },
+        {
+          "Name": "BikeEquiped",
+          "Enabled": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeProtocolToken, bolt.compiler"
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
+            "ExtrapolationErrorTolerance": 0.25,
+            "_ExtrapolationCorrectionFrames": 6,
+            "ExtrapolationMaxFrames": 9,
+            "SnapMagnitude": 10.0
+          }
+        },
+        {
+          "Name": "NewProperty",
           "Enabled": true,
           "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
-            "$type": "Bolt.Compiler.PropertyTypeObject, bolt.compiler",
-            "StructGuid": "e43fa1a1-de7e-4573-9617-8251f7c081f5"
+            "$type": "Bolt.Compiler.PropertyTypeObject, bolt.compiler"
           },
           "AssetSettings": {
             "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
@@ -3930,6 +3985,7 @@
       "PacketMaxBits": 512,
       "PacketMaxProperties": 16,
       "InitialPositionCompression": {
+        "Selection": 14,
         "Compression": [
           {
             "MinValue": -1024,
@@ -3961,6 +4017,7 @@
         ]
       },
       "InitialRotationCompression": {
+        "Selection": 14,
         "EulerCompression": [
           {
             "MaxValue": 360,
@@ -4494,7 +4551,6 @@
         {
           "Name": "BikeId",
           "Enabled": true,
-          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
@@ -4512,7 +4568,6 @@
         {
           "Name": "BikeTextureId",
           "Enabled": true,
-          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
@@ -4528,7 +4583,7 @@
           }
         }
       ],
-      "Name": "PlayerCustomize",
+      "Name": "BikeEquiped",
       "Guid": "e43fa1a1-de7e-4573-9617-8251f7c081f5",
       "Groups": [
         "samples"
@@ -4609,6 +4664,33 @@
       ],
       "Name": "PlayerRaceFinishEvent",
       "Guid": "e088f18d-1de7-47a4-a7fa-d5b23cbe6c8c",
+      "Groups": [
+        "samples"
+      ]
+    },
+    {
+      "$type": "Bolt.Compiler.ObjectDefinition, bolt.compiler",
+      "Properties": [
+        {
+          "Name": "Data",
+          "Enabled": true,
+          "Expanded": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeProtocolToken, bolt.compiler"
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
+            "ExtrapolationErrorTolerance": 0.25,
+            "_ExtrapolationCorrectionFrames": 6,
+            "ExtrapolationMaxFrames": 9,
+            "SnapMagnitude": 10.0
+          }
+        }
+      ],
+      "Name": "PlayerEquiped",
+      "Guid": "dff6ca44-0f38-4459-9521-3efa20f01b2b",
       "Groups": [
         "samples"
       ]

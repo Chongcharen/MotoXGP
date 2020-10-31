@@ -134,7 +134,14 @@ public class UI_Room : MonoBehaviourPunCallbacks
         // PhotonNetwork.CurrentRoom.IsVisible = false;
 
         //PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
-        BoltNetwork.LoadScene(SceneName.GAMEPLAY);
+        SceneDownloadAsset.LoadScene(SceneName.GAMEPLAY, 
+                    new List<string>{
+                    AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.HELMET,
+                    AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.GLOVE,
+                    AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.SUIT,
+                    AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.BOOT}
+                    ,true);
+        //BoltNetwork.LoadScene(SceneName.GAMEPLAY);
         //PhotonNetwork.CurrentRoom.SetCustomProperties();
     }
 

@@ -115,6 +115,7 @@ public struct ObjectLocationData{
 [System.Serializable]
 public class GameConfigData{
     public PhotonNetworkConfigData photonNetworkConfig;
+    public DataPath dataPath;
 }
 [System.Serializable]
 public class PhotonNetworkConfigData{
@@ -122,6 +123,10 @@ public class PhotonNetworkConfigData{
     public int sendRate;
     public int serializationRate;
     public float keepAliveInBackground;
+}
+[System.Serializable]
+public class DataPath{
+    public string equipment;
 }
 
 //PlayerData

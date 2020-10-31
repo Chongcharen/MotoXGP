@@ -21,8 +21,8 @@ public class CopyBone : MonoBehaviour
         //targetRender.BakeMesh()
         for (int i = 0; i < targetRender.bones.Length; i++)
         {
-            Debug.Log("mybone name"+targetRender.bones[i].name+" ------  other bone name"+bones[i].name);
-            Debug.Log("mybone "+targetRender.bones[i].localPosition+" ------  other bone "+bones[i].localPosition);
+            // Debug.Log("mybone name"+targetRender.bones[i].name+" ------  other bone name"+bones[i].name);
+            // Debug.Log("mybone "+targetRender.bones[i].localPosition+" ------  other bone "+bones[i].localPosition);
             //bones[i].localRotation = Quaternion.identity;
             //bones[i].localPosition = Vector3.zero;
             //bindPoses[i] =  bones[i].worldToLocalMatrix * transform.localToWorldMatrix;

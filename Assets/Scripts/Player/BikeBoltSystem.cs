@@ -24,6 +24,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public static Subject<bool> OnControllGained = new Subject<bool>();
     public static Subject<int> OnShowSpeed = new Subject<int>();
     public static Subject<Unit> OnReset = new Subject<Unit>();
+    public static Subject<Transform> OnCameraLookup = new Subject<Transform>();
     [Header("MiddleWare")]
     BikeMiddleware bikeMiddleWare;
     #region Respawn
@@ -293,6 +294,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         GetComponent<Rigidbody>().isKinematic = false;
         ragdollObject.gameObject.SetActive(true);
         OnControllGained.OnNext(true);
+        OnCameraLookup.OnNext(bikeSetting.bikerMan);
         VirtualPlayerCamera.Instantiate();
         VirtualPlayerCamera.instance.FollowTarget(bikeSetting.bikerMan);
         VirtualPlayerCamera.instance.LookupTarget(bikeSetting.bikerMan);

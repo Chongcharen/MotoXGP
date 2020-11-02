@@ -184,14 +184,15 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             OnCrash();
     }
     void Update(){
+        UpdateWheelRotation();
+        CheckGround();
         if(!isControll || !isReady)return;
         PollKey();
-        UpdateWheel();
+        //UpdateWheel();
         BoostChecker();
         BoostUpdate();
         SetPlayerAnimator();
         UpdatePlayerRoll();
-        CheckGround();
         CheckSpeed();
     }
     void CheckSpeed(){
@@ -304,7 +305,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         playerEquipmentToken.playerEquipmentMapper = SaveMockupData.GetEquipment.playerEquipmentMapper;
         state.PlayerEquiped = playerEquipmentToken;
         state.Name = playerProfileToken.playerProfileModel.DisplayName;
-        
+        //state.SetAnimator(animator);
         print(Depug.Log("Setup PlayerData ",Color.blue));
         print(Depug.Log("Display name "+state.Name,Color.blue));
         foreach (var item in playerEquipmentToken.playerEquipmentMapper)
@@ -376,7 +377,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             jump = cmd.Input.jump;
             isLeft = cmd.Input.left;
             isRight = cmd.Input.right;
-            UpdateWheel();
+            //UpdateWheel();
             // cmd.Result.Position = transform.position;
             // cmd.Result.Rotation = transform.rotation;
             // cmd.Result.Velocity = Rigidbody.velocity;
@@ -394,11 +395,11 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         //     cmd.Result.Rotation = transform.rotation;
         //     cmd.Result.Velocity = Rigidbody.velocity;
     }
-
     #endregion
 
     #region  Bike Movement
-    void UpdateWheel(){
+    //เดิมชื่อ UpdateWheel
+    public override void SimulateOwner(){
         var indexWhell = 0;
         speed = transform.InverseTransformDirection(Rigidbody.velocity).z * 3.6f;
         foreach(WheelComponent component in wheels){
@@ -408,12 +409,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
             
             if(component.drive && grounded&&!brake){
-                if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
-                    var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
-                    component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
-                }else{
-                    component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
-                }
+                // if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
+                //     var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                //     component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
+                // }else{
+                //     component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
+                // }
+                 component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
             }
             if(component.drive && accel == 0){
                 ReleaseTorque();
@@ -424,10 +426,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
 
             if(brake){
-                if(!component.drive)
-                    component.collider.brakeTorque = bikeSetting.brakePower;
-                else
-                    component.collider.brakeTorque = bikeSetting.brakePower;
+                //if(!component.drive)
+                component.collider.brakeTorque = bikeSetting.brakePower;
             }else
             {
                 if(!isGround[indexWhell])
@@ -435,33 +435,57 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                 else
                     component.collider.brakeTorque = 0;
             }
-            Quaternion quaternion;
-            Vector3 position;
-            component.collider.GetWorldPose(out position,out quaternion);
-            component.rotation = Mathf.Repeat(component.rotation + Time.deltaTime * component.collider.rpm * 360.0f / 60.0f, 360.0f);
-            component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
-            Vector3 lp = component.axle.localPosition;
-            if(component.collider.GetGroundHit(out hit)){
-                isGround[indexWhell] = true;
-                lp.y -= Vector3.Dot(component.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
-                lp.y = Mathf.Clamp(lp.y,component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y +  bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-            }else{
-                isGround[indexWhell] = false;
-            }
-
-            component.axle.localPosition = lp;
-            lp.y -= Vector3.Dot(component.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
-            lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            
             indexWhell++;
+            // Quaternion quaternion;
+            // Vector3 position;
+            // component.collider.GetWorldPose(out position,out quaternion);
+            // component.rotation = Mathf.Repeat(component.rotation + BoltNetwork.FrameDeltaTime * component.collider.rpm * 360.0f / 60.0f, 360.0f);
+            // component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
+            // Vector3 lp = component.axle.localPosition;
+            // if(component.collider.GetGroundHit(out hit)){
+            //     isGround[indexWhell] = true;
+            //     lp.y -= Vector3.Dot(component.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+            //     lp.y = Mathf.Clamp(lp.y,component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y +  bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            // }else{
+            //     isGround[indexWhell] = false;
+            // }
+
+            // component.axle.localPosition = lp;
+            // lp.y -= Vector3.Dot(component.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+            // lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            // indexWhell++;
             
         }
         Rigidbody.AddForce(-transform.forward * speed * downforce);
     }
+    void UpdateWheelRotation(){
+        var indexWhell = 0;
+         foreach(WheelComponent component in wheels){
+            WheelHit hit;
+            Quaternion quaternion;
+            Vector3 position;
+            
+            component.collider.GetWorldPose(out position,out quaternion);
+            component.rotation = Mathf.Repeat(component.rotation + BoltNetwork.FrameDeltaTime * component.collider.rpm * 360.0f / 60.0f, 360.0f);
+            component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
+            Vector3 lp = component.axle.localPosition;
+            isGround[indexWhell] = component.collider.GetGroundHit(out hit);
+
+            if(isGround[indexWhell])
+                lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+            
+            lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            component.axle.localPosition = lp;
+           
+            indexWhell++;
+         }
+    }
     void ReleaseTorque(){
         wheels[0].collider.motorTorque = 0;
         wheels[1].collider.motorTorque = 0;
-        wheels[0].collider.brakeTorque = 2000;
-        wheels[1].collider.brakeTorque = 2000;
+        wheels[0].collider.brakeTorque = 0;
+        wheels[1].collider.brakeTorque = 0;
     }
     void CheckGround(){
         if(grounded != (isGround[0] && isGround[1])){
@@ -469,7 +493,6 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             OnGrouned.OnNext(grounded);
         }
     }
-
     void UpdatePlayerRoll(){
         if(isLeft){
             direction = -1;
@@ -508,7 +531,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         if(isBoosting){
             if(currentBoostTime < boostTimeLimit){
                 //myRigidbody.AddForce(transform.forward*BoostForce);
-                currentBoostTime += Time.deltaTime*1;
+                currentBoostTime += BoltNetwork.FrameDeltaTime*1;
             }else
             {
 

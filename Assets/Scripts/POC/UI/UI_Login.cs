@@ -50,8 +50,8 @@ public class UI_Login : MonoBehaviour
             PlayFabController.Instance.LoginWithDeviceId();
         });
         PlayFabController.OnPlayFabLoginComplete.Subscribe(_=>{
-            AddressableManager.Instance.Init();
-            //BoltLobbyNetwork.Instance.Connect();
+            //AddressableManager.Instance.Init();
+            BoltLobbyNetwork.Instance.Connect();
         }).AddTo(this);
         AddressableManager.OnDownloadDependenciesCompleted.Subscribe(_=>{
             BoltLobbyNetwork.Instance.Connect();

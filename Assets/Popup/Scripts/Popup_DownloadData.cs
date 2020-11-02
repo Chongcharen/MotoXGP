@@ -34,7 +34,7 @@ public class Popup_DownloadData : MonoBehaviour
         Debug.Log("task "+handle.Task);
         Debug.Log(handle.DebugName);
         Debug.Log("result "+handle.Result);
-        yield return new WaitForSeconds(1);
+        //yield return new WaitForSeconds(1);
         Destroy(this.gameObject);
 
     }

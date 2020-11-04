@@ -176,8 +176,7 @@ Shader "Shader Forge/basic_vertex_color" {
                 float3 specularColor = float3(_Specular,_Specular,_Specular);
                 float specularMonochrome;
                 float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-                float3 node_4941 = (_MainTex_var.rgb*_Color_copy.rgb*i.vertexColor.rgb*_Alpha);
-                float3 diffuseColor = node_4941; // Need this for specular when using metallic
+                float3 diffuseColor = (_MainTex_var.rgb*_Color_copy.rgb*i.vertexColor.rgb*_Alpha); // Need this for specular when using metallic
                 diffuseColor = EnergyConservationBetweenDiffuseAndSpecular(diffuseColor, specularColor, specularMonochrome);
                 specularMonochrome = 1.0-specularMonochrome;
                 float NdotV = abs(dot( normalDirection, viewDirection ));
@@ -322,8 +321,7 @@ Shader "Shader Forge/basic_vertex_color" {
                 float3 specularColor = float3(_Specular,_Specular,_Specular);
                 float specularMonochrome;
                 float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-                float3 node_4941 = (_MainTex_var.rgb*_Color_copy.rgb*i.vertexColor.rgb*_Alpha);
-                float3 diffuseColor = node_4941; // Need this for specular when using metallic
+                float3 diffuseColor = (_MainTex_var.rgb*_Color_copy.rgb*i.vertexColor.rgb*_Alpha); // Need this for specular when using metallic
                 diffuseColor = EnergyConservationBetweenDiffuseAndSpecular(diffuseColor, specularColor, specularMonochrome);
                 specularMonochrome = 1.0-specularMonochrome;
                 float NdotV = abs(dot( normalDirection, viewDirection ));
@@ -422,8 +420,7 @@ Shader "Shader Forge/basic_vertex_color" {
                 o.Emission = 0;
                 
                 float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-                float3 node_4941 = (_MainTex_var.rgb*_Color_copy.rgb*i.vertexColor.rgb*_Alpha);
-                float3 diffColor = node_4941;
+                float3 diffColor = (_MainTex_var.rgb*_Color_copy.rgb*i.vertexColor.rgb*_Alpha);
                 float3 specColor = float3(_Specular,_Specular,_Specular);
                 float specularMonochrome = max(max(specColor.r, specColor.g),specColor.b);
                 diffColor *= (1.0-specularMonochrome);

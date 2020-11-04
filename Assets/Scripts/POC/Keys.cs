@@ -102,6 +102,7 @@ public static class SpreadSheetKeys{
     public const string GID_SUIT = "1278015005";
     public const string GID_GLOVE = "1697254392";
     public const string GID_BOOT = "432887015";
+    public const string GID_BIKE = "561684748";
 
 
     public const string HEADER_NAME = "Name";
@@ -113,6 +114,7 @@ public static class EquipmentKeys{
     public const string SUIT = "suit";
     public const string GLOVE = "glove";
     public const string BOOT = "boot";
+    public const string BIKE = "bike";
 }
 public static class AddressableKeys{
     public const string LABEL_ATLAS = "Atlas";

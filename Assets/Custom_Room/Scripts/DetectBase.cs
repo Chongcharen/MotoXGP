@@ -55,7 +55,6 @@ public class DetectBase : MonoBehaviour
             baseRigidbody.angularVelocity = Vector3.zero;
             h = Mathf.Abs(mouseCursorSpeed*dragingSpeed) * -Input.GetAxis("Mouse X")*Time.fixedDeltaTime;
             float v = mouseCursorSpeed * Input.GetAxis("Mouse Y")*Time.fixedDeltaTime*dragingSpeed;
-            Debug.Log("H "+h);
             baseRotate.transform.Rotate(0, h, 0);
         }else{
            // baseRigidbody.AddTorque(Vector3.down*-h*dragingSpeed,ForceMode.Acceleration);
@@ -71,7 +70,6 @@ public class DetectBase : MonoBehaviour
             if (baseCollider.Raycast(ray, out hit, 100.0f))
             {
                 isSelectBase = true;
-                Debug.Log("isSelectBase "+isSelectBase);
                 downPoint = Input.mousePosition;
                 startDrag = Time.time;
             }
@@ -81,12 +79,12 @@ public class DetectBase : MonoBehaviour
             stopDrag = Time.time;
             distanceDrag = downPoint.x - upPoint.x;
             var timeDrag = stopDrag - startDrag;
-            if(timeDrag < 0.25f && Mathf.Abs(distanceDrag) > 200){
-                directionBase += distanceDrag > 0 ? 180 : -180;
-                Debug.Log("directionBase "+directionBase);
-                baseRotate.transform.DORotate(new Vector3(0,directionBase,0),1);
-                directionBase = directionBase%360;
-            }
+            // if(timeDrag < 0.25f && Mathf.Abs(distanceDrag) > 200){
+            //     directionBase += distanceDrag > 0 ? 180 : -180;
+            //     Debug.Log("directionBase "+directionBase);
+            //     baseRotate.transform.DORotate(new Vector3(0,directionBase,0),1);
+            //     directionBase = directionBase%360;
+            // }
         }
 
         // if(isSelectBase){

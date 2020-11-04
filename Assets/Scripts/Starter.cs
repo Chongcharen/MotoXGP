@@ -78,6 +78,7 @@ public class Starter : MonoBehaviour
         var suitData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_SUIT);
         var gloveData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_GLOVE);
         var bootData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BOOT);
+        var bikeData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BIKE);
        // Depug.Log("spreadsheetDownloadUrl "+spreadsheetDownloadUrl,Color.green);
         EquipmentData equipmentData = new EquipmentData();
         equipmentData.data = new Dictionary<string, List<PartEquipmentData>>();
@@ -119,17 +120,29 @@ public class Starter : MonoBehaviour
             gloveData.Dispose();
         };
         bootData.downloadComplete += jsonString =>{
-            Debug.Log("gloveData json "+jsonString);
+            Debug.Log("bootData json "+jsonString);
             var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
             for (int i = 0; i < equipmentDataList.Count; i++)
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
             equipmentData.data.Add(EquipmentKeys.BOOT,equipmentDataList);
+            bikeData.Start();
             bootData.Dispose();
+            // var jsonequipment = JsonConvert.SerializeObject(equipmentData);
+            // GameDataManager.Instance.SetupEquipmentData(equipmentData);
+        };
+        bikeData.downloadComplete += jsonString =>{
+            Debug.Log("bikeData json "+jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            for (int i = 0; i < equipmentDataList.Count; i++)
+            {
+                Debug.Log(equipmentDataList[i].icon_name);
+            }
+            equipmentData.data.Add(EquipmentKeys.BIKE,equipmentDataList);
+            bikeData.Dispose();
 
             var jsonequipment = JsonConvert.SerializeObject(equipmentData);
-            Debug.Log("jsonequipment "+jsonequipment);
             GameDataManager.Instance.SetupEquipmentData(equipmentData);
         };
         

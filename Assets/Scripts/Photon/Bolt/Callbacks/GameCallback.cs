@@ -19,6 +19,7 @@ public class GameCallback : GlobalEventListener
     public static Subject<BoltEntity> OnEntityAttached = new Subject<BoltEntity>();
     public static Subject<List<BoltEntity>> OnPlayerRanksUpdate = new Subject<List<BoltEntity>>();
     public static Subject<string> OnplayerRankJsonUpdate = new Subject<string>();
+    public static Subject<Unit> OnCutSceneReady = new Subject<Unit>();
     BoltEntity myEntity;
 
     void Start(){
@@ -180,7 +181,8 @@ public class GameCallback : GlobalEventListener
         if(BikePlayerRegistry.AllPlayerReadys){
             print(Depug.Log("RegisterPlayerReady "+BikePlayerRegistry.AllPlayerReadys,Color.green));
             //Show countdown in log event!!!!
-            CreateRaceCountdown(3);
+
+            CreateRaceCountdown(10);
         }
     
     }
@@ -195,11 +197,15 @@ public class GameCallback : GlobalEventListener
         OnEntityDetached.OnNext(entity);
     }
     void CreateRaceCountdown(int countTime){
+        var objectCutScene = Resources.Load<GameObject>("CutScene");
+        OnCutSceneReady.OnNext(default);
+        Instantiate(objectCutScene);
             var _update = Observable.Interval(TimeSpan.FromSeconds(1)).Take(countTime+1).Subscribe(x => // x starts from 0 and is incremented everytime the stream pushes another item.
             {
                 var raceCountdownEvent = RaceCountdown.Create(GlobalTargets.Everyone);
                 var countTimeResult = (countTime-x);
-                raceCountdownEvent.Message = (countTimeResult == 0) ? "GO!" : countTimeResult.ToString();
+                if(countTimeResult<=3)
+                    raceCountdownEvent.Message = (countTimeResult == 0) ? "GO!" : countTimeResult.ToString();
                 raceCountdownEvent.RaceStart = (countTimeResult == 0);
                 raceCountdownEvent.Send();
                 print(Depug.Log("Count in "+raceCountdownEvent.Message,Color.yellow));

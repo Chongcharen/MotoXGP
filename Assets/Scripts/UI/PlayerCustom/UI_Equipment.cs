@@ -89,10 +89,10 @@ public class UI_Equipment : MonoBehaviour
         async void SetupEquipmentWindow(KeyValuePair<string,List<PartEquipmentData>> equipmentData){
             ClearEquipmentWindow();
             Debug.Log("equipmentData Key "+equipmentData.Key);
-            if(equipmentIndex == 1)
-                    layoutGroup.cellSize = suit_layout;
-            else
-                    layoutGroup.cellSize = standard_layout;
+            // if(equipmentIndex == 1)
+            //         layoutGroup.cellSize = suit_layout;
+            // else
+            //         layoutGroup.cellSize = standard_layout;
             var atlastKey = AddressableKeys.ATLAS_EQUIPMENT+equipmentData.Key;
             var atlasSprite = await AddressableManager.Instance.LoadObject<SpriteAtlas>(atlastKey);
             if(atlasSprite == null)return;
@@ -100,9 +100,9 @@ public class UI_Equipment : MonoBehaviour
                 if(equipmentData.Value.Count <= 0)return;
                 foreach (var item in equipmentData.Value)
                 {
-                    var prefab = equipmentIndex == 1 ? equipment_suit_prefab : equipment_prefab;
+                    //var prefab = equipmentIndex == 1 ? equipment_suit_prefab : equipment_prefab;
                     
-                    var go = Instantiate(prefab,equipment_content);
+                    var go = Instantiate(equipment_prefab,equipment_content);
                     go.transform.localScale = Vector3.one;
                     var key = AddressableKeys.ATLAS_EQUIPMENT+equipmentData.Key;
                     Debug.Log("Atlas key "+key);

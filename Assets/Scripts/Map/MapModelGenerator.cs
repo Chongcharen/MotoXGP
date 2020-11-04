@@ -44,6 +44,7 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
         ClearMap();
 
         gamePath = "Map/"+GameDataManager.Instance.gameLevel.gameStageData.themeName+"/";
+        Debug.Log("Gamepath "+gamePath);
         var mapRoot = new GameObject("MapRoot");
         poolCount = mapLocationData.startPositionDatas.Count;
         var prefabTerrain = GameDataManager.Instance.gameLevel.gameStageData.themeName+""+GameDataManager.Instance.gameLevel.gameStageData.stageName;

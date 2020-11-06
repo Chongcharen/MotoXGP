@@ -21,12 +21,28 @@ public class PlayerRankGameplay : MonoBehaviour
         //Debug.Log("profileData.playerBikeData.playerFinishTime "+profileData.playerBikeData.playerFinishTime);
         profileModel = profileData.playerProfileModel;
         player_name_txt.text = profileModel.DisplayName;
-        var TimeSpan = System.TimeSpan.FromTicks(System.Convert.ToInt64(profileData.playerBikeData.playerFinishTime));
-        var timeText = TimeSpan.ToString(@"mm\:ss\:fff");
-        if(!timeText.Equals("00:00:000")){
-            player_time_txt.text = timeText;
-        }else{
-            player_time_txt.text = "Driving";
+        
+
+        // var TimeSpan = System.TimeSpan.FromTicks(System.Convert.ToInt64(profileData.playerBikeData.playerFinishTime));
+        //     var timeText = TimeSpan.ToString(@"mm\:ss\:fff");
+        //     if(!timeText.Equals("00:00:000")){
+        //         player_time_txt.text = timeText;
+        //     }else{
+        //         player_time_txt.text = "Driving";
+        //     }
+
+
+        if(profileData.playerBikeData.playerFinishTime >= 999999999999999999){
+             player_time_txt.text = "Driving";
+        }else
+        {
+            var TimeSpan = System.TimeSpan.FromTicks(System.Convert.ToInt64(profileData.playerBikeData.playerFinishTime));
+            var timeText = TimeSpan.ToString(@"mm\:ss\:fff");
+            if(!timeText.Equals("00:00:000")){
+                player_time_txt.text = timeText;
+            }else{
+                player_time_txt.text = "Driving";
+            }
         }
     }
 }

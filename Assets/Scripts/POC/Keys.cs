@@ -114,6 +114,7 @@ public static class EquipmentKeys{
     public const string SUIT = "suit";
     public const string GLOVE = "glove";
     public const string BOOT = "boot";
+    public const string HEAD = "head";
     public const string BIKE = "bike";
 }
 public static class AddressableKeys{

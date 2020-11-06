@@ -76,6 +76,8 @@ public class UI_Equipment : MonoBehaviour
                 }
                 equipment_window.SetActive(_);
                 equipmentIndex = index;
+                if(equipmentIndex == 4)
+                    equipmentIndex = 5;
                 var equipmentElement = GameDataManager.Instance.equipmentData.data.ElementAtOrDefault(equipmentIndex);
 
                 SetupEquipmentWindow(equipmentElement);

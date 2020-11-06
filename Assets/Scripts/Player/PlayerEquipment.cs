@@ -7,9 +7,11 @@ public class PlayerEquipment : MonoBehaviour
     public SkinnedMeshRenderer[] skinnedMeshRenderers;
     public bool startLoadEquipment = true;
     void Start(){
+        Debug.Log("Playerequipment start =======================>");
         if(startLoadEquipment)
             LoadEquipmentFromSave();
         EquipmentIconPrefab.OnEquipmentChanged.Subscribe(async tracked =>{
+             if(tracked.id > 4 )return;
             Debug.Log("Model name "+tracked.model_name);
             Debug.Log("texture name "+tracked.texture_name);
             Debug.Log("tracked id "+tracked.id);
@@ -24,7 +26,10 @@ public class PlayerEquipment : MonoBehaviour
             skinnedMeshRenderers[tracked.id].material.mainTexture = texture;
             //skinnedMeshRenderers[tracked.id].material.mainTexture = texture;
              //skinnedMeshRenderers[tracked.id].GetComponent<Renderer>().material.mainTexture = texture;
-            SaveMockupData.SaveEquipment(tracked.id,tracked.model_name,tracked.texture_name);
+            if(tracked.id <= 4)
+                SaveMockupData.SaveEquipment(tracked.id,tracked.model_name,tracked.texture_name);
+            //else
+                //SaveMockupData.SaveBikeEquipment(tracked.id,tracked.model_name,tracked.texture_name);
         }).AddTo(this);
     }
     

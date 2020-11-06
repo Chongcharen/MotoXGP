@@ -44,6 +44,8 @@ public class EquipmentIconPrefab : MonoBehaviour
             if(!_)return;
             var track = new EquipmentTrack();
             track.id = equipmentIndex;
+            Debug.Log("tack id"+track.id);
+             Debug.Log("tack id"+data.texture_name);
             track.model_name = data.model_name;
             track.texture_name = data.texture_name;
             OnEquipmentChanged.OnNext(track);

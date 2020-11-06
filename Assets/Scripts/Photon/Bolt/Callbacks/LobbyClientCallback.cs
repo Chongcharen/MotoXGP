@@ -17,6 +17,7 @@ public class LobbyClientCallback : GlobalEventListener
         BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
         BoltNetwork.RegisterTokenClass<PlayerProfileToken>();
         BoltNetwork.RegisterTokenClass<PlayerEquipmentToken>();
+        BoltNetwork.RegisterTokenClass<BikeEquipmentToken>();
         OnBoltStart.OnNext(default);
     }
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){

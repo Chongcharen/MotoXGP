@@ -169,12 +169,10 @@ public class UI_Room : MonoBehaviourPunCallbacks
         if(playerindexHashtable != null){
              Debug.Log("playerindexHashtable total "+playerindexHashtable);
         }
-
         if(propertiesThatChanged.ContainsKey(RoomPropertyKeys.GAME_START)){
             if((bool)propertiesThatChanged[RoomPropertyKeys.GAME_START])
                 PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
         }
-         
     }
     // public override void OnLeftRoom(){
     //     if(root != null)

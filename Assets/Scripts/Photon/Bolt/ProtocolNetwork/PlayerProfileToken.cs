@@ -23,6 +23,7 @@ public class PlayerProfileToken : IProtocolToken
 
     public void RandomBikeData(){
         playerBikeData = new PlayerBikeData();
+        playerBikeData.playerFinishTime = 999999999999999999;
         playerBikeData.bikeId = Random.Range(1,5);
         playerBikeData.bikeTextureId = Random.Range(1,9);
     }

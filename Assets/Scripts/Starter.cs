@@ -78,6 +78,7 @@ public class Starter : MonoBehaviour
         var suitData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_SUIT);
         var gloveData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_GLOVE);
         var bootData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BOOT);
+        var headData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BOOT);
         var bikeData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BIKE);
        // Depug.Log("spreadsheetDownloadUrl "+spreadsheetDownloadUrl,Color.green);
         EquipmentData equipmentData = new EquipmentData();
@@ -127,8 +128,23 @@ public class Starter : MonoBehaviour
                 Debug.Log(equipmentDataList[i].icon_name);
             }
             equipmentData.data.Add(EquipmentKeys.BOOT,equipmentDataList);
-            bikeData.Start();
+            //equipmentData.data.Add(EquipmentKeys.HEAD,null);//ตอนนี้ยังไม่มีเมเดลหัว
+            headData.Start();
             bootData.Dispose();
+            // var jsonequipment = JsonConvert.SerializeObject(equipmentData);
+            // GameDataManager.Instance.SetupEquipmentData(equipmentData);
+        };
+        headData.downloadComplete += jsonString =>{
+            Debug.Log("bootData json "+jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            for (int i = 0; i < equipmentDataList.Count; i++)
+            {
+                Debug.Log(equipmentDataList[i].icon_name);
+            }
+            equipmentData.data.Add(EquipmentKeys.HEAD,equipmentDataList);
+            //equipmentData.data.Add(EquipmentKeys.HEAD,null);//ตอนนี้ยังไม่มีเมเดลหัว
+            bikeData.Start();
+            headData.Dispose();
             // var jsonequipment = JsonConvert.SerializeObject(equipmentData);
             // GameDataManager.Instance.SetupEquipmentData(equipmentData);
         };

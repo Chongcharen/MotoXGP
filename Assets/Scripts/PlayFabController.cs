@@ -146,8 +146,9 @@ public class PlayFabController : MonoSingleton<PlayFabController>
             Debug.Log("USerid in custom auth "+customAuth.UserId);
             //We finally tell Photon to use this authentication parameters throughout the entire application.
             PhotonNetwork.AuthValues = customAuth;
-            OnGetPhotonAuthenticationTokenResult.OnNext(tokenResult);
             GetPlayerProfile(PlayFabId);
+            OnGetPhotonAuthenticationTokenResult.OnNext(tokenResult);
+            
     }
     void OnPlayFabError(PlayFabError error){
         Debug.Log("PlayFabError "+error);
@@ -298,6 +299,7 @@ public class PlayFabController : MonoSingleton<PlayFabController>
             displayName = "Guest_"+PlayFabId;
             imageUrl = "";
         }
+        print(Depug.Log("Updateprofile withnewplayer : "+displayName,Color.green));
         PlayFabClientAPI.UpdateAvatarUrl(new UpdateAvatarUrlRequest{
             ImageUrl = imageUrl
         },result =>{

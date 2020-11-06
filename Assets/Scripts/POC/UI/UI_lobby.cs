@@ -12,9 +12,8 @@ using UnityEngine.SceneManagement;
 public class UI_lobby : MonoBehaviourPunCallbacks
 {
     [SerializeField]GameObject root;
-    [SerializeField]Button b_joinRandomRoom,b_mapviewer,b_playerCustom;
+    [SerializeField]Button b_joinRandomRoom,b_mapviewer,b_playerCustom,b_shop;
     [SerializeField]Image[] bikeImages;
-
     [SerializeField]float[] bikeStartScale;
     [SerializeField]float[] bikeStopScale;
     [SerializeField]Vector3[] bike0Path;
@@ -46,6 +45,9 @@ public class UI_lobby : MonoBehaviourPunCallbacks
                                             AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.SUIT,
                                             AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.BOOT
                                         });
+        }).AddTo(this);
+        b_shop.OnClickAsObservable().Subscribe(_=>{
+            PageManager.Instance.OpenShop();
         }).AddTo(this);
     }
     void StartBikeAnimation(){

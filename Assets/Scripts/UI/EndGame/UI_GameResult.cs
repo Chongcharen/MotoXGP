@@ -33,7 +33,7 @@ public class UI_GameResult : MonoBehaviour
             //SceneManager.LoadScene(SceneName.LOBBY);
             SceneDownloadAsset.LoadScene(SceneName.LOBBY);
         }).AddTo(this);
-
+        
         GameCallback.OnPlayerRanksUpdate.Subscribe(BoltEntities =>{
             UpdatePlayerRanking(BoltEntities);
         }).AddTo(this);
@@ -42,9 +42,8 @@ public class UI_GameResult : MonoBehaviour
         }).AddTo(this);
     }
     void UpdateJsonPlayerRanking(string jsonData){
-        Debug.Log("UpdateJsonPlayerRanking : "+jsonData);
         var playerProfilesDic = JsonConvert.DeserializeObject<Dictionary<int,PlayerProfileToken>>(jsonData); 
-        playerProfilesDic = playerProfilesDic.OrderByDescending(p =>p.Value.playerBikeData.playerFinishTime).ToDictionary(k => k.Key,v =>v.Value);
+        playerProfilesDic = playerProfilesDic.OrderBy(p =>p.Value.playerBikeData.playerFinishTime).ToDictionary(k => k.Key,v =>v.Value);
         for (int i = 0; i < playerProfilesDic.Count; i++)
         {
             playerRanks[i].gameObject.SetActive(true);

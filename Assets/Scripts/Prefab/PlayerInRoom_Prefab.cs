@@ -46,7 +46,7 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
 
     }
     public override void ControlGained(){
-        print(Depug.Log("ControlGained",Color.cyan));
+        print(Depug.Log("ControlGained client ?"+BoltNetwork.IsClient,Color.cyan));
         profilemodel = PlayFabController.Instance.playerProfileModel;
         SetupPlayer();
     }
@@ -75,9 +75,8 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
         OnDestroyed.OnNext(this);
     }
     public void SetupPlayer(){
-        print(Depug.Log("SetupPlayer",Color.green));
-        playername_text.text = profilemodel.DisplayName;
-        //var playerObject = BikePlayerRegistry.GetBikePlayer(entity.Source);
+        print(Depug.Log("SetupPlayer "+profilemodel.DisplayName,Color.green));
+        state.Name = profilemodel.DisplayName;
         b_kick.gameObject.SetActive(false);
     }
     public void SetupOtherPlayer(){

@@ -274,6 +274,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         state.SetTransforms(state.Transform, transform);
         state.AddCallback("Name",()=>playerName_txt.text = state.Name);
         state.AddCallback("PlayerEquiped",()=> SetUpPlayerEquipment());
+        state.AddCallback("BikeEquiped",()=> SetUpBikeEquipment());
         //state.AddCallback("PlayerEquiped")
         //state.AddCallback("PlayerCustomize",()=>state.PlayerCustomize);
         //state.AddCallback("PlayerCustomize",()=>bikeCustomize.SetUpBike(token.playerBikeData));
@@ -291,8 +292,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public override void ControlGained(){
         isControll = true;
         objectDetecter.SetActive(true);
+        bikeMiddleWare.ragdollCollider.enabled = true;
         GetComponent<Rigidbody>().isKinematic = false;
-        ragdollObject.gameObject.SetActive(true);
         OnControllGained.OnNext(true);
         OnCameraLookup.OnNext(bikeSetting.bikerMan);
         VirtualPlayerCamera.Instantiate();
@@ -305,7 +306,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         //state.PlayerEquiped.Data
         var playerEquipmentToken = new PlayerEquipmentToken();
         playerEquipmentToken.playerEquipmentMapper = SaveMockupData.GetEquipment.playerEquipmentMapper;
+        var bikeEquipmentToken = new BikeEquipmentToken();
+        bikeEquipmentToken.bikeEquipmentMapper = SaveMockupData.GetBikeEquipment.bikeEquipmentMapper;
+        
+        Debug.Log("bike token "+bikeEquipmentToken.bikeEquipmentMapper.Count);
+
         state.PlayerEquiped = playerEquipmentToken;
+        state.BikeEquiped = bikeEquipmentToken;
         state.Name = playerProfileToken.playerProfileModel.DisplayName;
         //state.SetAnimator(animator);
         print(Depug.Log("Setup PlayerData ",Color.blue));
@@ -334,6 +341,20 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         // {
         //     Debug.Log($"Key : {item.Key} , value : {item.Value}");
         // }
+    }
+    void SetUpBikeEquipment(){
+        Debug.Log("Setupbike equipment");
+        BikeEquipmentToken bikeEquiupmentToken = state.BikeEquiped as BikeEquipmentToken;
+
+         foreach (var item in bikeEquiupmentToken.bikeEquipmentMapper)
+        {
+            print(Depug.Log("e_ model "+item.Value.model_name,Color.green));
+            print(Depug.Log("e_ texture "+item.Value.texture_name,Color.green));
+            print(Depug.Log("---------------------------------------- "+item.Value.texture_name,Color.green));
+        }
+
+
+        bikeMiddleWare.SetupBikeEquipment(bikeEquiupmentToken);
     }
     void PollKey(){
         if(!isControll || !isReady)return;
@@ -405,7 +426,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         var indexWhell = 0;
         speed = transform.InverseTransformDirection(Rigidbody.velocity).z * 3.6f;
         foreach(WheelComponent component in wheels){
-            WheelHit hit;
+            //WheelHit hit;
             if(speed > currentSpeedLimit && !isBoosting){
                 speed = currentSpeedLimit;
             }
@@ -467,10 +488,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             WheelHit hit;
             Quaternion quaternion;
             Vector3 position;
-            
             component.collider.GetWorldPose(out position,out quaternion);
             component.rotation = Mathf.Repeat(component.rotation + BoltNetwork.FrameDeltaTime * component.collider.rpm * 360.0f / 60.0f, 360.0f);
             component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
+            //Debug.Log(component.rotation);
             Vector3 lp = component.axle.localPosition;
             isGround[indexWhell] = component.collider.GetGroundHit(out hit);
 
@@ -479,7 +500,6 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             
             lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
             component.axle.localPosition = lp;
-           
             indexWhell++;
          }
     }

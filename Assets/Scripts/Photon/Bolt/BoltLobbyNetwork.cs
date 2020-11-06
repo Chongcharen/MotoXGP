@@ -41,6 +41,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         BoltNetwork.RegisterTokenClass<Bolt.Photon.PhotonRoomProperties>();
         BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
         BoltNetwork.RegisterTokenClass<PlayerProfileToken>();
+        BoltNetwork.RegisterTokenClass<BikeEquipmentToken>();
     }
 
     public void Connect(){
@@ -63,6 +64,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         // playerCustomize.bike_texture_id = 5;
 
         var playerData = new PlayerProfileToken();
+        //playerData.playerBikeData.playerFinishTime = 99999999;
         playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
         playerData.RandomBikeData();
         Debug.Log("playerdata "+playerData.playerBikeData);
@@ -140,12 +142,12 @@ public class BoltLobbyNetwork : GlobalEventListener
         // var playerCustom = new ProtocolPlayerCustomize(); // connectionToken 
         // playerCustom.bike_body_id = 2;
         // playerCustom.bike_texture_id = 3;
-
         var playerData = new PlayerProfileToken();
+        //playerData.playerBikeData.playerFinishTime = 99999999;
         playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
         playerData.RandomBikeData();
-
         // token เป็น playerdata แล้ว join ห้องเดียวกันไมไ่ด้ งง
+        
         BoltMatchmaking.CreateSession(
             sessionID: matchName,token:customToken,null,customToken
         );

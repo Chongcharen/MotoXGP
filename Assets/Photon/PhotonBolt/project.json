@@ -3672,13 +3672,11 @@
           "Enabled": true,
           "Expanded": true,
           "ReplicationMode": 1,
-          "Priority": 1,
+          "Priority": 2,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeTransform, bolt.compiler",
             "PositionSelection": 6,
             "RotationSelection": 2,
-            "ExtrapolationVelocityMode": 1,
-            "Space": 1,
             "PositionCompression": [
               {
                 "MinValue": -1024,
@@ -3743,10 +3741,10 @@
           },
           "AssetSettings": {
             "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
-            "SmoothingAlgorithm": 2,
+            "SmoothingAlgorithm": 1,
             "ExtrapolationErrorTolerance": 0.25,
             "_ExtrapolationCorrectionFrames": 6,
-            "ExtrapolationMaxFrames": 3,
+            "ExtrapolationMaxFrames": 5,
             "SnapMagnitude": 10.0
           }
         },
@@ -3964,25 +3962,8 @@
           }
         },
         {
-          "Name": "NewProperty",
-          "Enabled": true,
-          "ReplicationMode": 1,
-          "Priority": 1,
-          "PropertyType": {
-            "$type": "Bolt.Compiler.PropertyTypeObject, bolt.compiler"
-          },
-          "AssetSettings": {
-            "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
-            "ExtrapolationErrorTolerance": 0.25,
-            "_ExtrapolationCorrectionFrames": 6,
-            "ExtrapolationMaxFrames": 9,
-            "SnapMagnitude": 10.0
-          }
-        },
-        {
           "Name": "Blend",
           "Enabled": true,
-          "Expanded": true,
           "Priority": 1,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeFloat, bolt.compiler",
@@ -4008,7 +3989,6 @@
         {
           "Name": "isLeft",
           "Enabled": true,
-          "Expanded": true,
           "Priority": 1,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeBool, bolt.compiler"
@@ -4025,7 +4005,6 @@
         {
           "Name": "isRight",
           "Enabled": true,
-          "Expanded": true,
           "Priority": 1,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeBool, bolt.compiler"
@@ -4042,7 +4021,6 @@
         {
           "Name": "speed",
           "Enabled": true,
-          "Expanded": true,
           "Priority": 1,
           "PropertyType": {
             "$type": "Bolt.Compiler.PropertyTypeFloat, bolt.compiler",
@@ -4633,30 +4611,13 @@
       "$type": "Bolt.Compiler.ObjectDefinition, bolt.compiler",
       "Properties": [
         {
-          "Name": "BikeId",
+          "Name": "Data",
           "Enabled": true,
+          "Expanded": true,
           "ReplicationMode": 1,
           "Priority": 1,
           "PropertyType": {
-            "$type": "Bolt.Compiler.PropertyTypeInteger, bolt.compiler",
-            "MaxValue": 255
-          },
-          "AssetSettings": {
-            "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
-            "ExtrapolationErrorTolerance": 0.25,
-            "_ExtrapolationCorrectionFrames": 6,
-            "ExtrapolationMaxFrames": 9,
-            "SnapMagnitude": 10.0
-          }
-        },
-        {
-          "Name": "BikeTextureId",
-          "Enabled": true,
-          "ReplicationMode": 1,
-          "Priority": 1,
-          "PropertyType": {
-            "$type": "Bolt.Compiler.PropertyTypeInteger, bolt.compiler",
-            "MaxValue": 255
+            "$type": "Bolt.Compiler.PropertyTypeProtocolToken, bolt.compiler"
           },
           "AssetSettings": {
             "$type": "Bolt.Compiler.PropertyStateSettings, bolt.compiler",
@@ -4775,6 +4736,15 @@
       ],
       "Name": "PlayerEquiped",
       "Guid": "dff6ca44-0f38-4459-9521-3efa20f01b2b",
+      "Groups": [
+        "samples"
+      ]
+    },
+    {
+      "$type": "Bolt.Compiler.EventDefinition, bolt.compiler",
+      "Properties": [],
+      "Name": "RaceCutSceneEvent",
+      "Guid": "0f593337-cc5a-467a-b3e0-a8b4296c9dc1",
       "Groups": [
         "samples"
       ]

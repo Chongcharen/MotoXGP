@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 public class PageManager : MonoBehaviour
 {
-    [SerializeField]GameObject display_login,display_lobby,display_room;
+    [SerializeField]GameObject display_login,display_lobby,display_room,display_shop;
     public UI_Room UI_Room;
 
     [Header("Map")]
@@ -29,10 +29,17 @@ public class PageManager : MonoBehaviour
     public void OpenLobby(){
         display_room.SetActive(false);
         display_lobby.SetActive(true);
+        display_shop.SetActive(false);
     }
     public void OpenRoom(){
         display_lobby.SetActive(false);
         display_room.SetActive(true);
+        display_shop.SetActive(false);
+    }
+    public void OpenShop(){
+        display_lobby.SetActive(false);
+        display_room.SetActive(false);
+        display_shop.SetActive(true);
     }
 
     public void OpenMap(){

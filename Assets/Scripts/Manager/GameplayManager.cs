@@ -44,12 +44,10 @@ public class GameplayManager : InstanceClass<GameplayManager>
         elapsedTime.Value = Time.time;
         OnGameStart.OnNext(default);
     }
-
     //PlayerREgister When Cross Finish Line
     public static void RegisterLocalPlayerFinish(long ticktime){
         Debug.Log("RegisterLocalPlayerfinish "+ticktime);
         OnPlayerFinishTime.OnNext(ticktime);       
-         
         //set time in playerindexprofiledata
         // var roomProperties = PhotonNetwork.CurrentRoom.CustomProperties;
         // var playersIndexHash = roomProperties[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
@@ -74,7 +72,6 @@ public class GameplayManager : InstanceClass<GameplayManager>
         playerProfileData.ready = true;
         var json = JsonConvert.SerializeObject(playerProfileData);
         playersIndexHash[userId] = json;
-
         roomProperties[RoomPropertyKeys.PLAYER_INDEX] = playersIndexHash;
         PhotonNetwork.CurrentRoom.SetCustomProperties(roomProperties);
     }

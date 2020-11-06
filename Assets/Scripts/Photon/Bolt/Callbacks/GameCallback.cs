@@ -45,9 +45,11 @@ public class GameCallback : GlobalEventListener
             print(Depug.Log("SceneLoadLocalDone SErver... ",Color.green));
             var player = BikePlayerRegistry.GetBikePlayer(BoltNetwork.Server);
             print(Depug.Log("player "+player,Color.green));
+
             //BikePlayerRegistry
             var playerData = new PlayerProfileToken();
             playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
+            //playerData.playerBikeData.playerFinishTime = 99999999;
             playerData.RandomBikeData();
             playerData.playerBikeData.runningTrack = player.index;
             var positionPlayer = MapManager.Instance.spawnPointsPosition[player.index];
@@ -68,6 +70,7 @@ public class GameCallback : GlobalEventListener
     public override void OnEvent(RaceTrackEvent evnt){
         print(Depug.Log("RaceTrackEvent "+evnt.TrankIndex,Color.green));
         var playerData = new PlayerProfileToken();
+            //playerData.playerBikeData.playerFinishTime = 99999999;
             playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
             playerData.RandomBikeData();
             playerData.playerBikeData.runningTrack = evnt.TrankIndex;
@@ -181,7 +184,8 @@ public class GameCallback : GlobalEventListener
         if(BikePlayerRegistry.AllPlayerReadys){
             print(Depug.Log("RegisterPlayerReady "+BikePlayerRegistry.AllPlayerReadys,Color.green));
             //Show countdown in log event!!!!
-
+            var raceCutSceneEvent = RaceCutSceneEvent.Create(GlobalTargets.Everyone);
+            raceCutSceneEvent.Send();
             CreateRaceCountdown(10);
         }
     
@@ -197,9 +201,7 @@ public class GameCallback : GlobalEventListener
         OnEntityDetached.OnNext(entity);
     }
     void CreateRaceCountdown(int countTime){
-        var objectCutScene = Resources.Load<GameObject>("CutScene");
-        OnCutSceneReady.OnNext(default);
-        Instantiate(objectCutScene);
+        
             var _update = Observable.Interval(TimeSpan.FromSeconds(1)).Take(countTime+1).Subscribe(x => // x starts from 0 and is incremented everytime the stream pushes another item.
             {
                 var raceCountdownEvent = RaceCountdown.Create(GlobalTargets.Everyone);
@@ -215,6 +217,11 @@ public class GameCallback : GlobalEventListener
             OnGameReady.OnNext(evnt);
             if(evnt.RaceStart)
                 GameplayManager.Instance.StartGame();
+    }
+    public override void OnEvent(RaceCutSceneEvent evnt){
+        var objectCutScene = Resources.Load<GameObject>("CutScene");
+        Instantiate(objectCutScene);
+        OnCutSceneReady.OnNext(default);
     }
 
 

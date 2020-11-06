@@ -5,11 +5,12 @@ using UnityEngine;
 public class BikeMiddleware : MonoBehaviour
 {
     public PlayerEquipment playerEquipment;
+    public BikeEquipment bikeEquipment;
+    public RagdollCollider ragdollCollider;
     public void SetupPlayerEquipment(PlayerEquipmentToken equipmentToken){
-        foreach (var item in equipmentToken.playerEquipmentMapper)
-        {
-            print(Depug.Log($"item key {item.Key} value {item.Value}",Color.green));
-        }
         playerEquipment.SetupEquipment(equipmentToken.playerEquipmentMapper);
+    }
+    public void SetupBikeEquipment(BikeEquipmentToken bikeEquipmentToken){
+        bikeEquipment.SetupEquipment(bikeEquipmentToken.bikeEquipmentMapper);
     }
 }

@@ -14,6 +14,7 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
     [SerializeField]Transform content;
     [SerializeField]Button b_EnterLevel;
     [SerializeField]Button b_forest,b_desert,b_beach;
+    [SerializeField]Button b_back;
     [SerializeField]Toggle t_forest,t_desert,t_sea;
     [SerializeField]ToggleGroup toggleGroup;
     [SerializeField]TMP_InputField input_nos;
@@ -146,6 +147,10 @@ public class HierachyMng : MonoBehaviour, IPointerEnterHandler, IDragHandler, IP
             themeIndex = 2;
             Init();
         });
+        b_back.OnClickAsObservable().Subscribe(_=>{
+            PageManager.Instance.CloseMap();
+        }).AddTo(this);
+       // b_back.onValueChanged.AddLis
         //ChildrenNum = Page.Count;
 
         ////Flip all sibling index

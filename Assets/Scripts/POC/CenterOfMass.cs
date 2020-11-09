@@ -45,11 +45,11 @@ public class CenterOfMass : MonoBehaviour
         });
         CrashDetecter.OnCrash.Subscribe(_=>{
             //OnCrash();
-        });
+        }).AddTo(this);
         CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
             if(this.gameObject.GetInstanceID() != tuple.Item1)return;
             OnCrash();
-        });
+        }).AddTo(this);
 
         
     }

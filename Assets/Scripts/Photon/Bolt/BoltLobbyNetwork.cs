@@ -20,7 +20,7 @@ public class BoltLobbyNetwork : GlobalEventListener
     public static Subject<Unit> OnJoinSession = new Subject<Unit>();
     static BoltLobbyNetwork _instance;
     public BoltConnection playerConnection;
-    ConnectionType connectionType = ConnectionType.Disconnect;
+    public ConnectionType connectionType = ConnectionType.Disconnect;
     public static BoltLobbyNetwork Instance{
         get{
             if(_instance == null){
@@ -260,7 +260,7 @@ public class BoltLobbyNetwork : GlobalEventListener
     public override void BoltShutdownBegin(AddCallback registerDoneCallback, UdpConnectionDisconnectReason disconnectReason){
         Debug.Log("BoltShutdownBegin    ************** "+disconnectReason);
         if(connectionType == ConnectionType.ToCreateServer){
-            BoltLauncher.StartServer();
+            BoltLauncher.StartServer(); 
         }else{
             BoltLauncher.StartClient();
         }

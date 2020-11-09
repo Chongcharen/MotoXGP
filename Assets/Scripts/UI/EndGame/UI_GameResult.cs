@@ -28,6 +28,9 @@ public class UI_GameResult : MonoBehaviour
         b_leaveRoom.OnClickAsObservable().Subscribe(_=>{
             //PhotonNetworkConsole.Instance.LeaveRoom();
             //BoltMatchmaking.CurrentSession.
+            
+            if(BoltLobbyNetwork.Instance.connectionType == ConnectionType.ToCreateServer)
+                BoltLobbyNetwork.Instance.connectionType = ConnectionType.Disconnect;
             BoltLauncher.Shutdown();
             ObjectPool.Instance.Dispose();
             //SceneManager.LoadScene(SceneName.LOBBY);

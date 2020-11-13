@@ -40,6 +40,7 @@ public class Starter : MonoBehaviour
         PhotonVoiceConsole.Instance.Init();
         PlayFabController.Instance.Init();
         GameDataManager.Instance.Init();
+        AdsManager.Instance.Init();
         DownloadData();
         //SceneManager.LoadScene(SceneName.LOBBY);
         // PhotonController.Instance.Init();

@@ -216,7 +216,7 @@ public class Starter : MonoBehaviour
         //OnNotification.OnNext(path);
         //var jsonData = GameUtil.GetTextFromFile(path);
         OnNotification.OnNext("jsonString .."+jsonString);
-        Debug.Log(jsonString);
+        Debug.Log("leveldata json "+jsonString);
         
         // Dictionary<string,object> gameleveldata = JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonString);
         // GameLevelData levelData = JsonConvert.DeserializeObject<GameLevelData>(jsonString);

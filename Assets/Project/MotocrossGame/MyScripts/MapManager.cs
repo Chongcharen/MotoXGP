@@ -63,13 +63,17 @@ public class MapManager : MonoBehaviour {
         camerapointData = new Dictionary<int, Quaternion>();
         respawnData = new Dictionary<int, Vector3>();
         MapModelGenerator.Instance.GenerateMap();
-        localSpawnPosition = MapModelGenerator.Instance.localSpawnPosition;
-        spawnPointsPosition = MapModelGenerator.Instance.spawnPointsPosition.ToArray();
-        MapModelGenerator.Instance.Dispose();
-        SetDeadZone();
-        SetCameraZone();
-        SubscribeEvent();
-        GetComponent<UI_PlayersDistance>().enabled = true;
+
+        MapModelGenerator.OnMapLoadComplete.Subscribe(_=>{
+            localSpawnPosition = MapModelGenerator.Instance.localSpawnPosition;
+            spawnPointsPosition = MapModelGenerator.Instance.spawnPointsPosition.ToArray();
+            MapModelGenerator.Instance.Dispose();
+            SetDeadZone();
+            SetCameraZone();
+            SubscribeEvent();
+            GetComponent<UI_PlayersDistance>().enabled = true;
+        }).AddTo(this);
+        
         //GetComponent<GameNetwork>().enabled = true;
         //PhotonVoiceConsole.Instance.CreateVoiceView();
     }

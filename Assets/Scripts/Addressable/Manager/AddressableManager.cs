@@ -124,7 +124,7 @@ public class AddressableManager : MonoBehaviour
        var task = await Addressables.LoadAssetAsync<T>(name).Task;
     }
     public async Task<T> LoadObject<T>(string name) where T : UnityEngine.Object{
-        Debug.Log("load object name "+name);
+        print(Depug.Log("load object name "+name,Color.green));
         Debug.Log("ContainsKey "+objectDic.ContainsKey(name));
         if(objectDic.ContainsKey(name))
             return (T)objectDic[name];
@@ -138,7 +138,7 @@ public class AddressableManager : MonoBehaviour
                 objectDic.Add(name,handle.Result);
             Debug.Log("after count "+objectDic.Count);
         }else{
-            Debug.LogFormat("Not found "+name +" in addressable Asset");
+            Debug.LogWarning("Not found "+name +" in addressable Asset");
         }
         Debug.Log("Object count "+addressableObjects.Count);
         return handle.Result;

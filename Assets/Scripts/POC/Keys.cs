@@ -121,6 +121,12 @@ public static class AddressableKeys{
     public const string LABEL_ATLAS = "Atlas";
     public const string LABEL_TEXTURE_EQUIPMENT = "Equipment_Texture";
     public const string LABEL_MODEL_EQUIPMENT = "Equipment_Model";
+
+    //map
+    public const string LABEL_MAP_FOREST = "Map_Forest";
+    public const string LABEL_MAP_DESERT = "Map_Desert";
+    public const string LABEL_MAP_BEACH = "Map_Beach";
+
     public const string ATLAS_EQUIPMENT = "atlas_equipment_";
 }
 public static class PopupKeys{

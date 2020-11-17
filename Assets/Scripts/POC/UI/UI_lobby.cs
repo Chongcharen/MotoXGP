@@ -13,6 +13,8 @@ public class UI_lobby : MonoBehaviourPunCallbacks
 {
     [SerializeField]GameObject root;
     [SerializeField]Button b_joinRandomRoom,b_mapviewer,b_playerCustom,b_shop;
+    [SerializeField]Button b_share;
+    [SerializeField]Button b_share_text;
     [SerializeField]Image[] bikeImages;
     [SerializeField]float[] bikeStartScale;
     [SerializeField]float[] bikeStopScale;
@@ -22,6 +24,7 @@ public class UI_lobby : MonoBehaviourPunCallbacks
     public List<Vector3[]> pathList;
 
     void Start(){
+        
         pathList = new List<Vector3[]>();
         pathList.Add(bike0Path);pathList.Add(bike1Path);pathList.Add(bike2Path);
         b_joinRandomRoom.OnClickAsObservable().Subscribe(_=>{
@@ -46,8 +49,37 @@ public class UI_lobby : MonoBehaviourPunCallbacks
                                             AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.BOOT
                                         });
         }).AddTo(this);
+
         b_shop.OnClickAsObservable().Subscribe(_=>{
             PageManager.Instance.OpenShop();
+        }).AddTo(this);
+
+        b_share.OnClickAsObservable().Subscribe(_=>{
+
+            NativeShare.ShareResultCallback p = (result,target) =>
+            {
+                Debug.Log("callback"+result);
+                Debug.Log("target "+target);
+            };
+            new NativeShare().SetSubject("Subject")
+            .SetText("https://play.google.com/store/apps/details?id=com.garena.game.kgth")
+            .SetTitle("title")
+            .SetCallback(p)
+            .Share();
+
+        }).AddTo(this);
+
+        b_share_text.OnClickAsObservable().Subscribe(_=>{
+             NativeShare.ShareResultCallback p = (result,target) =>
+            {
+                Debug.Log("callback"+result);
+                Debug.Log("target "+target);
+            };
+             new NativeShare().SetSubject("Subject ID")
+            .SetText("MotoXGP : "+PlayFabController.Instance.PlayFabId)
+            .SetTitle("tile ID")
+            .SetCallback(p)
+            .Share();
         }).AddTo(this);
     }
     void StartBikeAnimation(){

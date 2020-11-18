@@ -134,3 +134,8 @@ public static class PopupKeys{
     public const string PARAMETER_MESSAGE = "parameter_message";
     public const string PARAMETER_POPUP_HEADER = "parameter_popup_header";
 }
+public class UIName{
+    public const string FRIENDS = "friends";
+    public const string LOGIN = "login";
+    public const string LOBBY = "lobby";
+}

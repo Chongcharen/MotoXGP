@@ -47,7 +47,7 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
     }
     public override void ControlGained(){
         print(Depug.Log("ControlGained client ?"+BoltNetwork.IsClient,Color.cyan));
-        profilemodel = PlayFabController.Instance.playerProfileModel;
+        profilemodel = PlayFabController.Instance.playerProfileModel.Value;
         SetupPlayer();
     }
     public void SetColor(Color _color){

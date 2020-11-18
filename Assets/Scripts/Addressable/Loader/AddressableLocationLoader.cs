@@ -11,7 +11,7 @@ public static class AddressableLocationLoader
         var unloadLocations = await Addressables.LoadResourceLocationsAsync(Labels,Addressables.MergeMode.Union).Task;
         foreach (var location in unloadLocations)
         {
-            Debug.Log("location primary key "+location.PrimaryKey);
+           // Debug.Log("location primary key "+location.PrimaryKey);
             //Debug.Log("dependencies "+location.Dependencies.Count);
             loadedLocations.Add(location);
         }

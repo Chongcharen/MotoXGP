@@ -27,7 +27,8 @@ public class PlayFabController : MonoSingleton<PlayFabController>
     public string entityToken = string.Empty;
     public bool IsLogin = false;
     LoginMode loginMode;
-    public PlayerProfileModel playerProfileModel;
+    public PlayerProfileModel playerProfileModel2;
+    public ReactiveProperty<PlayerProfileModel> playerProfileModel = new ReactiveProperty<PlayerProfileModel>();
     void Start(){
         if(string.IsNullOrEmpty(PlayFabSettings.TitleId)){
             PlayFabSettings.TitleId = "BB6FF";
@@ -234,10 +235,11 @@ public class PlayFabController : MonoSingleton<PlayFabController>
         },
         result => {
                 // Debug.Log("The player's profile data is: " + result.PlayerProfile.PlayerId);
-                // Debug.Log("The player's DisplayName data is: " + result.PlayerProfile.DisplayName);
-                // Debug.Log("The player's AvatarUrl data is: " + result.PlayerProfile.AvatarUrl);
-                playerProfileModel = result.PlayerProfile;
-                PhotonNetwork.NickName = playerProfileModel.DisplayName;
+                Debug.Log("The player's DisplayName data is: " + result.PlayerProfile.DisplayName);
+                Debug.Log("The player's AvatarUrl data is: " + result.PlayerProfile.AvatarUrl);
+                playerProfileModel.Value = result.PlayerProfile;
+                playerProfileModel2 = result.PlayerProfile;
+                PhotonNetwork.NickName = playerProfileModel.Value.DisplayName;
                 IsLogin = true;
                 Debug.Log("Change Nickname "+PhotonNetwork.NickName);
                 OnPlayFabLoginComplete.OnNext(default);
@@ -319,7 +321,7 @@ public class PlayFabController : MonoSingleton<PlayFabController>
          //Test Add Modile In playerHashtable
          Debug.Log("UpdUpdateDataToPhotonPlayerate");
         ExitGames.Client.Photon.Hashtable playerProfilemodel_hashtable = new ExitGames.Client.Photon.Hashtable();
-        playerProfilemodel_hashtable.Add(PlayerPropertiesKey.PLAYFAB_PROFILE,playerProfileModel.ToJson());
+        playerProfilemodel_hashtable.Add(PlayerPropertiesKey.PLAYFAB_PROFILE,playerProfileModel.Value.ToJson());
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerProfilemodel_hashtable);
     }
 }

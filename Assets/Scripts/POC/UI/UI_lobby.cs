@@ -9,9 +9,8 @@ using Photon.Realtime;
 using Photon.Pun;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
-public class UI_lobby : MonoBehaviourPunCallbacks
+public class UI_lobby : UIDisplay
 {
-    [SerializeField]GameObject root;
     [SerializeField]Button b_joinRandomRoom,b_mapviewer,b_playerCustom,b_shop;
     [SerializeField]Button b_share;
     [SerializeField]Button b_share_text;
@@ -24,7 +23,8 @@ public class UI_lobby : MonoBehaviourPunCallbacks
     public List<Vector3[]> pathList;
 
     void Start(){
-        
+        id = UIName.LOBBY;
+        UI_Manager.RegisterUI(this);
         pathList = new List<Vector3[]>();
         pathList.Add(bike0Path);pathList.Add(bike1Path);pathList.Add(bike2Path);
         b_joinRandomRoom.OnClickAsObservable().Subscribe(_=>{
@@ -81,6 +81,7 @@ public class UI_lobby : MonoBehaviourPunCallbacks
             .SetCallback(p)
             .Share();
         }).AddTo(this);
+        
     }
     void StartBikeAnimation(){
        // Sequence sequence = DOTween.Sequence();
@@ -89,9 +90,9 @@ public class UI_lobby : MonoBehaviourPunCallbacks
             //bikeImages[0].rectTransform.anchoredPosition = pathList[0][0];
         });
     }
-    public override void OnJoinedRoom(){
-        root.gameObject.SetActive(false);
-        PageManager.Instance.OpenRoom();
-    }
+    // public override void OnJoinedRoom(){
+    //     root.gameObject.SetActive(false);
+    //     PageManager.Instance.OpenRoom();
+    // }
     
 }

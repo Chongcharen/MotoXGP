@@ -4,9 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UniRx;
-public class UI_Login : MonoBehaviour
+public class UI_Login : UIDisplay
 {
-    [SerializeField]GameObject root;
     [Header("PlayfabLogin")]
     [SerializeField]Button b_facebook_login;
     [SerializeField]Button b_google_login;
@@ -21,9 +20,12 @@ public class UI_Login : MonoBehaviour
                 root.gameObject.SetActive(false);
             PageManager.Instance.OpenLobby();
         }
+        
     }
     void Start(){
         Debug.Log("BoltNetwork.IsConnected "+BoltNetwork.IsConnected);
+        id = UIName.LOGIN;
+        UI_Manager.RegisterUI(this);
         if(PlayFabController.Instance.IsLogin){
             OpenLobby();
         }

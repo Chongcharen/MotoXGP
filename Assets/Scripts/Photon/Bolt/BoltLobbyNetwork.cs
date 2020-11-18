@@ -65,7 +65,7 @@ public class BoltLobbyNetwork : GlobalEventListener
 
         var playerData = new PlayerProfileToken();
         //playerData.playerBikeData.playerFinishTime = 99999999;
-        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
+        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
         playerData.RandomBikeData();
         Debug.Log("playerdata "+playerData.playerBikeData);
         Debug.Log("model "+playerData.playerProfileModel);
@@ -144,7 +144,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         // playerCustom.bike_texture_id = 3;
         var playerData = new PlayerProfileToken();
         //playerData.playerBikeData.playerFinishTime = 99999999;
-        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
+        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
         playerData.RandomBikeData();
         // token เป็น playerdata แล้ว join ห้องเดียวกันไมไ่ด้ งง
         
@@ -172,7 +172,6 @@ public class BoltLobbyNetwork : GlobalEventListener
     public void StartGamePlay(){
         //BoltNetwork.LoadScene(SceneName.GAME_PLAY);
     }
-    
     public override void SessionCreatedOrUpdated(UdpKit.UdpSession session){
         Debug.Log("----------SessionCreatedOrUpdated--------"+session);
         

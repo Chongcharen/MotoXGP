@@ -125,7 +125,11 @@ public class MapModelGenerator : MonoSingleton<MapModelGenerator>
         {
             var objectPath = gamePath+objectData.prefabName;
             var objectResource = await AddressableManager.Instance.LoadObject<GameObject>(objectPath+".prefab");
-            var prefab = ObjectPool.Instance.GetObjectFormPool(objectPath);
+             if(objectResource == null){
+                Debug.LogError("Noit found prefab "+objectPath+" in folder");
+                continue;
+            }
+            var prefab = Instantiate(objectResource);
             if(prefab != null){
                 prefab.gameObject.SetActive(true);
                 prefab.transform.SetParent(environment.transform);

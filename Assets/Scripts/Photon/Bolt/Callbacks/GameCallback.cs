@@ -43,7 +43,7 @@ public class GameCallback : GlobalEventListener
             var player = BikePlayerRegistry.GetBikePlayer(BoltNetwork.Server);
             print(Depug.Log("player "+player,Color.green));
             var playerData = new PlayerProfileToken();
-            playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
+            playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
             playerData.RandomBikeData();
             playerData.playerBikeData.runningTrack = player.index;
             print(Depug.Log("spawnpoint position "+MapManager.Instance.spawnPointsPosition.Count(),Color.blue));
@@ -66,7 +66,7 @@ public class GameCallback : GlobalEventListener
     public override void OnEvent(RaceTrackEvent evnt){
         print(Depug.Log("RaceTrackEvent "+evnt.TrankIndex,Color.green));
         var playerData = new PlayerProfileToken();
-            playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel;
+            playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
             playerData.RandomBikeData();
             playerData.playerBikeData.runningTrack = evnt.TrankIndex;
     }

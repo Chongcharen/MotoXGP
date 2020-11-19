@@ -21,4 +21,12 @@ public static class GameUtil
         var streamReader = new StreamReader(filePath);
         return streamReader.ReadToEnd();
     }
+
+    public static void ClearContent(Transform content){
+        for (var i = 0; i < content.childCount; i++)
+        {
+            if(content.GetChild(0) != null)
+                Object.Destroy(content.GetChild(0).gameObject);
+        }
+    }
 }

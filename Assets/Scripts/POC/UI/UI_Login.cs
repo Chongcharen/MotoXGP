@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Threading.Tasks;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ using UniRx;
 public class UI_Login : UIDisplay
 {
     [Header("PlayfabLogin")]
+    [SerializeField]Image fader;
     [SerializeField]Button b_facebook_login;
     [SerializeField]Button b_google_login;
     [SerializeField]Button b_guest_login;
@@ -16,18 +18,25 @@ public class UI_Login : UIDisplay
 
     void Awake(){
         if(PhotonNetworkConsole.Instance.isConnected){
-            if(root != null)
-                root.gameObject.SetActive(false);
-            PageManager.Instance.OpenLobby();
+            // if(root != null)
+            //     root.gameObject.SetActive(false);
+            //PageManager.Instance.OpenLobby();
+           OpenLobbyWithDelay(2);
         }
         
+    }
+    private void OnEnable()
+    {
+         fader.enabled = true;
     }
     void Start(){
         Debug.Log("BoltNetwork.IsConnected "+BoltNetwork.IsConnected);
         id = UIName.LOGIN;
         UI_Manager.RegisterUI(this);
         if(PlayFabController.Instance.IsLogin){
-            OpenLobby();
+            OpenLobbyWithDelay(2);
+        }else{
+            fader.enabled = false;
         }
         // b_connect.OnClickAsObservable().Subscribe(_=>{
         //     if(string.IsNullOrEmpty(input_name.text))return;
@@ -39,7 +48,7 @@ public class UI_Login : UIDisplay
         //         b_google_login.gameObject.SetActive(false);
         // });
         PhotonNetworkConsole.OnConnectedServer.Subscribe(connected =>{
-            OpenLobby();
+            OpenLobbyWithDelay(2);
         }).AddTo(this);
         
         // b_google_login.OnClickAsObservable().Subscribe(_=>{
@@ -63,9 +72,15 @@ public class UI_Login : UIDisplay
         }).AddTo(this);
 
     }
-    void OpenLobby(){
-        if(root != null)
-                root.gameObject.SetActive(false);
-            PageManager.Instance.OpenLobby();
+    // void OpenLobby(){
+    //     Debug.Log("Open Lobby");
+    //     UI_Manager.OpenUI(UIName.LOBBY);
+    //     // if(root != null)
+    //     //         root.gameObject.SetActive(false);
+    //     //     PageManager.Instance.OpenLobby();
+    // }
+    async void OpenLobbyWithDelay(int millisecoundDelay){
+        await Task.Delay(millisecoundDelay);
+         UI_Manager.OpenUI(UIName.LOBBY);
     }
 }

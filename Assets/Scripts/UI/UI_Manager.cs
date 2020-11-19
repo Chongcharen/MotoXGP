@@ -5,14 +5,24 @@ using UnityEngine.UI;
 using UniRx;
 using System.Linq;
 using Bolt;
-public class UI_Manager : GlobalEventListener
+using Photon.Pun;
+
+public class UI_Manager : MonoBehaviourPunCallbacks
 {
     public static UI_Manager Instance; 
     public Dictionary<string,UIDisplay> ui_dictionary;
     private void Awake()
     {
         Instance = this;    
+        SceneFlow.Instance.StartScene();
         ui_dictionary = new Dictionary<string, UIDisplay>();
+        
+        BoltLobbyNetwork.OnBoltConnected.Subscribe(_=>{
+            OpenUI(UIName.LOBBY);
+        }).AddTo(this);
+        LobbyClientCallback.OnJoinSession.Subscribe(_=>{
+            OpenUI(UIName.ROOM);
+        }).AddTo(this);
     }
     public void Open_UI_Friend(){
         
@@ -26,6 +36,8 @@ public class UI_Manager : GlobalEventListener
             Instance.ui_dictionary.Remove(displayUI.id);
     }
     public static void OpenUI(string ui_name_key){
+        Debug.Log("Open UI "+ui_name_key);
+        Debug.Log("contain "+Instance.ui_dictionary.ContainsKey(ui_name_key));
         if(Instance.ui_dictionary.ContainsKey(ui_name_key)){
             var openList = from list in Instance.ui_dictionary
                         where list.Value.root.activeSelf
@@ -36,5 +48,8 @@ public class UI_Manager : GlobalEventListener
             }
             Instance.ui_dictionary.Values.First(u =>u.id == ui_name_key).Open();
         }
+    }
+    public override void OnJoinedRoom(){
+        OpenUI(UIName.ROOM);
     }
 }

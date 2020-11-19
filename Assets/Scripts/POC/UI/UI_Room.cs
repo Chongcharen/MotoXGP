@@ -14,17 +14,19 @@ using PlayFab.ClientModels;
 using Newtonsoft.Json;
 
 // ตอนนี้ Userid ยังใช้ไมไ่ด้เพราะ ยังไมไ่ด้มีการเซ็ต user เลยต้องใช้ nickname ไปก่อน
-public class UI_Room : MonoBehaviourPunCallbacks
+public class UI_Room : UIDisplay
 {
-    [SerializeField]GameObject root;
     [SerializeField]Button b_leave,b_playGame;
     [SerializeField]Transform contentTransform;
     [SerializeField]PlayerInRoom_Prefab[] playersData;
     [SerializeField]Color[] playerColor;
     List<PlayerInRoom_Prefab> players = new List<PlayerInRoom_Prefab>();
+    [SerializeField]UI_GameRoom UI_GameRoom;
     // Start is called before the first frame update
     void Start()
     {
+        id = UIName.ROOM;
+        UI_Manager.RegisterUI(this);
         Debug.Log("UI Room start");
         b_leave.OnClickAsObservable().Subscribe(_=>{
             //PhotonNetwork.LeaveRoom(); 
@@ -145,35 +147,35 @@ public class UI_Room : MonoBehaviourPunCallbacks
         //PhotonNetwork.CurrentRoom.SetCustomProperties();
     }
 
-    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged){
-        foreach (var item in propertiesThatChanged)
-        {
-            Debug.Log(string.Format("Change Key : {0} , Value {1}",item.Key,item.Value));
-            if(item.Key.ToString() == RoomPropertyKeys.PLAYER_DATA){
-                ExitGames.Client.Photon.Hashtable playerDataHash = item.Value as ExitGames.Client.Photon.Hashtable;
-                Debug.Log("playerdata hash count "+playerDataHash.Count);
-                foreach (var playerData in playerDataHash)
-                {
-                    Debug.Log(string.Format("Playerdata key : {0} , value : {1}",playerData.Key,playerData.Value));
-                }
-            }
-            if(item.Key.ToString() == RoomPropertyKeys.PLAYER_INDEX){
-                ExitGames.Client.Photon.Hashtable playerIndex_hash = item.Value as ExitGames.Client.Photon.Hashtable;
-                foreach (var index in playerIndex_hash)
-                {
-                     Debug.Log(string.Format("playerIndex_hash Key : {0} , Value {1}",item.Key,item.Value));
-                }
-            }
-        }
-        var playerindexHashtable = PhotonNetwork.CurrentRoom.CustomProperties[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
-        if(playerindexHashtable != null){
-             Debug.Log("playerindexHashtable total "+playerindexHashtable);
-        }
-        if(propertiesThatChanged.ContainsKey(RoomPropertyKeys.GAME_START)){
-            if((bool)propertiesThatChanged[RoomPropertyKeys.GAME_START])
-                PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
-        }
-    }
+    // public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged){
+    //     foreach (var item in propertiesThatChanged)
+    //     {
+    //         Debug.Log(string.Format("Change Key : {0} , Value {1}",item.Key,item.Value));
+    //         if(item.Key.ToString() == RoomPropertyKeys.PLAYER_DATA){
+    //             ExitGames.Client.Photon.Hashtable playerDataHash = item.Value as ExitGames.Client.Photon.Hashtable;
+    //             Debug.Log("playerdata hash count "+playerDataHash.Count);
+    //             foreach (var playerData in playerDataHash)
+    //             {
+    //                 Debug.Log(string.Format("Playerdata key : {0} , value : {1}",playerData.Key,playerData.Value));
+    //             }
+    //         }
+    //         if(item.Key.ToString() == RoomPropertyKeys.PLAYER_INDEX){
+    //             ExitGames.Client.Photon.Hashtable playerIndex_hash = item.Value as ExitGames.Client.Photon.Hashtable;
+    //             foreach (var index in playerIndex_hash)
+    //             {
+    //                  Debug.Log(string.Format("playerIndex_hash Key : {0} , Value {1}",item.Key,item.Value));
+    //             }
+    //         }
+    //     }
+    //     var playerindexHashtable = PhotonNetwork.CurrentRoom.CustomProperties[RoomPropertyKeys.PLAYER_INDEX] as Hashtable;
+    //     if(playerindexHashtable != null){
+    //          Debug.Log("playerindexHashtable total "+playerindexHashtable);
+    //     }
+    //     if(propertiesThatChanged.ContainsKey(RoomPropertyKeys.GAME_START)){
+    //         if((bool)propertiesThatChanged[RoomPropertyKeys.GAME_START])
+    //             PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
+    //     }
+    // }
     // public override void OnLeftRoom(){
     //     if(root != null)
     //         root.gameObject.SetActive(false);

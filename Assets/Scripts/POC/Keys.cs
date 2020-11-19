@@ -138,4 +138,7 @@ public class UIName{
     public const string FRIENDS = "friends";
     public const string LOGIN = "login";
     public const string LOBBY = "lobby";
+    public const string ROOM = "room";
+    public const string SHOP = "shop";
+
 }

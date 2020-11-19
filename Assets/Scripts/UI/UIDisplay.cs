@@ -6,7 +6,6 @@ using UniRx;
 
 public abstract class UIDisplay : MonoBehaviour
 {
-    public static Subject<UIDisplay> OnRegister = new Subject<UIDisplay>();
     public GameObject root;
     public string id;
     public virtual void Open(){

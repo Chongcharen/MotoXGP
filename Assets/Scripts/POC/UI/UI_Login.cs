@@ -55,10 +55,20 @@ public class UI_Login : UIDisplay
         //     PlayFabController.Instance.LoginWithGoogle();
         // });
         b_facebook_login.OnClickAsObservable().Subscribe(_=>{
+            Popup_Loading.Launch();
             PlayFabController.Instance.LoginWithFacebook();
+            var parameter = new Dictionary<string,object>();
+            parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Logging...");
+            parameter.Add(PopupKeys.PARAMETER_MESSAGE,"Logging Please Wait");
+            Popup_Login.Launch(parameter);
         }).AddTo(this);
         b_guest_login.OnClickAsObservable().Subscribe(_=>{
+            Popup_Loading.Launch();
             PlayFabController.Instance.LoginWithDeviceId();
+            var parameter = new Dictionary<string,object>();
+            parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Logging...");
+            parameter.Add(PopupKeys.PARAMETER_MESSAGE,"Logging Please Wait");
+            Popup_Login.Launch(parameter);
         });
         PlayFabController.OnPlayFabLoginComplete.Subscribe(_=>{
             AddressableManager.Instance.Init();

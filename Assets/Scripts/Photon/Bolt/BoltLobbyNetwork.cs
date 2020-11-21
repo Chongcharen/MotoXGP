@@ -18,6 +18,7 @@ public class BoltLobbyNetwork : GlobalEventListener
 {
     public static Subject<Unit> OnBoltConnected = new Subject<Unit>();
     public static Subject<Unit> OnJoinSession = new Subject<Unit>();
+    public static Subject<Unit> OnSessionEndProgress = new Subject<Unit>();
     static BoltLobbyNetwork _instance;
     public BoltConnection playerConnection;
     public ConnectionType connectionType = ConnectionType.Disconnect;
@@ -49,7 +50,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         var parameter = new Dictionary<string,object>();
         parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Connect Server");
         parameter.Add(PopupKeys.PARAMETER_MESSAGE,"Connect Client");
-        Popup_BoltConnect.Launch(parameter);
+        //Popup_BoltConnect.Launch(parameter);
         BoltLauncher.StartClient();
     }
     public void JoinRandomSession(Bolt.Photon.PhotonRoomProperties roomProperties){
@@ -71,6 +72,14 @@ public class BoltLobbyNetwork : GlobalEventListener
         Debug.Log("model "+playerData.playerProfileModel);
         Debug.Log("filter "+filter);
         BoltMatchmaking.JoinRandomSession(filter,playerData);
+        CallPopupForWaiting("ระบบกำลัง ค้นหาห้อง โปรดรอสักครู่");
+    }
+    void CallPopupForWaiting(string messageDetail){
+        Popup_Loading.Launch();
+        var parameter = new Dictionary<string,object>();
+        parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"JoinRoom");
+        parameter.Add(PopupKeys.PARAMETER_MESSAGE,messageDetail);
+        Popup_JoinGameRoom.Launch(parameter);
     }
     public void JoinSession(UdpKit.UdpSession session){
 
@@ -151,6 +160,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         BoltMatchmaking.CreateSession(
             sessionID: matchName,token:customToken,null,customToken
         );
+        CallPopupForWaiting("ระบบกำลัง สร้างห้อง โปรดรอสักครู่");
     }
     
     public override void Connected(BoltConnection connection){
@@ -188,6 +198,7 @@ public class BoltLobbyNetwork : GlobalEventListener
             Debug.LogFormat("Key : {0} , Value : {1}",ss.Key,ss.Value);
            // GUIDebug.Log("Key : "+ss.Key+" , Value : "+ss.Value);
         }
+        OnSessionEndProgress.OnNext(default);
         // print(Depug.Log("LobbyServerCallback connection ",Color.white));
         // print(Depug.Log("LobbyServerCallback Server "+BoltNetwork.Server,Color.white));
         // print(Depug.Log("LobbyServerCallback ConnectToken "+BoltNetwork.Server.ConnectToken,Color.white));
@@ -252,9 +263,11 @@ public class BoltLobbyNetwork : GlobalEventListener
                 break;
 
         }
+         OnSessionEndProgress.OnNext(default);
     }
     public override void BoltStartFailed(UdpKit.UdpConnectionDisconnectReason disconnectReason){
         Debug.Log("BoltStartFailed .............. "+disconnectReason);
+         OnSessionEndProgress.OnNext(default);
     }
     public override void BoltShutdownBegin(AddCallback registerDoneCallback, UdpConnectionDisconnectReason disconnectReason){
         Debug.Log("BoltShutdownBegin    ************** "+disconnectReason);
@@ -263,16 +276,20 @@ public class BoltLobbyNetwork : GlobalEventListener
         }else{
             BoltLauncher.StartClient();
         }
+         OnSessionEndProgress.OnNext(default);
     }
     public override void ConnectFailed(UdpKit.UdpEndPoint endpoint, IProtocolToken token){
         Debug.Log("0000000000000000   Connect Failed 0000000000000"+endpoint.Address);
+         OnSessionEndProgress.OnNext(default);
     }
     public override void Disconnected(BoltConnection connection){
         Debug.Log("Disconnected");
+         OnSessionEndProgress.OnNext(default);
         
     }
     public override void SessionCreationFailed(UdpKit.UdpSession session, UdpKit.UdpSessionError errorReason){
         Debug.Log("SessionCreationFailed ............"+session+" reason "+errorReason);
+         OnSessionEndProgress.OnNext(default);
     }
     #endregion
 

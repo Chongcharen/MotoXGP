@@ -14,6 +14,7 @@ public class UI_lobby : UIDisplay
     [Header("Navigator To UI")]
     [SerializeField]Button b_friend;
     [SerializeField]Button b_shop;
+    [SerializeField]Button b_profile;
     [Header(".")]
     [SerializeField]Button b_joinRandomRoom,b_mapviewer,b_playerCustom;
     [SerializeField]Button b_share;
@@ -55,14 +56,17 @@ public class UI_lobby : UIDisplay
                                         });
         }).AddTo(this);
 
+        //Change UI
         b_shop.OnClickAsObservable().Subscribe(_=>{
-           // PageManager.Instance.OpenShop();
            UI_Manager.OpenUI(UIName.SHOP);
         }).AddTo(this);
         b_friend.OnClickAsObservable().Subscribe(_=>{
             UI_Manager.OpenUI(UIName.FRIENDS);
         }).AddTo(this);
-
+        b_profile.OnClickAsObservable().Subscribe(_=>{
+            UI_Manager.OpenUI(UIName.PROFILE);
+        }).AddTo(this);
+        //
         b_share.OnClickAsObservable().Subscribe(_=>{
 
             NativeShare.ShareResultCallback p = (result,target) =>
@@ -79,7 +83,7 @@ public class UI_lobby : UIDisplay
         }).AddTo(this);
 
         b_share_text.OnClickAsObservable().Subscribe(_=>{
-             NativeShare.ShareResultCallback p = (result,target) =>
+            NativeShare.ShareResultCallback p = (result,target) =>
             {
                 Debug.Log("callback"+result);
                 Debug.Log("target "+target);

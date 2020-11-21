@@ -131,6 +131,9 @@ public static class AddressableKeys{
 }
 public static class PopupKeys{
     public const string POPUP_BOLT_CONNECT = "popup_bolt_connect";
+    public const string POPUP_LOGIN = "Popup_Login";
+    public const string POPUP_JOINGAMEROOM = "Popup_JoinGameRoom";
+    public const string POPUP_LOADING = "Popup_Loading";
     public const string PARAMETER_MESSAGE = "parameter_message";
     public const string PARAMETER_POPUP_HEADER = "parameter_popup_header";
 }
@@ -140,5 +143,6 @@ public class UIName{
     public const string LOBBY = "lobby";
     public const string ROOM = "room";
     public const string SHOP = "shop";
+    public const string PROFILE = "profile";
 
 }

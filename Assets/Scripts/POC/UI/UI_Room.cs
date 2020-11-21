@@ -35,6 +35,7 @@ public class UI_Room : UIDisplay
             // }else{
                 
             // }
+            Popup_Loading.Launch();
             BoltLobbyNetwork.Instance.Shutdown(ConnectionType.Disconnect);
         }).AddTo(this);
         b_playGame.OnClickAsObservable().Subscribe(_=>{

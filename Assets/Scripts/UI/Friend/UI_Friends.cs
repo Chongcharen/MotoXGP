@@ -10,11 +10,11 @@ public class UI_Friends : UIDisplay
 {
     public Transform content;
     public GameObject FriendDetailPrefab;
-    public GameObject objectFindFriend;
     public Button b_back,b_clear_input,b_search;
     public TMP_InputField input_searchName;
     public Toggle t_friend,t_friendRequest,t_addFriend;
     public FriendListKey friendMode = FriendListKey.Friend;
+
     private void Start()
     {
         id = UIName.FRIENDS;
@@ -41,7 +41,9 @@ public class UI_Friends : UIDisplay
             });
         });
         t_addFriend.onValueChanged.AddListener(_=>{
-            objectFindFriend.gameObject.SetActive(_);
+            b_clear_input.interactable = _;
+            b_search.interactable = _;
+            input_searchName.interactable = _;
             if(!_)return;
             GameUtil.ClearContent(content);
         });

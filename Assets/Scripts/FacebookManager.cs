@@ -39,8 +39,9 @@ public class FacebookManager : MonoSingleton<FacebookManager>
 
     public void Login(){
         Depug.Log("Facebook Login ",Color.green);
-        var perms = new List<string>(){"public_profile", "email"};
+        var perms = new List<string>(){"public_profile", "email","user_friends"};
         FB.LogInWithReadPermissions(perms, AuthCallback);
+        //FB.LogInWithPublishPermissions(perms,AuthCallback);
     }
     private void AuthCallback (ILoginResult result) {
     if (FB.IsLoggedIn) {

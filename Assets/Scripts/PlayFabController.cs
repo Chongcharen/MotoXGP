@@ -27,7 +27,6 @@ public class PlayFabController : MonoSingleton<PlayFabController>
     public string entityToken = string.Empty;
     public bool IsLogin = false;
     LoginMode loginMode;
-    public PlayerProfileModel playerProfileModel2;
     public ReactiveProperty<PlayerProfileModel> playerProfileModel = new ReactiveProperty<PlayerProfileModel>();
     void Start(){
         if(string.IsNullOrEmpty(PlayFabSettings.TitleId)){
@@ -238,7 +237,6 @@ public class PlayFabController : MonoSingleton<PlayFabController>
                 Debug.Log("The player's DisplayName data is: " + result.PlayerProfile.DisplayName);
                 Debug.Log("The player's AvatarUrl data is: " + result.PlayerProfile.AvatarUrl);
                 playerProfileModel.Value = result.PlayerProfile;
-                playerProfileModel2 = result.PlayerProfile;
                 PhotonNetwork.NickName = playerProfileModel.Value.DisplayName;
                 IsLogin = true;
                 Debug.Log("Change Nickname "+PhotonNetwork.NickName);

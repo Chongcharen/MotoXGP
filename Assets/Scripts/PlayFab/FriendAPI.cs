@@ -46,8 +46,10 @@ public static class FriendAPI
         var getFriendListRequest = new GetFriendsListRequest(){
             ProfileConstraints = new PlayerProfileViewConstraints() {
                 ShowDisplayName = true,
-                ShowAvatarUrl = true
-            }
+                ShowAvatarUrl = true,
+            },
+            IncludeFacebookFriends = true,
+            IncludeSteamFriends = true
         };
         PlayFabClientAPI.GetFriendsList(getFriendListRequest,result=>{
             //OnGetFriendResult(result);

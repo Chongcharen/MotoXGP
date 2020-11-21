@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 
 public abstract class Popup : MonoBehaviour
 {
+
     public static Dictionary<string, object> parameter;
     //Oncreated use when this class create
     public abstract void OnCreated();

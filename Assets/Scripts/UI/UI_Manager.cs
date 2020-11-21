@@ -38,6 +38,7 @@ public class UI_Manager : MonoBehaviourPunCallbacks
     public static void OpenUI(string ui_name_key){
         Debug.Log("Open UI "+ui_name_key);
         Debug.Log("contain "+Instance.ui_dictionary.ContainsKey(ui_name_key));
+        Popup_Loading.Launch();
         if(Instance.ui_dictionary.ContainsKey(ui_name_key)){
             var openList = from list in Instance.ui_dictionary
                         where list.Value.root.activeSelf

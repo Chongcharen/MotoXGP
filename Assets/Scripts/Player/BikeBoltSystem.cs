@@ -432,13 +432,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
             
             if(component.drive && grounded&&!brake){
-                // if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
-                //     var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
-                //     component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
-                // }else{
-                //     component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
-                // }
-                 component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
+                if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
+                    var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                    component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
+                }else{
+                    component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
+                }
+                 //component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
             }
             if(component.drive && accel == 0){
                 ReleaseTorque();

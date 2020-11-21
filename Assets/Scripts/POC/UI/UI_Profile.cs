@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using TMPro;
-public class UI_Profile : MonoBehaviour
+public class UI_Profile : UIDisplay
 {
     [SerializeField]Button b_back;
     [SerializeField]Button b_share_id;
@@ -14,16 +14,29 @@ public class UI_Profile : MonoBehaviour
     bool hasObserve = false;
     private void Start()
     {
+        id = UIName.PROFILE;
+        UI_Manager.RegisterUI(this);
         b_back.OnClickAsObservable().Subscribe(_=>{
-
+            UI_Manager.OpenUI(UIName.LOBBY);
         }).AddTo(this);
         b_share_id.OnClickAsObservable().Subscribe(_=>{
-
+            NativeShare.ShareResultCallback p = (result,target) =>
+            {
+                Debug.Log("callback"+result);
+                Debug.Log("target "+target);
+                
+            };
+            new NativeShare().SetSubject("Share MotoXGP ID with")
+            .SetText(PlayFabController.Instance.PlayFabId)
+            .SetTitle("Share MotoXGP ID")
+            .SetCallback(p)
+            .Share();
         }).AddTo(this);
         PlayFabController.Instance.playerProfileModel.AsObservable().Subscribe(p=>{
             if( p == null&&hasObserve)return;
              PlayFabController.Instance.playerProfileModel.Value.ObserveEveryValueChanged(v =>v.DisplayName).Subscribe(_=>{
                 txt_displayName.text = PlayFabController.Instance.playerProfileModel.Value.DisplayName;
+                txt_playfabId.text = PlayFabController.Instance.playerProfileModel.Value.PlayerId;
             }).AddTo(this);
 
             PlayFabController.Instance.playerProfileModel.Value.ObserveEveryValueChanged(i => i.AvatarUrl).Subscribe(_=>{

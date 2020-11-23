@@ -27,8 +27,8 @@ public class GameDataManager : MonoSingleton<GameDataManager>
             gameConfigData = _;
             Debug.Log("gameConfigData "+gameConfigData.photonNetworkConfig.gameVersion);
             Debug.Log("gameConfigData "+gameConfigData.photonNetworkConfig.sendRate);
-            Depug.Log("path"+gameConfigData.dataPath.equipment,Color.blue);
-            Debug.Log("gameConfigData 111"+gameConfigData.dataPath.equipment);
+            Depug.Log("path"+gameConfigData.dataPath.equipment_models,Color.blue);
+            Debug.Log("gameConfigData 111"+gameConfigData.dataPath.equipment_textures);
         }).AddTo(this);
     }
     public void SetUpGameLevel(int themeIndex,int stageIndex,int levelIndex,int _nosCount){

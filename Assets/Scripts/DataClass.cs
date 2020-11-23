@@ -126,7 +126,9 @@ public class PhotonNetworkConfigData{
 }
 [System.Serializable]
 public class DataPath{
-    public string equipment;
+    public string equipment_models;
+    public string equipment_materials;
+    public string equipment_textures;
 }
 
 //PlayerData

@@ -22,6 +22,7 @@ public class UI_PlayerCustom : MonoBehaviour
 
         //                 });
         b_back.OnClickAsObservable().Subscribe(_=>{
+            
             SceneDownloadAsset.LoadScene(SceneName.LOBBY);
         }).AddTo(this);
     }

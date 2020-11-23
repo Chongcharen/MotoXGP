@@ -18,7 +18,7 @@ public class AddressableManager : MonoBehaviour
     static AddressableManager _instance;
 
     public string Label = "product";
-    public List<object> Labels = new List<object>{AddressableKeys.LABEL_MODEL_EQUIPMENT,AddressableKeys.LABEL_TEXTURE_EQUIPMENT,AddressableKeys.LABEL_ATLAS};
+    public List<object> Labels = new List<object>{AddressableKeys.LABEL_MODEL_EQUIPMENT,AddressableKeys.LABEL_TEXTURE_EQUIPMENT_SD,AddressableKeys.LABEL_ATLAS};
     List<IResourceLocation> assetLocations {get;}= new List<IResourceLocation>();
     Dictionary<string,IList<IResourceLocation>> resourceLocationLabel = new Dictionary<string, IList<IResourceLocation>>();
     List<GameObject> assets = new List<GameObject>();
@@ -166,6 +166,7 @@ public class AddressableManager : MonoBehaviour
     public void ReleaseObjects(){
         foreach (var item in addressableObjects)
         {
+            Debug.Log("ReleaseObjects name "+item);
             Addressables.Release(item);
         }
         addressableObjects.Clear();
@@ -174,14 +175,16 @@ public class AddressableManager : MonoBehaviour
     public void ClearDictionaryAsset(){
         foreach (var item in objectDic.Values)
         {
+            Debug.Log("ClearAsset name "+item);
             Addressables.Release(item);
         }
         objectDic.Clear();
     }
     public void ClearAllAssets(){
         ReleaseObjects();
-        ClearGameObjects();
         ClearDictionaryAsset();
+        ClearGameObjects();
+        
         AssetObjects.ClearGameObjects();
         Debug.Log("clear count "+assets.Count);
     }

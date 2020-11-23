@@ -119,7 +119,8 @@ public static class EquipmentKeys{
 }
 public static class AddressableKeys{
     public const string LABEL_ATLAS = "Atlas";
-    public const string LABEL_TEXTURE_EQUIPMENT = "Equipment_Texture";
+    public const string LABEL_TEXTURE_EQUIPMENT_HD = "Equipment_Texture_HD";
+    public const string LABEL_TEXTURE_EQUIPMENT_SD = "Equipment_Texture_SD";
     public const string LABEL_MODEL_EQUIPMENT = "Equipment_Model";
 
     //map

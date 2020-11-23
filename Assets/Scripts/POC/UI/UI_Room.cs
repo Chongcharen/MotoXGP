@@ -139,10 +139,9 @@ public class UI_Room : UIDisplay
         //PhotonNetwork.LoadLevel(SceneName.GAMEPLAY);
         SceneDownloadAsset.LoadScene(SceneName.GAMEPLAY, 
                     new List<string>{
-                    AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.HELMET,
-                    AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.GLOVE,
-                    AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.SUIT,
-                    AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.BOOT}
+                        AddressableKeys.LABEL_MODEL_EQUIPMENT,
+                        AddressableKeys.LABEL_TEXTURE_EQUIPMENT_SD
+                    }
                     ,true);
         //BoltNetwork.LoadScene(SceneName.GAMEPLAY);
         //PhotonNetwork.CurrentRoom.SetCustomProperties();

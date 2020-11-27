@@ -13434,8 +13434,8 @@ Rigidbody:
   m_GameObject: {fileID: 5581475483137713487}
   serializedVersion: 2
   m_Mass: 1000
-  m_Drag: 0.01
-  m_AngularDrag: 5
+  m_Drag: 0.05
+  m_AngularDrag: 2.5
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 1
@@ -13453,6 +13453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 555cbdaf32ec09247806701f87b6e2e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BikeStatus: 0
   startPosition: {x: 0, y: 0, z: 0}
   bodyCollider: {fileID: 5581475483805622445}
   objectDetecter: {fileID: 5581475483877303438}
@@ -13468,7 +13469,7 @@ MonoBehaviour:
       Weight: 1000
       SuspensionDistance: 0.23
       ForceAppointDistance: 0
-      DampingRate: 0.25
+      DampingRate: 0.3
       WheelCenter: {x: 0, y: 0.2, z: -0.04}
       ForwardFriction:
         extremumSlip: 1
@@ -13490,7 +13491,7 @@ MonoBehaviour:
       Weight: 1000
       SuspensionDistance: 0.3
       ForceAppointDistance: 0
-      DampingRate: 0.25
+      DampingRate: 0.3
       WheelCenter: {x: 0, y: 0.2, z: 0}
       ForwardFriction:
         extremumSlip: 1
@@ -13553,7 +13554,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 40.06305
+      time: 40.512817
       value: 1502.7031
       inSlope: 0
       outSlope: 0
@@ -13562,8 +13563,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 60
-      value: -300
+      time: 69.54239
+      value: -1930.57
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -13614,7 +13615,7 @@ MonoBehaviour:
   boostTimeLimit: 3
   boostDelay: 2
   lower_gear_force: 5
-  airBrake: 0
+  airBrake: 250
   downforce: 1
   diffGearing: 4
   positionExplode: {x: 0, y: 0, z: 0}
@@ -13645,6 +13646,7 @@ MonoBehaviour:
   canvas: {fileID: 700879060723633499}
   playerName_txt: {fileID: 1776579072936699170}
   runningTrack: 0
+  currentTorque: 0
 --- !u!114 &5581475483137713486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14076,7 +14078,7 @@ GameObject:
   - component: {fileID: 5581475483805622444}
   - component: {fileID: 5581475483805622445}
   m_Layer: 9
-  m_Name: PlayerCollider
+  m_Name: unnameCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

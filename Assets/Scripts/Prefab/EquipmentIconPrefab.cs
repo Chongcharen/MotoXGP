@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Drawing;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,6 +11,7 @@ using UnityEngine.U2D;
 public class EquipmentIconPrefab : MonoBehaviour
 {
     public static Subject<EquipmentTrack> OnEquipmentChanged = new Subject<EquipmentTrack>();
+    public Image frameicon;
     public TextMeshProUGUI price_txt;
     public Image img_icon,img_overlay,img_coin;
     public Toggle toggle;
@@ -32,6 +34,11 @@ public class EquipmentIconPrefab : MonoBehaviour
         // Debug.Log("atlasSprite "+atlasSprite);
         // Debug.Log("data.icon_name "+data.icon_name);
         img_icon.sprite = atlasSprite.GetSprite(data.icon_name);
+        
+        toggle.interactable = !data.locked;
+        img_icon.color = data.locked ? Color.black : Color.white;
+        frameicon.enabled = !data.locked;
+        
         if( _data.price > 0){
             price_txt.text = _data.price.ToString();
             img_overlay.enabled = true;

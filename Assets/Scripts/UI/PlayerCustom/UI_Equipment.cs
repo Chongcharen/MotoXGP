@@ -8,7 +8,7 @@ using System.Linq;
 using Cinemachine;
 using DG.Tweening;
 using UnityEngine.U2D;
-
+using TMPro;
 public class UI_Equipment : MonoBehaviour
 {
     [SerializeField]Button b_clearScreen;
@@ -21,6 +21,7 @@ public class UI_Equipment : MonoBehaviour
     [SerializeField]GameObject equipment_suit_prefab;
     [SerializeField]CinemachineVirtualCamera virtualCamera;
     [SerializeField]GameObject[] ui_panels;
+    [SerializeField]GameObject ui_bike;
     [SerializeField]Transform character_object;
     [SerializeField]Transform character_equipement_view;
     CinemachineTransposer CinemachineTransposer;
@@ -28,6 +29,10 @@ public class UI_Equipment : MonoBehaviour
     public float character_screenX_center = 0.5f;
     public float character_screenX_shift_left = 0.3f;
     public Toggle[] toggles;
+    [Header("Bike Toggles")]
+    public Toggle[] toggles_bike;
+    public GameObject[] bike_status;
+    public TextMeshProUGUI[] txt_bike_index;
     public ToggleGroup equipment_toggle_group;
     int equipmentIndex=-1;
     bool isClearScreen = false;
@@ -69,6 +74,7 @@ public class UI_Equipment : MonoBehaviour
         {
             item.OnValueChangedAsObservable().Subscribe(_=>{
                 var index = Array.IndexOf(toggles,item);
+                ui_bike.SetActive(index == 5);
                 if(!_){
                     if(equipmentIndex == index)
                         equipment_window.SetActive(_);
@@ -76,38 +82,35 @@ public class UI_Equipment : MonoBehaviour
                 }
                 equipment_window.SetActive(_);
                 equipmentIndex = index;
-                if(equipmentIndex == 4)
-                    equipmentIndex = 5;
                 var equipmentElement = GameDataManager.Instance.equipmentData.data.ElementAtOrDefault(equipmentIndex);
-
                 SetupEquipmentWindow(equipmentElement);
-                // Debug.Log("equipmentElement "+equipmentElement);
-                // Debug.Log("equipmentElement Key"+equipmentElement.Key);
-                // Debug.Log("equipmentElement Value"+equipmentElement.Value);
-                //Debug.Log(GameDataManager.Instance.equipmentData.data.el)
+            }).AddTo(this);
+        }
+        foreach (var item in toggles_bike)
+        {
+            item.OnValueChangedAsObservable().Subscribe(_=>{
+                var bikeIndex = Array.IndexOf(toggles_bike,item);
+                bike_status[bikeIndex].SetActive(_);
+                txt_bike_index[bikeIndex].color = _ ? Color.black : Color.white;
+                if(!_)return;
+                var equipmentElement = GameDataManager.Instance.equipmentData.data.ElementAtOrDefault(equipmentIndex+bikeIndex);
+                SetupEquipmentWindow(equipmentElement);
             }).AddTo(this);
         }
 
         async void SetupEquipmentWindow(KeyValuePair<string,List<PartEquipmentData>> equipmentData){
             ClearEquipmentWindow();
             Debug.Log("equipmentData Key "+equipmentData.Key);
-            // if(equipmentIndex == 1)
-            //         layoutGroup.cellSize = suit_layout;
-            // else
-            //         layoutGroup.cellSize = standard_layout;
-            var atlastKey = AddressableKeys.ATLAS_EQUIPMENT+equipmentData.Key;
+            var atlastKey = AddressableKeys.LABEL_ATLAS+"/equipment_"+equipmentData.Key+".spriteatlas";
+            Debug.Log("atlastKey "+atlastKey);
             var atlasSprite = await AddressableManager.Instance.LoadObject<SpriteAtlas>(atlastKey);
             if(atlasSprite == null)return;
             try{
                 if(equipmentData.Value.Count <= 0)return;
                 foreach (var item in equipmentData.Value)
                 {
-                    //var prefab = equipmentIndex == 1 ? equipment_suit_prefab : equipment_prefab;
-                    
                     var go = Instantiate(equipment_prefab,equipment_content);
                     go.transform.localScale = Vector3.one;
-                    var key = AddressableKeys.ATLAS_EQUIPMENT+equipmentData.Key;
-                    Debug.Log("Atlas key "+key);
                     go.GetComponent<EquipmentIconPrefab>().Setup(equipmentIndex,atlasSprite,item,equipment_toggle_group);
                 }
             }catch(Exception e){

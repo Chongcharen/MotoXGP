@@ -88,8 +88,8 @@ public static class SaveMockupData
     static void NewBikeCustomData(){
         bikeCustomizeData = new BikeCustomizeData();
         bikeCustomizeData.bikeEquipmentMapper = new Dictionary<string, BikeEquipedData>();
-        var bikeDefault = GameDataManager.Instance.equipmentData.data[EquipmentKeys.BIKE][0];
-        bikeCustomizeData.bikeEquipmentMapper.Add(EquipmentKeys.BIKE,new BikeEquipedData{model_name = bikeDefault.model_name,texture_name = bikeDefault.texture_name});
+        var bikeDefault = GameDataManager.Instance.equipmentData.data[EquipmentKeys.BIKE_BODY_1][0];
+        bikeCustomizeData.bikeEquipmentMapper.Add(EquipmentKeys.BIKE_BODY_1,new BikeEquipedData{model_name = bikeDefault.model_name,texture_name = bikeDefault.texture_name});
     }
     
 }

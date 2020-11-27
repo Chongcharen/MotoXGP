@@ -25,6 +25,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public static Subject<int> OnShowSpeed = new Subject<int>();
     public static Subject<Unit> OnReset = new Subject<Unit>();
     public static Subject<Transform> OnCameraLookup = new Subject<Transform>();
+    [Header("BikeStatus")]
+    public BikeStatus BikeStatus = BikeStatus.Normal;
     [Header("MiddleWare")]
     BikeMiddleware bikeMiddleWare;
     #region Respawn
@@ -124,6 +126,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     #endregion  
     ProtocolPlayerCustomize playerCustomize;
     PlayerProfileToken playerProfileToken;
+    public float currentTorque = 0;
     void Awake(){
         bikeMiddleWare = GetComponent<BikeMiddleware>();
         Rigidbody = GetComponent<Rigidbody>();
@@ -149,7 +152,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             OnPlayerCrash.OnNext(crash);
             OnCrash();
         }).AddTo(this);
-         CrashDetecter.OnBump.Subscribe(_=>{
+        CrashDetecter.OnBump.Subscribe(_=>{
                 ExplodeBump();
             }).AddTo(this);
         GameplayManager.OnGameEnd.Subscribe(_=>{
@@ -304,6 +307,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     void SetUpPlayerData(){
         //state.PlayerEquiped.Data
+        bodyCollider.gameObject.name = "PlayerCollider";
         var playerEquipmentToken = new PlayerEquipmentToken();
         playerEquipmentToken.playerEquipmentMapper = SaveMockupData.GetEquipment.playerEquipmentMapper;
         var bikeEquipmentToken = new BikeEquipmentToken();
@@ -432,17 +436,23 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
             
             if(component.drive && grounded&&!brake){
-                if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
-                    var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
-                    component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
-                }else{
-                    component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
-                }
+                // if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
+                //     var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                //     component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
+                // }else{
+                //     component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
+                // }
+                var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
                  //component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
             }
-            if(component.drive && accel == 0){
-                ReleaseTorque();
-            }
+            if(component.drive){
+                if(accel == 0)
+                    ReleaseTorque();       
+            }else{
+                if(accel != 0)
+                    ReleaseBrake();
+            }   
             
             if(jump && isGround.Any(g => g == true)){
                 Rigidbody.AddForce((grounded ? new Vector3(0,1.5f,0f) : new Vector3(0,0.5f,0.5f))* Rigidbody.mass*forceJump);
@@ -506,6 +516,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     void ReleaseTorque(){
         wheels[0].collider.motorTorque = 0;
         wheels[1].collider.motorTorque = 0;
+        wheels[0].collider.brakeTorque = 1000;
+        wheels[1].collider.brakeTorque = 1000;
+    }
+    void ReleaseBrake(){
         wheels[0].collider.brakeTorque = 0;
         wheels[1].collider.brakeTorque = 0;
     }
@@ -642,4 +656,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     void OnDestroy(){
         
     }
+}
+public enum BikeStatus{
+    Normal,Slow,Speed
 }

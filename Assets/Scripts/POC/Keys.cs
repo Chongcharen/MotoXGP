@@ -5,17 +5,12 @@ using UnityEngine;
 
 public class Keys : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+}
+public class StatusKeys{
+    public const float NORNAL = 0.5f;
+    public const float SLOW = 1; 
+    public const float FAST = 0;
 }
 public class LayerKeys{
     public const string ROAD = "Road";
@@ -102,7 +97,18 @@ public static class SpreadSheetKeys{
     public const string GID_SUIT = "1278015005";
     public const string GID_GLOVE = "1697254392";
     public const string GID_BOOT = "432887015";
-    public const string GID_BIKE = "561684748";
+    public const string GID_BIKE_BODY_1 = "561684748";
+    public const string GID_BIKE_BODY_2 = "1897718935";
+    public const string GID_BIKE_BODY_3 = "348133245";
+
+    public const string GID_BIKE_BODY_4 = "1887582513";
+
+    public const string GID_BIKE_BODY_5 = "497383251";
+
+    public const string GID_BIKE_BODY_6 = "1441191374";
+
+    public const string GID_BIKE_BODY_7 = "1622833420";
+
 
 
     public const string HEADER_NAME = "Name";
@@ -115,7 +121,13 @@ public static class EquipmentKeys{
     public const string GLOVE = "glove";
     public const string BOOT = "boot";
     public const string HEAD = "head";
-    public const string BIKE = "bike";
+    public const string BIKE_BODY_1 = "bike_body_1";
+    public const string BIKE_BODY_2 = "bike_body_2";
+    public const string BIKE_BODY_3 = "bike_body_3";
+    public const string BIKE_BODY_4 = "bike_body_4";
+    public const string BIKE_BODY_5 = "bike_body_5";
+    public const string BIKE_BODY_6 = "bike_body_6";
+    public const string BIKE_BODY_7 = "bike_body_7";
 }
 public static class AddressableKeys{
     public const string LABEL_ATLAS = "Atlas";
@@ -128,7 +140,6 @@ public static class AddressableKeys{
     public const string LABEL_MAP_DESERT = "Map_Desert";
     public const string LABEL_MAP_BEACH = "Map_Beach";
 
-    public const string ATLAS_EQUIPMENT = "atlas_equipment_";
 }
 public static class PopupKeys{
     public const string POPUP_BOLT_CONNECT = "popup_bolt_connect";

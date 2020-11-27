@@ -49,10 +49,7 @@ public class UI_lobby : UIDisplay
             Debug.Log("BoltNetwork.IsConnected "+BoltNetwork.IsConnected);
             //SceneManager.LoadScene(SceneName.PLAYER_CUSTOM);
             SceneDownloadAsset.LoadScene(SceneName.PLAYER_CUSTOM,
-                                            new List<string>{AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.HELMET,
-                                            AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.GLOVE,
-                                            AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.SUIT,
-                                            AddressableKeys.ATLAS_EQUIPMENT+EquipmentKeys.BOOT,
+                                            new List<string>{
                                             AddressableKeys.LABEL_MODEL_EQUIPMENT,
                                             AddressableKeys.LABEL_TEXTURE_EQUIPMENT_SD
                                         });

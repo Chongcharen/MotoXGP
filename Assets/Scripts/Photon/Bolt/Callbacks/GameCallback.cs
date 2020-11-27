@@ -181,7 +181,7 @@ public class GameCallback : GlobalEventListener
             //Show countdown in log event!!!!
             var raceCutSceneEvent = RaceCutSceneEvent.Create(GlobalTargets.Everyone);
             raceCutSceneEvent.Send();
-            CreateRaceCountdown(10);
+            CreateRaceCountdown(3);
         }
     
     }
@@ -214,8 +214,9 @@ public class GameCallback : GlobalEventListener
                 GameplayManager.Instance.StartGame();
     }
     public override void OnEvent(RaceCutSceneEvent evnt){
-        var objectCutScene = Resources.Load<GameObject>("CutScene");
-        Instantiate(objectCutScene);
+        //OpenCutscene
+        // var objectCutScene = Resources.Load<GameObject>("CutScene");
+        // Instantiate(objectCutScene);
         OnCutSceneReady.OnNext(default);
     }
 

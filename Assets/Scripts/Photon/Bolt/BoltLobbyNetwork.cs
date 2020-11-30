@@ -71,6 +71,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         Debug.Log("playerdata "+playerData.playerBikeData);
         Debug.Log("model "+playerData.playerProfileModel);
         Debug.Log("filter "+filter);
+        //BoltMatchmaking.JoinRandomSession(filter,playerData);
         BoltMatchmaking.JoinRandomSession(filter,playerData);
         CallPopupForWaiting("ระบบกำลัง ค้นหาห้อง โปรดรอสักครู่");
     }

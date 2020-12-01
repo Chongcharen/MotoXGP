@@ -10294,6 +10294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 555cbdaf32ec09247806701f87b6e2e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BikeStatus: 0
   startPosition: {x: 0, y: 0, z: 0}
   bodyCollider: {fileID: 5581475483805622445}
   objectDetecter: {fileID: 5581475483877303438}
@@ -10486,6 +10487,7 @@ MonoBehaviour:
   canvas: {fileID: 700879060723633499}
   playerName_txt: {fileID: 1776579072936699170}
   runningTrack: 0
+  currentTorque: 0
 --- !u!114 &5581475483137713486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10499,6 +10501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMass: {x: 0, y: 0, z: 0}
+  tensor: {x: 0, y: 0, z: 0}
   objectCenter: {fileID: 5581475482762325752}
   objectOfMass: {fileID: 5581475483276048658}
   massPoint: {fileID: 5581475482499772521}
@@ -10506,6 +10509,7 @@ MonoBehaviour:
   massIncrease: 0.1
   currentMass: 0
   limit: 0.5
+  gameController: {fileID: 0}
 --- !u!114 &3624806902396512118
 MonoBehaviour:
   m_ObjectHideFlags: 0

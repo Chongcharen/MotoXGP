@@ -1,0 +1,224 @@
+fileFormatVersion: 2
+guid: 6593ee5fce7914865b76102e9900f0d0
+ModelImporter:
+  serializedVersion: 19301
+  internalIDToNameTable:
+  - first:
+      74: 1827226128182048838
+    second: BackwardSpeed
+  externalObjects: {}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: BackwardSpeed
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 10
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton:
+    - name: Bike_Model_Backwards(Clone)
+      parentName: 
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 0.39370102, y: 0.39370102, z: 0.39370102}
+    - name: Bike_Jnt_Grp
+      parentName: Bike_Model_Backwards(Clone)
+      position: {x: -0, y: -0.23040211, z: 0.12311688}
+      rotation: {x: -0.054387666, y: 0, z: -0, w: 0.9985199}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Root_Jnt
+      parentName: Bike_Jnt_Grp
+      position: {x: -0, y: 1.5086957, z: -0.0022468232}
+      rotation: {x: 0.054387663, y: -0, z: -0, w: 0.9985199}
+      scale: {x: 1, y: 1, z: 1}
+    - name: SwingArm_Jnt
+      parentName: Root_Jnt
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.52192706, y: -0.026096355, z: 0.0073439484, w: 0.85255915}
+      scale: {x: 1, y: 1, z: 1}
+    - name: BWheel_Jnt
+      parentName: SwingArm_Jnt
+      position: {x: 1.0757318e-23, y: -0.5433076, z: -1.930616}
+      rotation: {x: -0.064108826, y: -0, z: -0, w: 0.9979429}
+      scale: {x: 1, y: 1, z: 1}
+    - name: BodyPart_Jnt
+      parentName: Root_Jnt
+      position: {x: -0, y: 1.0167795, z: -0.67127186}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Hand01_Jnt
+      parentName: Root_Jnt
+      position: {x: -0.00000007150726, y: 1.6793293, z: 0.8918074}
+      rotation: {x: -0.11744483, y: -0.0034839471, z: -0.013471429, w: 0.9929819}
+      scale: {x: 1, y: 1.0000004, z: 1.0000004}
+    - name: Hand02_Jnt
+      parentName: Hand01_Jnt
+      position: {x: -0, y: -1.1702687, z: 0}
+      rotation: {x: 0.027222784, y: 4.6566134e-10, z: -0.0018357305, w: 0.9996277}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+    - name: Hand02_JntEnd
+      parentName: Hand02_Jnt
+      position: {x: -0, y: -1.5170114, z: 0}
+      rotation: {x: -0.16184005, y: 0.00013111567, z: 0.015728233, w: 0.98669165}
+      scale: {x: 1, y: 1, z: 1}
+    - name: FWheel_Jnt
+      parentName: Hand02_JntEnd
+      position: {x: 0.00000007150726, y: 0.093226865, z: 0.09523992}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: B200CC_Model_Grp
+      parentName: Bike_Model_Backwards(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: B200CC_BWheel_M
+      parentName: B200CC_Model_Grp
+      position: {x: 0.011378212, y: 0.9662487, z: -1.9280459}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: B200CC_Engine_M
+      parentName: B200CC_Model_Grp
+      position: {x: -0.07705615, y: 1.851166, z: -0.6770098}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: B200CC_BodyFrame_M
+      parentName: B200CC_Model_Grp
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: B200CC_Hand01_M
+      parentName: B200CC_Model_Grp
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: B200CC_Hand02_M
+      parentName: B200CC_Model_Grp
+      position: {x: -0, y: 1.3698609, z: 1.9740103}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: B200CC_FWheel_M
+      parentName: B200CC_Model_Grp
+      position: {x: -0.022650532, y: 0.9662489, z: 2.2110713}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: B200CC_SwingArm_M
+      parentName: B200CC_Model_Grp
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: B200CC_Body01_M
+      parentName: B200CC_Model_Grp
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

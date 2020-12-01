@@ -69,7 +69,7 @@ public class CenterOfMass : MonoBehaviour
     void Update()
     {
          rigidbody.centerOfMass = newMass;
-         rigidbody.inertiaTensor = tensor;
+         //rigidbody.inertiaTensor = tensor;
          rigidbody.maxAngularVelocity = 1;
          //rigidbody.AddForceAtPosition(new Vector3(1,1,1f),transform.position,ForceMode.Impulse);
          //rigidbody.MoveRotation(Quaternion.Euler(-90,90,0));

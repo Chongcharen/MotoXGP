@@ -14,6 +14,11 @@ using System.Linq;
 [RequireComponent(typeof(Rigidbody),typeof(BikeMiddleware))]
 public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 {
+    public float animationTime;
+    public float idleAnimationTime;
+    public DG.Tweening.Ease ease;
+
+    //
     public static Subject<int> OnBoostChanged = new Subject<int>();
     public static Subject<float> OnBoostTime = new Subject<float>();
     public static Subject<float> OnBoostDelay = new Subject<float>();
@@ -41,7 +46,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     [SerializeField]GameObject objectDetecter;
     Rigidbody Rigidbody;
     Transform currentSpawn;
-    public float direction = 0;
+    public float direction = 0.5f;
 
     [Header("Bike Setting")]
     [SerializeField]BilkWheelSetting bikeWheelSetting;
@@ -50,7 +55,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     [Header ("Speed Setting")]
     [SerializeField] AnimationCurve motorTorque = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
     [SerializeField] AnimationCurve boostTorque = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
-    float speed;
+    float speed = 0;
     public float currentSpeedLimit =0;
     public float speedLimit = 60;
     
@@ -251,12 +256,20 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     
     #region  Player Animation
     void SetPlayerAnimator(){
-        if(animator != null){
+        if(animator == null)return;
            // animator.SetFloat("AxisX",axisX);
-           animator.SetBool("isLeft",isLeft);
-           animator.SetBool("isRight",isRight);
-           animator.SetFloat("speed",speed);
-        }
+           //animator.SetBool("isLeft",isLeft);
+           //animator.SetBool("isRight",isRight);
+
+        if(isLeft)
+            DOTween.To(()=> direction, x=> direction = x, 0f, animationTime).SetEase(ease).SetAutoKill();
+        else if(isRight)
+            DOTween.To(()=> direction, x=> direction = x, 1f,animationTime).SetEase(ease).SetAutoKill();
+        else
+            DOTween.To(()=> direction, x=> direction = x, 0.5f,animationTime*idleAnimationTime).SetEase(Ease.InQuad).SetAutoKill();
+
+        animator.SetFloat("direction",direction);
+        animator.SetFloat("speed",speed);
     }
 
     #endregion 
@@ -531,13 +544,14 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     void UpdatePlayerRoll(){
         if(isLeft){
-            direction = -1;
+            //direction = -1;
+            
             if(!grounded){
                  Rigidbody.AddTorque(Vector3.forward*bikeRotatePower,ForceMode.Acceleration);
             }
         }
         if(isRight){
-            direction = 1;
+            //direction = 1;
             if(!grounded){
                 Rigidbody.AddTorque(-Vector3.forward*bikeRotatePower,ForceMode.Acceleration);
             }

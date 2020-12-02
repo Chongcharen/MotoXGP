@@ -44,6 +44,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     
     [SerializeField]Collider bodyCollider;
     [SerializeField]GameObject objectDetecter;
+    public bool visualizeWheel = false;
+    public bool visualizeChock = false;
     Rigidbody Rigidbody;
     Transform currentSpawn;
     public float direction = 0.5f;
@@ -194,7 +196,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             OnCrash();
     }
     void Update(){
-       // UpdateWheelRotation();
+        UpdateWheelRotation();
         CheckGround();
         if(!isControll || !isReady)return;
         PollKey();
@@ -521,7 +523,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             Vector3 position;
             component.collider.GetWorldPose(out position,out quaternion);
             component.rotation = Mathf.Repeat(component.rotation + BoltNetwork.FrameDeltaTime * component.collider.rpm * 360.0f / 60.0f, 360.0f);
-            component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
+            if(visualizeWheel)
+                component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
             //Debug.Log(component.rotation);
             Vector3 lp = component.axle.localPosition;
             isGround[indexWhell] = component.collider.GetGroundHit(out hit);
@@ -529,9 +532,18 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             if(isGround[indexWhell])
                 lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
             //Debug.Log("LP "+ lp.y);
-            // lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-            // component.axle.localPosition = lp;
-
+            lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            if(visualizeChock)
+                component.axle.localPosition = lp;
+            else
+            {
+                if(indexWhell == 0){
+                    bike_animator.SetFloat("frontwheel",lp.y);
+                }else{
+                    bike_animator.SetFloat("rearwheel",lp.y);
+                }
+            }
+            
             indexWhell++;
          }
     }

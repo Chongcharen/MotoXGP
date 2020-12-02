@@ -533,6 +533,9 @@ public class ABikeSystem : MonoBehaviour
         public Transform AxleFront; // connect to Back Right Wheel transform
         public Transform AxleBack; // connect to Back Left Wheel transform
 
+        public Transform modelWheelFront;
+        public Transform modelWheelBack;
+
     }
 [System.Serializable]
     public class WheelSetting
@@ -556,6 +559,7 @@ public class ABikeSystem : MonoBehaviour
     {
 
         public Transform wheel;
+        public Transform modelWheel;
         public Transform axle;
         public WheelCollider collider;
         public SphereCollider sphereCollider;

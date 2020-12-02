@@ -140,8 +140,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         Rigidbody = GetComponent<Rigidbody>();
         bikeCustomize = GetComponent<BikeCustomize>();
         wheels = new WheelComponent[2];
-        wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.AxleFront,true,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0]);
-        wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
+        wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.modelWheelFront,bikeWheelSetting.wheels.AxleFront,true,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0]);
+        wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.modelWheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
 
     }
     
@@ -523,8 +523,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             Vector3 position;
             component.collider.GetWorldPose(out position,out quaternion);
             component.rotation = Mathf.Repeat(component.rotation + BoltNetwork.FrameDeltaTime * component.collider.rpm * 360.0f / 60.0f, 360.0f);
-            if(visualizeWheel)
+            if(visualizeWheel){
                 component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
+                component.modelWheel.localRotation = Quaternion.Euler(component.rotation,0,0);
+            }
             //Debug.Log(component.rotation);
             Vector3 lp = component.axle.localPosition;
             isGround[indexWhell] = component.collider.GetGroundHit(out hit);
@@ -627,7 +629,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 
 
     #region Bike Setup
-    private WheelComponent SetWheelComponent(Transform wheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting)
+    private WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting)
     {
 
         WheelComponent result = new WheelComponent();
@@ -647,6 +649,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         
         result.drive = drive;
         result.wheel = wheel;
+        result.modelWheel = modelWheel;
         result.axle = axle;
         result.collider = wheelCol.GetComponent<WheelCollider>();
         result.collider.mass = wheelSetting.Weight;
@@ -658,6 +661,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         result.pos_y = pos_y;
         result.maxSteer = maxSteer;
         result.startPos = axle.transform.localPosition;
+        
         JointSpring spring = new JointSpring();
         spring.spring = wheelSetting.SuspensionSpring.spring;//bikeWheels.setting.SuspensionSpring.spring;
         spring.damper = wheelSetting.SuspensionSpring.damper;//bikeWheels.setting.SuspensionSpring.damper;

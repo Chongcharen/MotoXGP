@@ -105,6 +105,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     [Header("Controller")]
     [SerializeField]GameController motorControl;
     [SerializeField]Animator animator;
+    [SerializeField]Animator bike_animator;
     [SerializeField]RagdollCollider ragdollCollider;
     [SerializeField]GameObject ragdollObject;
     public float airDrag = 0.1f;
@@ -137,7 +138,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         Rigidbody = GetComponent<Rigidbody>();
         bikeCustomize = GetComponent<BikeCustomize>();
         wheels = new WheelComponent[2];
-        wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.AxleFront,false,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0]);
+        wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.AxleFront,true,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0]);
         wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
 
     }
@@ -193,7 +194,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             OnCrash();
     }
     void Update(){
-        UpdateWheelRotation();
+       // UpdateWheelRotation();
         CheckGround();
         if(!isControll || !isReady)return;
         PollKey();
@@ -201,6 +202,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         BoostChecker();
         BoostUpdate();
         SetPlayerAnimator();
+        SetBikeAnimator();
         UpdatePlayerRoll();
         CheckSpeed();
     }
@@ -270,6 +272,12 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 
         animator.SetFloat("direction",direction);
         animator.SetFloat("speed",speed);
+
+    }
+    void SetBikeAnimator(){
+        if(bike_animator == null)return;
+        bike_animator.SetFloat("direction",direction);
+        bike_animator.SetFloat("speed",speed);
     }
 
     #endregion 
@@ -520,9 +528,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 
             if(isGround[indexWhell])
                 lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
-            
-            lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-            component.axle.localPosition = lp;
+            //Debug.Log("LP "+ lp.y);
+            // lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            // component.axle.localPosition = lp;
+
             indexWhell++;
          }
     }
@@ -657,9 +666,12 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         sidewayFriction.asymptoteValue = wheelSetting.SidewaysFriction.asymptoteValue;//bikeWheels.setting.SidewaysFriction.asymptoteValue;
         sidewayFriction.stiffness = wheelSetting.SidewaysFriction.stiffness;//bikeWheels.setting.SidewaysFriction.stiffness;
         result.collider.sidewaysFriction = frictionCurve;
+        //result.collider.gameObject.AddComponent<enableWheelPhysicMaterial>();
+        
+
 
         //result.sphereCollider = wheel.gameObject.AddComponent<SphereCollider>();
-
+        //result.sphereCollider.radius = 28;
         return result;
     }
     #endregion

@@ -10294,10 +10294,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 555cbdaf32ec09247806701f87b6e2e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animationTime: 0
+  idleAnimationTime: 0
+  ease: 0
   BikeStatus: 0
   startPosition: {x: 0, y: 0, z: 0}
   bodyCollider: {fileID: 5581475483805622445}
   objectDetecter: {fileID: 5581475483877303438}
+  visualizeWheel: 0
+  visualizeChock: 0
   direction: 0
   bikeWheelSetting:
     wheels:
@@ -10305,6 +10310,8 @@ MonoBehaviour:
       wheelBack: {fileID: 7146346073519477857}
       AxleFront: {fileID: 8430102997846358911}
       AxleBack: {fileID: 7146346073519477857}
+      modelWheelFront: {fileID: 0}
+      modelWheelBack: {fileID: 0}
     wheelSettings:
     - Radius: 0.37
       Weight: 1000
@@ -10470,6 +10477,7 @@ MonoBehaviour:
   bodyRotationRageZ: {x: 0, y: 45}
   motorControl: {fileID: 3624806902396512118}
   animator: {fileID: 8324813357837525236}
+  bike_animator: {fileID: 0}
   ragdollCollider: {fileID: 8324813357837525237}
   ragdollObject: {fileID: 4252184976598614526}
   airDrag: 0.1

@@ -348,6 +348,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         //
         //Depug.Log("-----------------Attached------------",Color.yellow);
         Debug.Log("-----------------Attached------------");
+        visualizeChock = true;
+        SetupBikePhysic();
         playerProfileToken = entity.AttachToken as PlayerProfileToken;
         if(entity.Source != null){
             Debug.Log(entity.Source.ConnectToken);
@@ -513,6 +515,31 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         foreach(WheelComponent component in wheels){
             //WheelHit hit;
            // Debug.Log("modelwheel "+component.modelWheel);
+           if(brake){
+                //Rigidbody.velocity = new Vector3(1,Rigidbody.velocity.y,Rigidbody.velocity.z);
+                component.collider.brakeTorque = bikeSetting.brakePower;
+                indexWhell++;
+                continue;
+                Debug.Log("BrakeTorque "+component.collider.brakeTorque);
+                Debug.Log("MotorTorque "+component.collider.motorTorque);
+                Debug.Log("---------------");
+            }else
+            {
+
+                if(component.drive){
+                    if(accel == 0){
+                        ReleaseTorque();   
+                        indexWhell ++;
+                        continue;
+                    }else{
+                        ReleaseBrake();
+                    }
+                }else{
+                    if(accel != 0){
+                        ReleaseBrake();
+                    }
+                } 
+            }
             if(speed > currentSpeedLimit && !isBoosting){
                 speed = currentSpeedLimit;
             }
@@ -523,6 +550,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                 }else{
                     component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
                 }
+                // var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                //      component.collider.motorTorque = accel * torqueSpeed * diffGearing / 1;
             }
              
             
@@ -530,29 +559,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                 Rigidbody.AddForce((grounded ? new Vector3(0,1.5f,0f) : new Vector3(0,0.5f,0.5f))* Rigidbody.mass*forceJump);
             }
 
-            if(brake){
-                component.collider.brakeTorque = bikeSetting.brakePower;
-                Debug.Log("BrakeTorque "+component.collider.brakeTorque);
-                Debug.Log("MotorTorque "+component.collider.motorTorque);
-                Debug.Log("---------------");
-            }else
-            {
-
-                if(component.drive){
-                    if(accel == 0)
-                        ReleaseTorque();       
-                }else{
-                    if(accel != 0){
-                        ReleaseBrake();
-                    }
-                } 
-
-
-                // if(!isGround[indexWhell])
-                //     component.collider.brakeTorque = airBrake;
-                // else
-                //     component.collider.brakeTorque = 0;
-            }
+            
             
             indexWhell++;
         }
@@ -614,8 +621,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     void ReleaseTorque(){
         wheels[0].collider.motorTorque = 0;
         wheels[1].collider.motorTorque = 0;
-        wheels[0].collider.brakeTorque = 0;
-        wheels[1].collider.brakeTorque = 0;
+        wheels[0].collider.brakeTorque = bikeSetting.brakePower;
+        wheels[1].collider.brakeTorque = bikeSetting.brakePower;
+       // Rigidbody.velocity = new Vector3(3,Rigidbody.velocity.y,Rigidbody.velocity.z);
     }
     void ReleaseBrake(){
         wheels[0].collider.brakeTorque = 0;

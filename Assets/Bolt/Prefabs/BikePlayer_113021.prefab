@@ -342,13 +342,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 518299306343795627}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: -0.17914401, z: -0.76008505}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.21390063, z: -0.7600847}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1358687912548654039}
-  m_Father: {fileID: 3592549599716586884}
-  m_RootOrder: 0
+  m_Father: {fileID: 3737956984145102980}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &526385967957815103
 GameObject:
@@ -5161,6 +5161,7 @@ Transform:
   - {fileID: 1805207060537580720}
   - {fileID: 1382543729774498201}
   - {fileID: 3592549599716586884}
+  - {fileID: 1946789321690592112}
   m_Father: {fileID: 1061752292268081543}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5355,6 +5356,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3592549599716586884}
+  - component: {fileID: 2094297153001280474}
   m_Layer: 0
   m_Name: SwingArm_Jnt
   m_TagString: Untagged
@@ -5370,13 +5372,26 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5360361585029907219}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: -0.034756623, z: 0}
+  m_LocalPosition: {x: 0, y: -0.034756623, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1946789321690592112}
+  m_Children: []
   m_Father: {fileID: 3737956984145102980}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2094297153001280474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5360361585029907219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a1595abe883c98479f9d635f96d16f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1946789321690592112}
+  position: {x: 0, y: -0.37, z: 0}
 --- !u!1 &5383548082597879133
 GameObject:
   m_ObjectHideFlags: 0
@@ -6438,7 +6453,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 1
   m_Constraints: 104
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!114 &5301074537287395687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6451,14 +6466,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 555cbdaf32ec09247806701f87b6e2e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myMotorTorque:
+  - 0
+  - 0
+  myBrakeTorque:
+  - 0
+  - 0
   animationTime: 0.3
   idleAnimationTime: 1.2
+  chockSpeedUpdate: 1
   ease: 22
+  DownForce: {x: 0, y: 0, z: 0}
+  suspensions:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  maxVelocity: 20
+  carParent: {fileID: 0}
+  swingarmParent: {fileID: 0}
+  rearWheelJoint: {fileID: 0}
+  rearLookAt: {fileID: 0}
   BikeStatus: 0
   startPosition: {x: 0, y: 0, z: 0}
   bodyCollider: {fileID: 5581475483805622445}
   objectDetecter: {fileID: 5581475483877303438}
-  visualizeWheel: 0
+  visualizeWheel: 1
   visualizeChock: 0
   direction: 0
   bikeWheelSetting:
@@ -6559,8 +6590,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 40.512817
-      value: 1502.7031
+      time: 45.088223
+      value: 501.77896
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -6568,8 +6599,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 69.54239
-      value: -1930.57
+      time: 75.21548
+      value: -902.76917
       inSlope: 0
       outSlope: 0
       tangentMode: 0

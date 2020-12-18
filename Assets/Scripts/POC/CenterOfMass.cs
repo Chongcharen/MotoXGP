@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using UnityEngine.UIElements;
 
 public class CenterOfMass : MonoBehaviour
 {
@@ -22,18 +23,24 @@ public class CenterOfMass : MonoBehaviour
     bool isRight;
     float rotation;
     float angle = 0;
+    
+
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
         gameController = GetComponent<GameController>();
+
+        rigidbody.ResetInertiaTensor();
+        rigidbody.ResetCenterOfMass();
         defaultMass = objectOfMass.transform.localPosition;
         Vector3 setInitialTensor =rigidbody.inertiaTensor;//this string is necessary for Unity 5.3f with new PhysX feature when Tensor decoupled from center of mass
+
+
         Debug.Log("center of mass "+rigidbody.centerOfMass);
         Debug.Log("inertiaTensor "+rigidbody.inertiaTensor);
         newMass = defaultMass;
         rigidbody.centerOfMass = newMass;
         rigidbody.inertiaTensor = setInitialTensor;///
-        rigidbody.centerOfMass = objectOfMass.transform.localPosition;
         AbikeChopSystem.OnGrouned.Subscribe(grouned =>{
             // Debug.Log("Subscribe grouned "+grouned);
             // if(grouned)
@@ -66,22 +73,22 @@ public class CenterOfMass : MonoBehaviour
         newMass = defaultMass;
     }
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-         rigidbody.centerOfMass = newMass;
+        rigidbody.centerOfMass = newMass;
          //rigidbody.inertiaTensor = tensor;
-         rigidbody.maxAngularVelocity = 1;
+        rigidbody.maxAngularVelocity = 1;
          //rigidbody.AddForceAtPosition(new Vector3(1,1,1f),transform.position,ForceMode.Impulse);
          //rigidbody.MoveRotation(Quaternion.Euler(-90,90,0));
          //sphere.transform.localPosition = newMass;
-         isLeft = gameController.isLeft;
-         isRight = gameController.isRight;
-         if(isLeft){
+        isLeft = gameController.isLeft;
+        isRight = gameController.isRight;
+        if(isLeft){
             currentMass = Mathf.Clamp(currentMass-massIncrease,-limit,limit);
             newMass = new Vector3(rigidbody.centerOfMass.x,rigidbody.centerOfMass.y,defaultMass.z+currentMass);
             //transform.localRotation = Quaternion.Euler(transform.localRotation.x -1,90,0);
             //transform.rotation = Quaternion.Euler(angle,90,0);
-         }
+        }
         if(isRight){
             currentMass = Mathf.Clamp(currentMass+massIncrease,-limit,limit);
             newMass = new Vector3(rigidbody.centerOfMass.x,rigidbody.centerOfMass.y,defaultMass.z+currentMass);
@@ -94,6 +101,5 @@ public class CenterOfMass : MonoBehaviour
             currentMass = 0;
         }
         massPoint.localPosition = rigidbody.centerOfMass;
-        
     }
 }

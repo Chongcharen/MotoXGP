@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Security.Cryptography.X509Certificates;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,10 +15,24 @@ using System.Linq;
 [RequireComponent(typeof(Rigidbody),typeof(BikeMiddleware))]
 public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 {
+    public float[] myMotorTorque = new float[2];
+    public float[] myBrakeTorque = new float[2];
     public float animationTime;
     public float idleAnimationTime;
+    public float chockSpeedUpdate = 1;
     public DG.Tweening.Ease ease;
+    public Vector3 DownForce;
+    public Vector3[] suspensions = new Vector3[2];
+    public PhysicMaterial physicMaterial;
+    public float maxVelocity =20;
+    public float boostVelocity = 40;
+    public float normalVelocity = 20;
 
+    [Header("bikeComponent")]
+    public Transform carParent;
+    public Transform swingarmParent;
+    public GameObject rearWheelJoint;
+    public RearLookAt rearLookAt;
     //
     public static Subject<int> OnBoostChanged = new Subject<int>();
     public static Subject<float> OnBoostTime = new Subject<float>();
@@ -147,11 +162,20 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     
     
     void AddControlEventListener(){
+        GameHUD.OnSwitchChoke.Subscribe(_=>{
+            visualizeChock = !visualizeChock;
+            if(visualizeChock)
+                SetupBikePhysic();
+            else
+                SetupBikeAnimation();
+        }).AddTo(this);
         GameCallback.OnGameReady.Subscribe(raceCountdown =>{
             isReady = raceCountdown.RaceStart;
         }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
-                Rigidbody.AddForce(transform.forward* Rigidbody.mass*lower_gear_force,ForceMode.Impulse);
+                maxVelocity = boostVelocity;
+                Rigidbody.AddForce(transform.forward* Rigidbody.mass*lower_gear_force*2,ForceMode.Impulse);
+                DOTween.To(()=> maxVelocity, x=> maxVelocity = x, normalVelocity, 1f).SetEase(ease).SetAutoKill();
             }).AddTo(this);
         CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
             if(tuple.Item1 != gameObject.GetInstanceID())return;
@@ -177,6 +201,14 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             finishEvent.Send();
         }).AddTo(this);
     }
+    void SetupBikePhysic(){
+        rearWheelJoint.transform.SetParent(carParent);
+        rearLookAt.enabled = true;
+    }
+    void SetupBikeAnimation(){
+        rearWheelJoint.transform.SetParent(swingarmParent);
+        rearLookAt.enabled = false;
+    }
     void ExplodeBump(){
         print(Depug.Log("Explode Bump ",Color.red));
           crash = true;
@@ -198,24 +230,34 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     void Update(){
         UpdateWheelRotation();
         CheckGround();
+        SetPlayerAnimator();
+        SetBikeAnimator();
         if(!isControll || !isReady)return;
         PollKey();
         //UpdateWheel();
         BoostChecker();
         BoostUpdate();
-        SetPlayerAnimator();
-        SetBikeAnimator();
+       
         UpdatePlayerRoll();
         CheckSpeed();
     }
     void CheckSpeed(){
         if(isControll)
             OnShowSpeed.OnNext((int)speed);
+
+        var wheelIndex = 0;
+        foreach(WheelComponent component in wheels)
+        {
+            myMotorTorque[wheelIndex] = component.collider.motorTorque;
+            myBrakeTorque[wheelIndex] = component.collider.brakeTorque;
+            wheelIndex ++;
+        }
     }
     
     
     #region  CrashEvent
     void OnCrash(){
+        Debug.Log("Bolt Crash !!!!!");
         animator.enabled = false;
         objectDetecter.gameObject.SetActive(false);
         StartCoroutine(DelayRespawn());
@@ -276,10 +318,23 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         animator.SetFloat("speed",speed);
 
     }
+    float frontWheel = -0.35f;
     void SetBikeAnimator(){
         if(bike_animator == null)return;
         bike_animator.SetFloat("direction",direction);
         bike_animator.SetFloat("speed",speed);
+        if(visualizeChock){
+            bike_animator.SetLayerWeight(1,0);
+        }else{
+            bike_animator.SetLayerWeight(1,1);
+        }
+        if(isGround[0]){
+            DOTween.To(()=> frontWheel, x=> frontWheel = x, 0.2f,animationTime).SetEase(Ease.InQuad).SetAutoKill();
+        }else
+        {
+            DOTween.To(()=> frontWheel, x=> frontWheel = x, 0.5f,animationTime).SetEase(Ease.InQuad).SetAutoKill();
+        }
+        bike_animator.SetFloat("frontwheel",frontWheel);
     }
 
     #endregion 
@@ -321,10 +376,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         bikeMiddleWare.ragdollCollider.enabled = true;
         GetComponent<Rigidbody>().isKinematic = false;
         OnControllGained.OnNext(true);
-        OnCameraLookup.OnNext(bikeSetting.bikerMan);
+        OnCameraLookup.OnNext(bikeSetting.MainBody);
         VirtualPlayerCamera.Instantiate();
-        VirtualPlayerCamera.instance.FollowTarget(bikeSetting.bikerMan);
-        VirtualPlayerCamera.instance.LookupTarget(bikeSetting.bikerMan);
+        VirtualPlayerCamera.instance.FollowTarget(bikeSetting.MainBody);
+        VirtualPlayerCamera.instance.LookupTarget(bikeSetting.MainBody);
         SetUpPlayerData();
         AddControlEventListener();
     }
@@ -451,70 +506,59 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     //เดิมชื่อ UpdateWheel
     public override void SimulateOwner(){
         var indexWhell = 0;
+        if(Rigidbody.velocity.magnitude > maxVelocity){
+            Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, maxVelocity);
+        }
         speed = transform.InverseTransformDirection(Rigidbody.velocity).z * 3.6f;
         foreach(WheelComponent component in wheels){
             //WheelHit hit;
+           // Debug.Log("modelwheel "+component.modelWheel);
             if(speed > currentSpeedLimit && !isBoosting){
                 speed = currentSpeedLimit;
             }
-            
-            if(component.drive && grounded&&!brake){
-                // if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
-                //     var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
-                //     component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
-                // }else{
-                //     component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
-                // }
-                var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
-                component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
-                 //component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
+            if(component.drive &&!brake){
+                if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
+                    var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                    component.collider.motorTorque = accel * torqueSpeed * diffGearing / 1;
+                }else{
+                    component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
+                }
             }
-            if(component.drive){
-                if(accel == 0)
-                    ReleaseTorque();       
-            }else{
-                if(accel != 0)
-                    ReleaseBrake();
-            }   
+             
             
             if(jump && isGround.Any(g => g == true)){
                 Rigidbody.AddForce((grounded ? new Vector3(0,1.5f,0f) : new Vector3(0,0.5f,0.5f))* Rigidbody.mass*forceJump);
             }
 
             if(brake){
-                //if(!component.drive)
                 component.collider.brakeTorque = bikeSetting.brakePower;
+                Debug.Log("BrakeTorque "+component.collider.brakeTorque);
+                Debug.Log("MotorTorque "+component.collider.motorTorque);
+                Debug.Log("---------------");
             }else
             {
-                if(!isGround[indexWhell])
-                    component.collider.brakeTorque = airBrake;
-                else
-                    component.collider.brakeTorque = 0;
+
+                if(component.drive){
+                    if(accel == 0)
+                        ReleaseTorque();       
+                }else{
+                    if(accel != 0){
+                        ReleaseBrake();
+                    }
+                } 
+
+
+                // if(!isGround[indexWhell])
+                //     component.collider.brakeTorque = airBrake;
+                // else
+                //     component.collider.brakeTorque = 0;
             }
             
             indexWhell++;
-            // Quaternion quaternion;
-            // Vector3 position;
-            // component.collider.GetWorldPose(out position,out quaternion);
-            // component.rotation = Mathf.Repeat(component.rotation + BoltNetwork.FrameDeltaTime * component.collider.rpm * 360.0f / 60.0f, 360.0f);
-            // component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
-            // Vector3 lp = component.axle.localPosition;
-            // if(component.collider.GetGroundHit(out hit)){
-            //     isGround[indexWhell] = true;
-            //     lp.y -= Vector3.Dot(component.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
-            //     lp.y = Mathf.Clamp(lp.y,component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y +  bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-            // }else{
-            //     isGround[indexWhell] = false;
-            // }
-
-            // component.axle.localPosition = lp;
-            // lp.y -= Vector3.Dot(component.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
-            // lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-            // indexWhell++;
-            
         }
-        Rigidbody.AddForce(-transform.forward * speed * downforce);
+        //Rigidbody.AddForce(-transform.up*speed,ForceMode.Force);
     }
+    
     void UpdateWheelRotation(){
         var indexWhell = 0;
          foreach(WheelComponent component in wheels){
@@ -529,31 +573,49 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
             //Debug.Log(component.rotation);
             Vector3 lp = component.axle.localPosition;
-            isGround[indexWhell] = component.collider.GetGroundHit(out hit);
 
+             if(isGround[indexWhell] == false && component.collider.GetGroundHit(out hit)){
+                 bike_animator.SetTrigger("OnGround");
+             }
+
+            isGround[indexWhell] = component.collider.GetGroundHit(out hit);
+           
             if(isGround[indexWhell])
-                lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+                lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius)*chockSpeedUpdate;
             //Debug.Log("LP "+ lp.y);
-            lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            //lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            var newPosition = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+           
+            DOTween.To(()=> lp.y, x=> lp.y = x, newPosition, 1f).SetEase(ease).SetAutoKill();
+            
+            //Debug.Log("min "+ (component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
+            //Debug.Log("max "+ (component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
+            suspensions[indexWhell] = lp;
             if(visualizeChock)
                 component.axle.localPosition = lp;
+                
+                //component.axle.DOLocalMove(lp,animationTime).SetEase(ease).SetAutoKill();
             else
             {
                 if(indexWhell == 0){
-                    bike_animator.SetFloat("frontwheel",lp.y);
+                   if(isGround[indexWhell]){
+                      frontWheel = lp.y;
+                   }
                 }else{
-                    bike_animator.SetFloat("rearwheel",lp.y);
+                    //bike_animator.SetFloat("rearwheel",lp.y);
                 }
             }
             
             indexWhell++;
-         }
+        }
+        //Rigidbody.AddForce(transform.up*speed,ForceMode.Force);
+        //DownForce = Rigidbody.velocity;
     }
     void ReleaseTorque(){
         wheels[0].collider.motorTorque = 0;
         wheels[1].collider.motorTorque = 0;
-        wheels[0].collider.brakeTorque = 1000;
-        wheels[1].collider.brakeTorque = 1000;
+        wheels[0].collider.brakeTorque = 0;
+        wheels[1].collider.brakeTorque = 0;
     }
     void ReleaseBrake(){
         wheels[0].collider.brakeTorque = 0;
@@ -588,6 +650,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         if(motorControl.isBoost&& boostLimit >0 && !isBoosting && !isBoostDelay){
                 
                 isBoosting = true;
+                maxVelocity = boostVelocity;
                 boostLimit -- ;    
                 currentSpeedLimit = boostSpeedLimit;
                 OnBoostChanged.OnNext(boostLimit);
@@ -617,6 +680,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                     isBoostDelay = false;
                 }).AddTo(this);
                 currentSpeedLimit = speedLimit;
+                maxVelocity = normalVelocity;
                 currentBoostTime = 0;
                 wheels[1].collider.brakeTorque = 0;
                 wheels[0].collider.brakeTorque = 0;
@@ -686,8 +750,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         
 
 
-        //result.sphereCollider = wheel.gameObject.AddComponent<SphereCollider>();
-        //result.sphereCollider.radius = 28;
+        result.sphereCollider = result.collider.gameObject.AddComponent<SphereCollider>();
+        result.sphereCollider.radius = 0.05f;
+        result.sphereCollider.material = physicMaterial;
         return result;
     }
     #endregion

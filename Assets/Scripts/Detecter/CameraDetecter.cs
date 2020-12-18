@@ -18,11 +18,11 @@ public class CameraDetecter : MonoBehaviour
         Debug.Log("virtualcam "+virtualCamera);
     }
     private void OnTriggerEnter(Collider other) {
-        Debug.Log("ontriggerenter ");
+        //Debug.Log("ontriggerenter ");
             //virtualCamera.enabled = true;
     }
     private void OnTriggerExit(Collider other) {
-        Debug.Log("onenterExit");
+        //Debug.Log("onenterExit");
             //virtualCamera.enabled = false;
         //virtualCamera.des
     }

@@ -10294,9 +10294,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 555cbdaf32ec09247806701f87b6e2e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myMotorTorque:
+  - 0
+  - 0
+  myBrakeTorque:
+  - 0
+  - 0
   animationTime: 0
   idleAnimationTime: 0
+  chockSpeedUpdate: 1
   ease: 0
+  DownForce: {x: 0, y: 0, z: 0}
+  suspensions:
+  - {x: -1.8263726e+29, y: 6.63e-43, z: -1.826282e+29}
+  - {x: 6.63e-43, y: -1.8266083e+29, z: 6.63e-43}
+  maxVelocity: 20
+  carParent: {fileID: 0}
+  swingarmParent: {fileID: 0}
+  rearWheelJoint: {fileID: 0}
+  rearLookAt: {fileID: 0}
   BikeStatus: 0
   startPosition: {x: 0, y: 0, z: 0}
   bodyCollider: {fileID: 5581475483805622445}

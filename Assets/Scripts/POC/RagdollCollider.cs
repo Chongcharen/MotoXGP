@@ -12,7 +12,7 @@ public class RagdollCollider : MonoBehaviour
     public GameObject rootObject;
     void Start()
     {
-       // SetRagdoll();
+        SetRagdoll();
         //EnableKinematic(false);
         CrashDetecter.OnCrash.Subscribe(_=>{
             //  foreach(Collider coll in colliders){
@@ -62,22 +62,22 @@ public class RagdollCollider : MonoBehaviour
         // });
         
         BikeBoltSystem.OnReset.Subscribe(_=>{
-            foreach(Collider coll in colliders){
-                if(coll == null)continue;
+            // foreach(Collider coll in colliders){
+            //     if(coll == null)continue;
                 
-                EnabledRagDolls(false);
+            //     EnabledRagDolls(false);
 
-                var rigidbody = coll.GetComponent<Rigidbody>();
-                rigidbody.mass = 0;
-                rigidbody.drag = 0;
-                rigidbody.angularDrag = 0;
-                rigidbody.velocity = Vector3.zero;
-                rigidbody.angularVelocity = Vector3.zero;
-                rigidbody.sleepThreshold = 0.005f;
-                rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
-                rigidbody.WakeUp();
-                EnabledRagDolls(true);
-             }
+            //     var rigidbody = coll.GetComponent<Rigidbody>();
+            //     rigidbody.mass = 0;
+            //     rigidbody.drag = 0;
+            //     rigidbody.angularDrag = 0;
+            //     rigidbody.velocity = Vector3.zero;
+            //     rigidbody.angularVelocity = Vector3.zero;
+            //     rigidbody.sleepThreshold = 0.005f;
+            //     rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
+            //     rigidbody.WakeUp();
+            //     EnabledRagDolls(true);
+            //  }
         });
         BikeBoltSystem.OnControllGained.Subscribe(_=>{
             EnableKinematic(_);
@@ -88,14 +88,16 @@ public class RagdollCollider : MonoBehaviour
         foreach(Collider coll in colliders){
             if(coll == null)continue;
             //coll.enabled = false;
-            coll.material = material;
-            var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
-            rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
-            rigidbody.mass = 0;
-            rigidbody.drag = 0;
-            rigidbody.angularDrag = 0;
-            rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
-            Rigidbodies.Add(rigidbody);
+            // coll.material = material;
+            // var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
+            // rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+            // rigidbody.mass = 0;
+            // rigidbody.drag = 0;
+            // rigidbody.angularDrag = 0;
+            // rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
+            var rigid = new Rigidbody();
+            rigid = coll.gameObject.GetComponent<Rigidbody>();
+            Rigidbodies.Add(rigid);
         }
     }
    

@@ -5385,7 +5385,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5360361585029907219}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a1595abe883c98479f9d635f96d16f3, type: 3}
   m_Name: 
@@ -6472,40 +6472,40 @@ MonoBehaviour:
   myBrakeTorque:
   - 0
   - 0
-  animationTime: 0.3
-  idleAnimationTime: 1.2
+  animationTime: 0
+  idleAnimationTime: 0
   chockSpeedUpdate: 1
-  ease: 22
+  ease: 0
   DownForce: {x: 0, y: 0, z: 0}
   suspensions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  physicMaterial: {fileID: 0}
+  - {x: -4.3037578e+29, y: 6.6e-43, z: 6}
+  - {x: 4.5, y: -1.3497e-41, z: 6.61e-43}
+  physicMaterial: {fileID: 13400000, guid: 2e8569514c4d74e1db0fda96af3dab1b, type: 2}
   maxVelocity: 60
   boostVelocity: 80
   normalVelocity: 60
-  carParent: {fileID: 0}
-  swingarmParent: {fileID: 0}
-  rearWheelJoint: {fileID: 0}
-  rearLookAt: {fileID: 0}
+  carParent: {fileID: 3737956984145102980}
+  swingarmParent: {fileID: 3592549599716586884}
+  rearWheelJoint: {fileID: 518299306343795627}
+  rearLookAt: {fileID: 2094297153001280474}
   BikeStatus: 0
   startPosition: {x: 0, y: 0, z: 0}
   bodyCollider: {fileID: 5581475483805622445}
   objectDetecter: {fileID: 5581475483877303438}
   visualizeWheel: 1
-  visualizeChock: 1
+  visualizeChock: 0
   direction: 0
   bikeWheelSetting:
     wheels:
       wheelFront: {fileID: 3065182761021614074}
       wheelBack: {fileID: 1946789321690592112}
       AxleFront: {fileID: 4870480143212059422}
-      AxleBack: {fileID: 1946789321690592112}
+      AxleBack: {fileID: 3592549599716586884}
       modelWheelFront: {fileID: 6963492725308428288}
       modelWheelBack: {fileID: 1358687912548654039}
     wheelSettings:
     - Radius: 0.37
-      Weight: 250
+      Weight: 1000
       SuspensionDistance: 0.23
       ForceAppointDistance: 0
       DampingRate: 0.3
@@ -6521,13 +6521,13 @@ MonoBehaviour:
         extremumValue: 1
         asymptoteSlip: 0.8
         asymptoteValue: 0.75
-        stiffness: 1
+        stiffness: 0.75
       SuspensionSpring:
-        spring: 12500
-        damper: 2000
-        targetposition: 0.5
+        spring: 20000
+        damper: 10000
+        targetposition: 0.4
     - Radius: 0.37
-      Weight: 250
+      Weight: 1000
       SuspensionDistance: 0.3
       ForceAppointDistance: 0
       DampingRate: 0.3
@@ -6537,7 +6537,7 @@ MonoBehaviour:
         extremumValue: 1
         asymptoteSlip: 0.8
         asymptoteValue: 0.5
-        stiffness: 1
+        stiffness: 0.75
       SidewaysFriction:
         extremumSlip: 1
         extremumValue: 1
@@ -6545,15 +6545,15 @@ MonoBehaviour:
         asymptoteValue: 0.75
         stiffness: 0.75
       SuspensionSpring:
-        spring: 12500
-        damper: 2000
-        targetposition: 0.5
+        spring: 20000
+        damper: 10000
+        targetposition: 0.4
   bikeSetting:
     showNormalGizmos: 0
     hitGround: []
     bikerMan: {fileID: 6857191458039726859}
     cameraSwitchView: []
-    MainBody: {fileID: 5581475483137713481}
+    MainBody: {fileID: 9042290134065632353}
     bikeSteer: {fileID: 0}
     maxWheelie: 40
     speedWheelie: 30
@@ -6593,8 +6593,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 45.088223
-      value: 501.77896
+      time: 40.512817
+      value: 1502.7031
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -6602,8 +6602,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 75.21548
-      value: -902.76917
+      time: 69.54239
+      value: -1930.57
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -6673,7 +6673,7 @@ MonoBehaviour:
   ragdollObject: {fileID: 3957285977554309061}
   airDrag: 0.1
   forceJump: 15
-  bikeRotatePower: 15
+  bikeRotatePower: 1
   brake: 0
   jump: 0
   isLeft: 0
@@ -6708,7 +6708,7 @@ MonoBehaviour:
   massIncrease: 0.1
   currentMass: 0
   limit: 0.5
-  gameController: {fileID: 0}
+  gameController: {fileID: 3624806902396512118}
 --- !u!114 &3624806902396512118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6868,7 +6868,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sceneGuid: 
   _serializerGuid: e7d343ea-6b94-4aa4-9f84-225903d9f0da
-  _prefabId: 5
+  _prefabId: 7
   _updateRate: 1
   _autoFreezeProxyFrames: 0
   _clientPredicted: 1
@@ -14505,9 +14505,9 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: b333213c5bef7411eaf2614fd08bc061, type: 3}
   m_Controller: {fileID: 9100000, guid: e93201a3e37c4425eb9bcd7356779a35, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 1
   m_UpdateMode: 1
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1

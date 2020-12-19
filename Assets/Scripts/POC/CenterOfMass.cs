@@ -9,6 +9,7 @@ public class CenterOfMass : MonoBehaviour
     // Start is called before the first frame update
     public Vector3 defaultMass;
     public Vector3 tensor;
+    public Vector3 inertiaTensorRotation;
     public GameObject objectCenter; // 
     public GameObject objectOfMass;
 
@@ -33,14 +34,16 @@ public class CenterOfMass : MonoBehaviour
         rigidbody.ResetInertiaTensor();
         rigidbody.ResetCenterOfMass();
         defaultMass = objectOfMass.transform.localPosition;
-        Vector3 setInitialTensor =rigidbody.inertiaTensor;//this string is necessary for Unity 5.3f with new PhysX feature when Tensor decoupled from center of mass
+       // Vector3 setInitialTensor =rigidbody.inertiaTensor+tensor;//this string is necessary for Unity 5.3f with new PhysX feature when Tensor decoupled from center of mass
 
 
         Debug.Log("center of mass "+rigidbody.centerOfMass);
         Debug.Log("inertiaTensor "+rigidbody.inertiaTensor);
         newMass = defaultMass;
         rigidbody.centerOfMass = newMass;
-        rigidbody.inertiaTensor = setInitialTensor;///
+        SetInertiaTensor();
+        //rigidbody.inertiaTensorRotation = Quaternion.Euler(100,0,0);
+    
         AbikeChopSystem.OnGrouned.Subscribe(grouned =>{
             // Debug.Log("Subscribe grouned "+grouned);
             // if(grouned)
@@ -61,6 +64,10 @@ public class CenterOfMass : MonoBehaviour
 
         
     }
+    void SetInertiaTensor(){
+        Vector3 setInitialTensor =rigidbody.inertiaTensor+tensor;
+        rigidbody.inertiaTensor = setInitialTensor;
+    }
     void OnCrash(){
         if(objectCenter == null)return;
         rigidbody.centerOfMass = objectCenter.transform.localPosition;
@@ -75,6 +82,7 @@ public class CenterOfMass : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        SetInertiaTensor();
         rigidbody.centerOfMass = newMass;
          //rigidbody.inertiaTensor = tensor;
         rigidbody.maxAngularVelocity = 1;

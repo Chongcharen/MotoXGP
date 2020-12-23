@@ -13,6 +13,7 @@ public class RagdollCollider : MonoBehaviour
     void Start()
     {
         SetRagdoll();
+        DeactivateRagdoll();
         //EnableKinematic(false);
         CrashDetecter.OnCrash.Subscribe(_=>{
             //  foreach(Collider coll in colliders){
@@ -31,17 +32,18 @@ public class RagdollCollider : MonoBehaviour
         CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
             if(tuple.Item1 != rootObject.GetInstanceID())return;
              Debug.Log("Ragdoll collider  Crash !!!!!");
-            foreach(Collider coll in colliders){
-                if(coll == null)continue;
-                // var rigidbody = coll.GetComponent<Rigidbody>();
-                // rigidbody.mass = 1000f;
-                // rigidbody.drag = 1f;
-                // rigidbody.angularDrag = 0.05f;
-                // rigidbody.velocity = Vector3.zero;
-                // rigidbody.angularVelocity = Vector3.zero;
-                // rigidbody.sleepThreshold = 0;
-                //rigidbody.constraints = RigidbodyConstraints.FreezePositionZ|RigidbodyConstraints.FreezeRotationY;
-             }
+            ActivateRagdoll();
+            // foreach(Collider coll in colliders){
+            //     if(coll == null)continue;
+            //     // var rigidbody = coll.GetComponent<Rigidbody>();
+            //     // rigidbody.mass = 1000f;
+            //     // rigidbody.drag = 1f;
+            //     // rigidbody.angularDrag = 0.05f;
+            //     // rigidbody.velocity = Vector3.zero;
+            //     // rigidbody.angularVelocity = Vector3.zero;
+            //     // rigidbody.sleepThreshold = 0;
+            //     //rigidbody.constraints = RigidbodyConstraints.FreezePositionZ|RigidbodyConstraints.FreezeRotationY;
+            //  }
         });
         // AbikeChopSystem.OnReset.Subscribe(_=>{
         //     foreach(Collider coll in colliders){
@@ -78,6 +80,7 @@ public class RagdollCollider : MonoBehaviour
             //     rigidbody.WakeUp();
             //     EnabledRagDolls(true);
             //  }
+            DeactivateRagdoll();
         });
         BikeBoltSystem.OnControllGained.Subscribe(_=>{
             EnableKinematic(_);
@@ -100,36 +103,32 @@ public class RagdollCollider : MonoBehaviour
             Rigidbodies.Add(rigid);
         }
     }
+    public void SetLowMassRagdoll(){
+        var index = 0;
+        foreach (Collider coll in colliders)
+        {
+            var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
+            rigidbody.mass = 0;
+        }
+    }
    
     public void ActivateRagdoll(){
-            gameObject.GetComponent<CharacterController> ().enabled  = false;
-            gameObject.GetComponent<Animator> ().enabled = false;
-            foreach (Rigidbody bone in GetComponentsInChildren<Rigidbody>()) {
-                bone.isKinematic = false;
-                bone.detectCollisions = true;
-            }
-            foreach (Collider col in GetComponentsInChildren<Collider>()) {
-                col.enabled = true;
-            }
+         var index = 0;
+        foreach (Collider coll in colliders)
+        {
+            var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
+            rigidbody = Rigidbodies[index];
+            rigidbody.drag = 10;
+            index ++; 
+        }
     }
 
     public void DeactivateRagdoll(){
-
-            gameObject.GetComponent<Animator>().enabled = true;
-            transform.position = GameObject.Find("Spawnpoint").transform.position;
-            transform.rotation = GameObject.Find("Spawnpoint").transform.rotation;
-            foreach(Rigidbody bone in GetComponentsInChildren<Rigidbody>()){
-                bone.isKinematic = true;
-                bone.detectCollisions = false;
-            }
-            foreach (CharacterJoint joint in GetComponentsInChildren<CharacterJoint>()) {
-                joint.enableProjection = true;
-            }
-            foreach(Collider col in GetComponentsInChildren<Collider>()){
-                col.enabled = false;
-            }
-        gameObject.GetComponent<CharacterController>().enabled = true;
-
+        foreach (Collider coll in colliders)
+        {
+            var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
+            rigidbody.mass = 0;
+        }
     }
     public void EnabledRagDolls(bool active){
         foreach(Collider coll in colliders){

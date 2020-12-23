@@ -41,7 +41,7 @@ public class CenterOfMass : MonoBehaviour
         Debug.Log("inertiaTensor "+rigidbody.inertiaTensor);
         newMass = defaultMass;
         rigidbody.centerOfMass = newMass;
-        SetInertiaTensor();
+       // SetInertiaTensor();
         //rigidbody.inertiaTensorRotation = Quaternion.Euler(100,0,0);
     
         AbikeChopSystem.OnGrouned.Subscribe(grouned =>{
@@ -82,7 +82,7 @@ public class CenterOfMass : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        SetInertiaTensor();
+       // SetInertiaTensor();
         rigidbody.centerOfMass = newMass;
          //rigidbody.inertiaTensor = tensor;
         rigidbody.maxAngularVelocity = 1;

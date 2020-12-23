@@ -1,0 +1,55 @@
+[
+  {
+    "landing": {
+      "maxFall": -20,
+      "maxSpeed": 3.5,
+      "minFall": -5,
+      "minSpeed": 0,
+      "active": true
+    },
+    "rigidbody": {
+      "mass": 20,
+      "drag": 0.05,
+      "angularDrag": 0
+    },
+    "engineSetting": {
+      "engine_max_torque": 1060,
+      "engine_max_velocity": 17,
+      "engine_nos_velocity": 35,
+      "engine_jump_power": 15,
+      "engine_rotate_bike_power": 15,
+      "engine_animation_choke": 20,
+      "engine_decrease_torque": 0
+    },
+    "wheelColliderSettings": [
+      {
+        "mass": 5,
+        "wheelDampingRate": 0.3,
+        "suspensionDistance": 0.5,
+        "forceApppointDistance": 0.3,
+        "spring": 1000,
+        "damper": 100,
+        "targetPosition": 0.7,
+        "extremumSlip": 1,
+        "extremumValue": 1,
+        "asymptoteSlip": 3,
+        "asymptoteValue": 5,
+        "stiffness": 1.5
+      },
+      {
+        "mass": 5,
+        "wheelDampingRate": 0.3,
+        "suspensionDistance": 0.5,
+        "forceApppointDistance": 0.3,
+        "spring": 1000,
+        "damper": 100,
+        "targetPosition": 0.7,
+        "extremumSlip": 1,
+        "extremumValue": 1,
+        "asymptoteSlip": 3,
+        "asymptoteValue": 5,
+        "stiffness": 1.5
+      }
+    ]
+  }
+]

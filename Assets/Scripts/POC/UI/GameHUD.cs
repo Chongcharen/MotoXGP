@@ -48,9 +48,9 @@ public class GameHUD : MonoBehaviourPunCallbacks
         // b_reset.OnClickAsObservable().Subscribe(_=>{
         //     OnResetPosition.OnNext(default);
         // });
-        b_switch_choke.OnClickAsObservable().Subscribe(_=>{
-            OnSwitchChoke.OnNext(default);
-        }).AddTo(this);
+        // b_switch_choke.OnClickAsObservable().Subscribe(_=>{
+        //     OnSwitchChoke.OnNext(default);
+        // }).AddTo(this);
         gear_count.ObserveEveryValueChanged(g => g.Value).Subscribe(_=>{
             if(_<3){
                 img_lower_gear[_].DOFillAmount(1,gear_cooldown).SetAutoKill();

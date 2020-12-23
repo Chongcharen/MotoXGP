@@ -10300,6 +10300,9 @@ MonoBehaviour:
   myBrakeTorque:
   - 0
   - 0
+  dotProduct:
+  - 0
+  - 0
   animationTime: 0
   idleAnimationTime: 0
   chockSpeedUpdate: 1
@@ -10318,6 +10321,7 @@ MonoBehaviour:
   rearLookAt: {fileID: 0}
   BikeStatus: 0
   startPosition: {x: 0, y: 0, z: 0}
+  bikerStartPosition: {x: 0, y: 0, z: 0}
   bodyCollider: {fileID: 5581475483805622445}
   objectDetecter: {fileID: 5581475483877303438}
   visualizeWheel: 0
@@ -10529,6 +10533,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMass: {x: 0, y: 0, z: 0}
   tensor: {x: 0, y: 0, z: 0}
+  inertiaTensorRotation: {x: 0, y: 0, z: 0}
   objectCenter: {fileID: 5581475482762325752}
   objectOfMass: {fileID: 5581475483276048658}
   massPoint: {fileID: 5581475482499772521}

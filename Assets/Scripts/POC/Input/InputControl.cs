@@ -93,7 +93,7 @@ public class @InputControl : IInputActionCollection, IDisposable
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""e01c2285-9115-4a96-b8ea-8729db8056e9"",
-                    ""path"": ""2DVector(mode=1)"",
+                    ""path"": ""2DVector(mode=2)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

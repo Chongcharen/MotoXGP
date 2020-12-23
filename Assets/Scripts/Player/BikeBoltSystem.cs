@@ -30,6 +30,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public float boostVelocity = 40;
     public float normalVelocity = 20;
 
+    public float downLimit = -5;
+
     [Header("bikeComponent")]
     public Transform carParent;
     public Transform swingarmParent;
@@ -47,6 +49,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public static Subject<int> OnShowSpeed = new Subject<int>();
     public static Subject<Unit> OnReset = new Subject<Unit>();
     public static Subject<Transform> OnCameraLookup = new Subject<Transform>();
+    public static Subject<BikeSettingMappingData> OnUpdateBikeSettingData = new Subject<BikeSettingMappingData>();
     [Header("BikeStatus")]
     public BikeStatus BikeStatus = BikeStatus.Normal;
     [Header("MiddleWare")]
@@ -79,6 +82,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public float speedLimit = 60;
     
     public float boostSpeedLimit = 120;
+
+    [Header("Landing Setting")]
+    [SerializeField] AnimationCurve landingCurve = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
+    public bool landingActive = true;
     
     [Header("Boost Setting")]
     [SerializeField] float boostForce = 200;
@@ -161,7 +168,68 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.modelWheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
 
     }
-    
+    void SetupBikeUIData(){
+        var wheelSettings = new WheelColliderSetting[2];
+        var frontWheelSetting = new WheelColliderSetting{
+            mass = wheels[0].collider.mass,
+            wheelDampingRate = wheels[0].collider.wheelDampingRate,
+            suspensionDistance = wheels[0].collider.suspensionDistance,
+            forceApppointDistance = wheels[0].collider.forceAppPointDistance,
+            spring = wheels[0].collider.suspensionSpring.spring,
+            damper = wheels[0].collider.suspensionSpring.damper,
+            targetPosition = wheels[0].collider.suspensionSpring.targetPosition,
+            extremumSlip = wheels[0].collider.forwardFriction.extremumSlip,
+            extremumValue = wheels[0].collider.forwardFriction.extremumValue,
+            asymptoteSlip = wheels[0].collider.forwardFriction.asymptoteSlip,
+            asymptoteValue = wheels[0].collider.forwardFriction.asymptoteValue,
+            stiffness = wheels[0].collider.forwardFriction.stiffness
+        };
+        var rearWheelSetting = new WheelColliderSetting{
+            mass = wheels[1].collider.mass,
+            wheelDampingRate = wheels[1].collider.wheelDampingRate,
+            suspensionDistance = wheels[1].collider.suspensionDistance,
+            forceApppointDistance = wheels[1].collider.forceAppPointDistance,
+            spring = wheels[1].collider.suspensionSpring.spring,
+            damper = wheels[1].collider.suspensionSpring.damper,
+            targetPosition = wheels[1].collider.suspensionSpring.targetPosition,
+            extremumSlip = wheels[1].collider.forwardFriction.extremumSlip,
+            extremumValue = wheels[1].collider.forwardFriction.extremumValue,
+            asymptoteSlip = wheels[1].collider.forwardFriction.asymptoteSlip,
+            asymptoteValue = wheels[1].collider.forwardFriction.asymptoteValue,
+            stiffness = wheels[1].collider.forwardFriction.stiffness
+        };
+        wheelSettings[0] = frontWheelSetting;
+        wheelSettings[1] = rearWheelSetting;
+        var bikeEngineSetting = new BikeEngineSetting{
+            engine_max_torque = motorTorque.keys[0].value,
+            engine_max_velocity = maxVelocity,
+            engine_nos_velocity = boostVelocity,
+            engine_jump_power = forceJump,
+            engine_rotate_bike_power = bikeRotatePower,
+            engine_animation_choke = chockSpeedUpdate,
+            engine_decrease_torque = motorTorque.keys[1].value
+        };
+        var rigidbodyTuner = new RigidbodyTuner{
+            mass = Rigidbody.mass,
+            drag = Rigidbody.drag,
+            angularDrag = Rigidbody.angularDrag
+        };
+        var landingTuner = new LandingTunner{
+            maxFall = landingCurve.keys[0].time,
+            maxSpeed = landingCurve.keys[0].value,
+            minFall = landingCurve.keys[1].time,
+            minSpeed = landingCurve.keys[1].value,
+            active = landingActive
+        };
+        var mappingData = new BikeSettingMappingData{
+            landing = landingTuner,
+            rigidbody = rigidbodyTuner,
+            engineSetting = bikeEngineSetting,
+            wheelColliderSettings = wheelSettings
+        };
+        print(Depug.Log("SEting data ***********************************************",Color.white));
+        OnUpdateBikeSettingData.OnNext(mappingData);
+    }
     
     void AddControlEventListener(){
         GameHUD.OnSwitchChoke.Subscribe(_=>{
@@ -202,38 +270,178 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             finishEvent.JsonToken = JsonConvert.SerializeObject(token);
             finishEvent.Send();
         }).AddTo(this);
-        UI_UpdateWheel.OnUpdateSpring.Subscribe(_=>{
-            SetUpWheelSpring(_);
+    }
+    void AddBikeSettingListener(){
+        //
+        UI_UpdateWheel.OnUpdateLandingMaxFall.Subscribe(_=>{
+            SetupLandingCurve(_,landingCurve.keys[0].value,landingCurve.keys[1].time,landingCurve.keys[1].value);
         }).AddTo(this);
-        UI_UpdateWheel.OnUpdateDamper.Subscribe(_=>{
-            SetUpWheelDamper(_);
+        UI_UpdateWheel.OnUpdateLandingMaxSpeed.Subscribe(_=>{
+            SetupLandingCurve(landingCurve.keys[0].time,_,landingCurve.keys[1].time,landingCurve.keys[1].value);
         }).AddTo(this);
-        UI_UpdateWheel.OnUpdateChoke.Subscribe(_=>{
+        UI_UpdateWheel.OnUpdateLandingMinFall.Subscribe(_=>{
+            SetupLandingCurve(landingCurve.keys[0].time,landingCurve.keys[0].value,_,landingCurve.keys[1].value);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateLandingMinSpeed.Subscribe(_=>{
+            SetupLandingCurve(landingCurve.keys[0].time,landingCurve.keys[0].value,landingCurve.keys[1].time,_);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateLandingActive.Subscribe(_=>{
+            landingActive = _;
+        }).AddTo(this);
+        //rigidbody
+        UI_UpdateWheel.OnUpdateRigidbodyMass.Subscribe(_=>{
+            Rigidbody.mass = _;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRigidbodyDrag.Subscribe(_=>{
+            Rigidbody.drag = _;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRigidbodyAngularDarg.Subscribe(_=>{
+            Rigidbody.angularDrag = _;
+        }).AddTo(this);
+        //engine
+        UI_UpdateWheel.OnUpdateMaxTorque.Subscribe(_ =>{
+            var curve = new AnimationCurve(new Keyframe(0, _), new Keyframe(maxVelocity,motorTorque.keys[1].value));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            motorTorque = curve;
+            curve = new AnimationCurve(new Keyframe(0, _*1.5f), new Keyframe(boostVelocity,0));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            boostTorque = curve;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateMaxVelocity.Subscribe(_ =>{
+            maxVelocity = normalVelocity =_;
+            var curve = new AnimationCurve(new Keyframe(0, motorTorque.keys[0].value), new Keyframe(maxVelocity, motorTorque.keys[1].value));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            motorTorque = curve;
+        }).AddTo(this);
+        UI_UpdateWheel.OnupdateDecreaseTorque.Subscribe(_ =>{
+           var curve = new AnimationCurve(new Keyframe(0, motorTorque.keys[0].value), new Keyframe(maxVelocity,_));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            motorTorque = curve;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateNosVelocity.Subscribe(_ =>{
+            boostVelocity = _;
+            var curve = new AnimationCurve(new Keyframe(0, boostTorque.keys[0].value), new Keyframe(boostVelocity,0));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            boostTorque = curve;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateJumpPower.Subscribe(_ =>{
+            forceJump = _;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRotateBikePower.Subscribe(_ =>{
+            bikeRotatePower = _;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateAnimationChoke.Subscribe(_ =>{
             chockSpeedUpdate = _;
+        }).AddTo(this);
+        
+        //wheel
+        UI_UpdateWheel.OnUpdateWheelMass.Subscribe(_ =>{
+           wheels[_.Item1].collider.mass = _.Item2; 
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelDampingRate.Subscribe(_ =>{
+           wheels[_.Item1].collider.wheelDampingRate = _.Item2;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelSuspensionDistance.Subscribe(_ =>{
+           wheels[_.Item1].collider.suspensionDistance = _.Item2;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelForceApppointDistance.Subscribe(_ =>{
+           wheels[_.Item1].collider.forceAppPointDistance = _.Item2;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelSpring.Subscribe(_ =>{
+            wheels[_.Item1].collider.suspensionSpring = SetUpSuspensionSpring(_.Item2,wheels[_.Item1].collider.suspensionSpring.damper,wheels[_.Item1].collider.suspensionSpring.targetPosition);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelDamper.Subscribe(_ =>{
+           wheels[_.Item1].collider.suspensionSpring = SetUpSuspensionSpring(wheels[_.Item1].collider.suspensionSpring.spring,_.Item2,wheels[_.Item1].collider.suspensionSpring.targetPosition);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelTargetPosition.Subscribe(_ =>{
+           wheels[_.Item1].collider.suspensionSpring = SetUpSuspensionSpring(wheels[_.Item1].collider.suspensionSpring.spring,wheels[_.Item1].collider.suspensionSpring.damper,_.Item2);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelExtremumSlip.Subscribe(_ =>{
+            var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(_.Item2,forwardFriction.extremumValue,forwardFriction.asymptoteSlip,forwardFriction.asymptoteValue,forwardFriction.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelExtremumValue.Subscribe(_ =>{
+           var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(forwardFriction.extremumSlip,_.Item2,forwardFriction.asymptoteSlip,forwardFriction.asymptoteValue,forwardFriction.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelAsymptoteSlip.Subscribe(_ =>{
+           var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(forwardFriction.extremumSlip,forwardFriction.extremumValue,_.Item2,forwardFriction.asymptoteValue,forwardFriction.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelAsymptoteValue.Subscribe(_ =>{
+           var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(forwardFriction.extremumSlip,forwardFriction.extremumValue,forwardFriction.asymptoteSlip,_.Item2,forwardFriction.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelStiffness.Subscribe(_ =>{
+           var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(forwardFriction.extremumSlip,forwardFriction.extremumValue,forwardFriction.asymptoteSlip,forwardFriction.asymptoteValue,_.Item2);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateLandingSetting.Subscribe(_=>{
+            SetupLandingCurve(_.maxFall,_.maxSpeed,_.minFall,_.minSpeed);
+            landingActive = _.active;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRigidbodySetting.Subscribe(_ =>{
+            Rigidbody.mass = _.mass;
+            Rigidbody.drag = _.drag;
+            Rigidbody.angularDrag = _.angularDrag;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateBikeEngineSetting.Subscribe(_ =>{
+            var curve = new AnimationCurve(new Keyframe(0, _.engine_max_torque), new Keyframe(_.engine_max_velocity,motorTorque.keys[1].value));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            motorTorque = curve;
+            maxVelocity = _.engine_max_velocity;
+            normalVelocity = maxVelocity;
+            //
+            boostVelocity = _.engine_nos_velocity;
+            curve = new AnimationCurve(new Keyframe(0, _.engine_max_torque*1.5f), new Keyframe(boostVelocity,0));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            boostTorque = curve;
+            //
+            forceJump = _.engine_jump_power;
+            bikeRotatePower = _.engine_rotate_bike_power;
+            chockSpeedUpdate = _.engine_animation_choke;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateFrontWheelSetting.Subscribe(_ =>{
+            wheels[0].collider.mass = _.mass;
+            wheels[0].collider.wheelDampingRate = _.wheelDampingRate;
+            wheels[0].collider.suspensionDistance = _.suspensionDistance;
+            wheels[0].collider.forceAppPointDistance = _.forceApppointDistance;
+            wheels[0].collider.suspensionSpring = SetUpSuspensionSpring(_.spring,_.damper,_.targetPosition);
+            wheels[0].collider.forwardFriction = SetupForwardFriction(_.extremumSlip,_.extremumValue,_.asymptoteSlip,_.asymptoteValue,_.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRearWheelSetting.Subscribe(_ =>{
+            wheels[1].collider.mass = _.mass;
+            wheels[1].collider.wheelDampingRate = _.wheelDampingRate;
+            wheels[1].collider.suspensionDistance = _.suspensionDistance;
+            wheels[1].collider.forceAppPointDistance = _.forceApppointDistance;
+            wheels[1].collider.suspensionSpring = SetUpSuspensionSpring(_.spring,_.damper,_.targetPosition);
+            wheels[1].collider.forwardFriction = SetupForwardFriction(_.extremumSlip,_.extremumValue,_.asymptoteSlip,_.asymptoteValue,_.stiffness);
         }).AddTo(this);
     }
 
     //update spring on UI_UpdateWheel
-    void SetUpWheelSpring(float springValue){
-        foreach (var wheel in wheels)
-        {
-            JointSpring spring = new JointSpring();
-            spring.spring = springValue;
-            spring.damper = wheel.collider.suspensionSpring.damper;
-            spring.targetPosition =  wheel.collider.suspensionSpring.targetPosition;
-            wheel.collider.suspensionSpring = spring;
-        }
-        
+    JointSpring SetUpSuspensionSpring(float springValue,float damperValue,float targetPositionValue){
+        JointSpring jointSpring = new JointSpring();
+        jointSpring.spring = springValue;
+        jointSpring.damper = damperValue;
+        jointSpring.targetPosition = targetPositionValue;
+        return jointSpring;
     }
-    void SetUpWheelDamper(float damperValue){
-        foreach (var wheel in wheels)
-        {
-            JointSpring spring = new JointSpring();
-            spring.spring = wheel.collider.suspensionSpring.spring;
-            spring.damper = damperValue;
-            spring.targetPosition =  wheel.collider.suspensionSpring.targetPosition;
-            wheel.collider.suspensionSpring = spring;
-        }
+    WheelFrictionCurve SetupForwardFriction(float _extremumSlip,float _extremumValue,float _asymptoteSlip,float _asymptoteValue,float _stiffness){
+        WheelFrictionCurve frictionCurve = new WheelFrictionCurve();
+        frictionCurve.extremumSlip = _extremumSlip;
+        frictionCurve.extremumValue = _extremumValue;
+        frictionCurve.asymptoteSlip = _asymptoteSlip;
+        frictionCurve.asymptoteValue = _asymptoteValue;
+        frictionCurve.stiffness = _stiffness;
+        return frictionCurve;
     }
     void SetupBikePhysic(){
         rearWheelJoint.transform.SetParent(carParent);
@@ -274,6 +482,32 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
        
         UpdatePlayerRoll();
         CheckSpeed();
+        Landing();
+    }
+    void Landing(){
+        if(!landingActive)return;
+        // if(Rigidbody.velocity.y < downLimit){
+        //     Rigidbody.velocity = new Vector3(Rigidbody.velocity.x,downLimit,Rigidbody.velocity.z);
+        // }
+
+        // Bit shift the index of the layer (8) to get a bit mask
+        LayerMask layermask = LayerMask.GetMask("Road");
+
+        // This would cast rays only against colliders in layer 8.
+        // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+        //layerMask = ~layerMask;
+        RaycastHit hit;
+        // Does the ray intersect any objects excluding the player layer
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit,5, layermask))
+        {
+            var landingUp = landingCurve.Evaluate(Rigidbody.velocity.y);
+            Rigidbody.velocity += new Vector3(0,landingUp,0);
+        }
+        else
+        {
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) *5 , Color.white);
+            Debug.Log("Did not Hit");
+        }
     }
     void CheckSpeed(){
         if(isControll)
@@ -309,7 +543,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     IEnumerator DelayRespawn(){
         yield return new WaitForSeconds(1);
         RestartPosition();
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.5f);
         bikeSetting.bikerMan.transform.localPosition = new Vector3(0,bikerStartPosition.y,0);
         StopAllCoroutines();
     }
@@ -418,7 +652,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         
         boostSystem = GetComponent<BoostSystem>();
 
-        
+        //Send Bike Data to ui;      
+          
     }
     
     public override void ControlGained(){
@@ -431,8 +666,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         VirtualPlayerCamera.Instantiate();
         VirtualPlayerCamera.instance.FollowTarget(bikeSetting.MainBody);
         VirtualPlayerCamera.instance.LookupTarget(bikeSetting.MainBody);
-        SetUpPlayerData();
+        
         AddControlEventListener();
+        AddBikeSettingListener();
+        SetUpPlayerData();
     }
     void SetUpPlayerData(){
         //state.PlayerEquiped.Data
@@ -456,6 +693,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             print(Depug.Log("e_ texture "+item.Value.texture_name,Color.blue));
             print(Depug.Log("---------------------------------------- "+item.Value.texture_name,Color.blue));
         }
+         SetupBikeUIData();
     }
     //if playerequipment has been changed , go process in bikemiddleware
     public void SetUpPlayerEquipment(){
@@ -819,6 +1057,12 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         }
         return result;
     }
+    void SetupLandingCurve(float maxFall,float maxSpeed,float minFall,float minSpeed){
+         var curve = new AnimationCurve(new Keyframe(maxFall, maxSpeed), new Keyframe(minFall,minSpeed));
+            curve.preWrapMode = WrapMode.ClampForever;
+            curve.postWrapMode = WrapMode.ClampForever;
+            landingCurve = curve;
+    }
     #endregion
 
     #region AddCallback
@@ -831,3 +1075,4 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 public enum BikeStatus{
     Normal,Slow,Speed
 }
+

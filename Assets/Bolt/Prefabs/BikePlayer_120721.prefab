@@ -6487,6 +6487,9 @@ MonoBehaviour:
   maxVelocity: 20
   boostVelocity: 40
   normalVelocity: 20
+  downLimit: -5
+  skidmarkController: {fileID: 0}
+  animationSkid: []
   carParent: {fileID: 3737956984145102980}
   swingarmParent: {fileID: 3592549599716586884}
   rearWheelJoint: {fileID: 518299306343795627}
@@ -6662,11 +6665,46 @@ MonoBehaviour:
   currentSpeedLimit: 0
   speedLimit: 60
   boostSpeedLimit: 120
+  landingCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 200
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 50
+      value: 300
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 200
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  landingActive: 1
   boostForce: 10
   brakeForce: 5000
   boostTimeLimit: 3
   boostDelay: 2
   lower_gear_force: 5
+  lower_gear_force_time_limit: 0.2
   airBrake: 250
   downforce: 1
   diffGearing: 4

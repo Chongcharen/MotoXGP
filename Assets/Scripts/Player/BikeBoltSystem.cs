@@ -31,7 +31,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public float normalVelocity = 20;
 
     public float downLimit = -5;
-
+    [Header("skidmark")]
+    public Skidmarks skidmarkController;
+    public GameObject[] animationSkid;
     [Header("bikeComponent")]
     public Transform carParent;
     public Transform swingarmParent;
@@ -111,6 +113,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public float BreakForce { get { return boostForce; } set { boostForce = value; } }
     [Header("Lower Gear")]
     [SerializeField]int lower_gear_force = 200;
+    [SerializeField]float lower_gear_force_time_limit = 0.2f;
     [SerializeField]int airBrake = 200;
     [Range(0.5f, 10f)]
     [SerializeField] float downforce = 1.0f;
@@ -164,8 +167,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         Rigidbody = GetComponent<Rigidbody>();
         bikeCustomize = GetComponent<BikeCustomize>();
         wheels = new WheelComponent[2];
-        wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.modelWheelFront,bikeWheelSetting.wheels.AxleFront,true,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0],false);
-        wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.modelWheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
+        wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.modelWheelFront,bikeWheelSetting.wheels.AxleFront,true,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0],animationSkid[0],false);
+        wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.modelWheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1],animationSkid[1]);
 
     }
     void SetupBikeUIData(){
@@ -244,8 +247,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
                 maxVelocity = boostVelocity;
-                Rigidbody.AddForce(transform.forward* Rigidbody.mass*lower_gear_force*2,ForceMode.Impulse);
-                DOTween.To(()=> maxVelocity, x=> maxVelocity = x, normalVelocity, 1f).SetEase(ease).SetAutoKill();
+                Rigidbody.AddForce(transform.forward* Rigidbody.mass*lower_gear_force,ForceMode.Impulse);
+                DOTween.To(()=> maxVelocity, x=> maxVelocity = x, normalVelocity, lower_gear_force_time_limit).SetEase(ease).SetAutoKill();
             }).AddTo(this);
         CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
             if(tuple.Item1 != gameObject.GetInstanceID())return;
@@ -528,6 +531,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         Debug.Log("Bolt Crash !!!!!");
         animator.applyRootMotion = false;
         animator.enabled = false;
+        //animator.gameObject.transform.SetParent(animator.gameObject.transform.parent.parent);
         objectDetecter.gameObject.SetActive(false);
         StartCoroutine(DelayRespawn());
         //StartCoroutine(DelayApplyRootMotion());
@@ -561,6 +565,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         GetComponent<CenterOfMass>().Reset();
         crash = false;
         objectDetecter.gameObject.SetActive(true);
+        //bikeSetting.bikerMan.transform.SetParent(this.gameObject.transform);
         bikeSetting.bikerMan.transform.localPosition = new Vector3(0,bikerStartPosition.y,0);
         animator.enabled = true;
         animator.applyRootMotion = true;
@@ -662,10 +667,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         bikeMiddleWare.ragdollCollider.enabled = true;
         GetComponent<Rigidbody>().isKinematic = false;
         OnControllGained.OnNext(true);
-        OnCameraLookup.OnNext(bikeSetting.MainBody);
+        OnCameraLookup.OnNext(bikeSetting.bikerMan);
         VirtualPlayerCamera.Instantiate();
-        VirtualPlayerCamera.instance.FollowTarget(bikeSetting.MainBody);
-        VirtualPlayerCamera.instance.LookupTarget(bikeSetting.MainBody);
+        VirtualPlayerCamera.instance.FollowTarget(bikeSetting.bikerMan);
+        VirtualPlayerCamera.instance.LookupTarget(bikeSetting.bikerMan);
         
         AddControlEventListener();
         AddBikeSettingListener();
@@ -810,9 +815,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                 component.collider.brakeTorque = bikeSetting.brakePower;
                 indexWhell++;
                 continue;
-                Debug.Log("BrakeTorque "+component.collider.brakeTorque);
-                Debug.Log("MotorTorque "+component.collider.motorTorque);
-                Debug.Log("---------------");
+                // Debug.Log("BrakeTorque "+component.collider.brakeTorque);
+                // Debug.Log("MotorTorque "+component.collider.motorTorque);
+                // Debug.Log("---------------");
             }else
             {
 
@@ -914,11 +919,17 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     void ReleaseTorque(){
         wheels[0].collider.motorTorque = 0;
         wheels[1].collider.motorTorque = 0;
-        wheels[0].collider.brakeTorque = bikeSetting.brakePower;
-        wheels[1].collider.brakeTorque = bikeSetting.brakePower;
+        wheels[0].collider.brakeTorque = 0;
+        wheels[1].collider.brakeTorque = 0;
        // Rigidbody.velocity = new Vector3(3,Rigidbody.velocity.y,Rigidbody.velocity.z);
     }
     void ReleaseBrake(){
+        wheels[0].collider.brakeTorque = 0;
+        wheels[1].collider.brakeTorque = 0;
+    }
+    void ForceTorque(){
+        wheels[0].collider.motorTorque = motorTorque.keys[0].value;
+        wheels[1].collider.motorTorque = motorTorque.keys[1].value;
         wheels[0].collider.brakeTorque = 0;
         wheels[1].collider.brakeTorque = 0;
     }
@@ -960,8 +971,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                     boostSystem.StartBoostEffect(boostTimeLimit);
                 //myRigidbody.AddExplosionForce(explosionPower,explosionTransform.position,explosionRadius,1,ForceMode.Impulse);
                 if(grounded){
-                    Rigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
+                    //Rigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
+                    accel = 1;
+                    ForceTorque();
+                    Rigidbody.AddForce(transform.forward* Rigidbody.mass*boostForce,ForceMode.Impulse);
+                    DOTween.To(()=> maxVelocity, x=> maxVelocity = x, normalVelocity, boostTimeLimit).SetEase(ease).SetAutoKill();
                 }
+               
             }
     }
     void BoostUpdate(){
@@ -994,7 +1010,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 
 
     #region Bike Setup
-    private WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting,bool addSphereCollider = true)
+    private WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting,GameObject skidmark,bool addSphereCollider = true)
     {
 
         WheelComponent result = new WheelComponent();
@@ -1055,6 +1071,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             result.sphereCollider.radius = 0.2f;
             result.sphereCollider.material = physicMaterial;
         }
+        var wheelSkid = result.collider.gameObject.AddComponent<WheelSkid>();
+        wheelSkid.rb = Rigidbody;
+        wheelSkid.skidmarksController = skidmarkController;
+        wheelSkid.animationSkid = skidmark;
         return result;
     }
     void SetupLandingCurve(float maxFall,float maxSpeed,float minFall,float minSpeed){

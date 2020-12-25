@@ -509,7 +509,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         else
         {
             Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) *5 , Color.white);
-            Debug.Log("Did not Hit");
+           // Debug.Log("Did not Hit");
         }
     }
     void CheckSpeed(){
@@ -531,6 +531,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         Debug.Log("Bolt Crash !!!!!");
         animator.applyRootMotion = false;
         animator.enabled = false;
+        Rigidbody.drag = 10;
         //animator.gameObject.transform.SetParent(animator.gameObject.transform.parent.parent);
         objectDetecter.gameObject.SetActive(false);
         StartCoroutine(DelayRespawn());
@@ -556,7 +557,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         if(!isControll)return;
         if(MapManager.Instance.isDeadzone)
             respawnPosition = new Vector3(MapManager.Instance.respawnPosition.x,MapManager.Instance.respawnPosition.y,startPosition.z);
-       
+        Rigidbody.drag = 0.05f;
         transform.DOKill();
         bikeSetting.MainBody.DOKill();
         bikeSetting.MainBody.transform.DORotate(new Vector3(0,90,0),0);

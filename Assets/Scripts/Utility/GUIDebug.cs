@@ -21,9 +21,9 @@ public class GUIDebug : MonoSingleton<GUIDebug>
         messageStyle.fontSize = 15;
     }
     void Update(){
-        if(Input.GetKeyDown(KeyCode.Alpha1)){
-            showGUI = !showGUI;
-        }
+        // if(Input.GetKeyDown(KeyCode.Alpha1)){
+        //     showGUI = !showGUI;
+        // }
     }
     void OnGUI(){
         if(!showGUI)return;

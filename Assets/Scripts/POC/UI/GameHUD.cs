@@ -15,6 +15,8 @@ public class GameHUD : MonoBehaviourPunCallbacks
     public static Subject<Unit> OnResetPosition = new Subject<Unit>();
     public static Subject<Unit> OnRestartPosition = new Subject<Unit>();
     public static Subject<Unit> OnLowerGear = new Subject<Unit>();
+    public static Subject<Unit> OnSwitchChoke = new Subject<Unit>();
+    [SerializeField]Button b_switch_choke;
     [SerializeField]Button b_reset,b_restart,b_mic;
     [SerializeField]Button b_accel;
     [SerializeField]Button b_back;
@@ -46,6 +48,9 @@ public class GameHUD : MonoBehaviourPunCallbacks
         // b_reset.OnClickAsObservable().Subscribe(_=>{
         //     OnResetPosition.OnNext(default);
         // });
+        // b_switch_choke.OnClickAsObservable().Subscribe(_=>{
+        //     OnSwitchChoke.OnNext(default);
+        // }).AddTo(this);
         gear_count.ObserveEveryValueChanged(g => g.Value).Subscribe(_=>{
             if(_<3){
                 img_lower_gear[_].DOFillAmount(1,gear_cooldown).SetAutoKill();

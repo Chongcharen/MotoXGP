@@ -478,6 +478,11 @@ extern "C" {
     [FBSDKSettings setAdvertiserIDCollectionEnabled:advertiserIDCollectionEnabledID];
   }
 
+  BOOL IOSFBAdvertiserTrackingEnabled(BOOL advertiserTrackingEnabled)
+  {
+    return [FBSDKSettings setAdvertiserTrackingEnabled:advertiserTrackingEnabled];
+  }
+
   char* IOSFBSdkVersion()
   {
     const char* string = [[FBSDKSettings sdkVersion] UTF8String];
@@ -503,6 +508,21 @@ extern "C" {
                                     requestId:requestId];
         }
       }];
+  }
+
+  void IOSFBSetDataProcessingOptions(
+    const char** options,
+    int numOptions,
+    int country,
+    int state) {
+    NSMutableArray<NSString*>* array = [[NSMutableArray alloc] init];
+    for (int i = 0; i < numOptions; i++) {
+      NSString* option = [FBUnityUtility stringFromCString:options[i]];
+      if (option) {
+        [array addObject:option];
+      }
+    }
+    [FBSDKSettings setDataProcessingOptions:array country:country state:state];
   }
 
   void IOSFBUploadImageToMediaLibrary(int requestId,

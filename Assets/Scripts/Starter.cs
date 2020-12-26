@@ -75,6 +75,7 @@ public class Starter : MonoBehaviour
         LoadGoogleEquipmentData();
     }
     void LoadGoogleEquipmentData(){
+        Debug.Log("Loadgoogle equipmentData");
         var helmetData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_HELMET);
         var suitData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_SUIT);
         var gloveData = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_GLOVE);
@@ -87,7 +88,7 @@ public class Starter : MonoBehaviour
         var bike_body5_Data = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BIKE_BODY_5);
         var bike_body6_Data = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BIKE_BODY_6);
         var bike_body7_Data = new CustomDataDownloader(SpreadSheetKeys.EQUIPMENT,SpreadSheetKeys.GID_BIKE_BODY_7);
-       // Depug.Log("spreadsheetDownloadUrl "+spreadsheetDownloadUrl,Color.green);
+        //Depug.Log("spreadsheetDownloadUrl "+spreadsheetDownloadUrl,Color.green);
         EquipmentData equipmentData = new EquipmentData();
         equipmentData.data = new Dictionary<string, List<PartEquipmentData>>();
         GameDataManager.Instance.SetupEquipmentData(equipmentData);

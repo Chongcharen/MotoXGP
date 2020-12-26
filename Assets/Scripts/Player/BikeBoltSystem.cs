@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Security.Cryptography.X509Certificates;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,10 +15,30 @@ using System.Linq;
 [RequireComponent(typeof(Rigidbody),typeof(BikeMiddleware))]
 public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 {
+    public float[] myMotorTorque = new float[2];
+    public float[] myBrakeTorque = new float[2];
+
+    public float[] dotProduct = new float[2];
     public float animationTime;
     public float idleAnimationTime;
+    public float chockSpeedUpdate = 1;
     public DG.Tweening.Ease ease;
+    public Vector3 DownForce;
+    public Vector3[] suspensions = new Vector3[2];
+    public PhysicMaterial physicMaterial;
+    public float maxVelocity =20;
+    public float boostVelocity = 40;
+    public float normalVelocity = 20;
 
+    public float downLimit = -5;
+    [Header("skidmark")]
+    public Skidmarks skidmarkController;
+    public GameObject[] animationSkid;
+    [Header("bikeComponent")]
+    public Transform carParent;
+    public Transform swingarmParent;
+    public GameObject rearWheelJoint;
+    public RearLookAt rearLookAt;
     //
     public static Subject<int> OnBoostChanged = new Subject<int>();
     public static Subject<float> OnBoostTime = new Subject<float>();
@@ -30,6 +51,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public static Subject<int> OnShowSpeed = new Subject<int>();
     public static Subject<Unit> OnReset = new Subject<Unit>();
     public static Subject<Transform> OnCameraLookup = new Subject<Transform>();
+    public static Subject<BikeSettingMappingData> OnUpdateBikeSettingData = new Subject<BikeSettingMappingData>();
     [Header("BikeStatus")]
     public BikeStatus BikeStatus = BikeStatus.Normal;
     [Header("MiddleWare")]
@@ -37,7 +59,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     #region Respawn
     public Vector3 startPosition;
     Vector3 respawnPosition;
-    Vector3 bikerStartPosition;
+    public Vector3 bikerStartPosition;
     #endregion
     #region Bike Property
     [Header("Body Setting")]
@@ -62,6 +84,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public float speedLimit = 60;
     
     public float boostSpeedLimit = 120;
+
+    [Header("Landing Setting")]
+    [SerializeField] AnimationCurve landingCurve = new AnimationCurve(new Keyframe(0, 200), new Keyframe(50, 300), new Keyframe(200, 0));
+    public bool landingActive = true;
     
     [Header("Boost Setting")]
     [SerializeField] float boostForce = 200;
@@ -87,6 +113,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public float BreakForce { get { return boostForce; } set { boostForce = value; } }
     [Header("Lower Gear")]
     [SerializeField]int lower_gear_force = 200;
+    [SerializeField]float lower_gear_force_time_limit = 0.2f;
     [SerializeField]int airBrake = 200;
     [Range(0.5f, 10f)]
     [SerializeField] float downforce = 1.0f;
@@ -140,18 +167,88 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         Rigidbody = GetComponent<Rigidbody>();
         bikeCustomize = GetComponent<BikeCustomize>();
         wheels = new WheelComponent[2];
-        wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.modelWheelFront,bikeWheelSetting.wheels.AxleFront,true,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0]);
-        wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.modelWheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1]);
+        wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.modelWheelFront,bikeWheelSetting.wheels.AxleFront,true,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0],animationSkid[0],false);
+        wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.modelWheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1],animationSkid[1]);
 
     }
-    
+    void SetupBikeUIData(){
+        var wheelSettings = new WheelColliderSetting[2];
+        var frontWheelSetting = new WheelColliderSetting{
+            mass = wheels[0].collider.mass,
+            wheelDampingRate = wheels[0].collider.wheelDampingRate,
+            suspensionDistance = wheels[0].collider.suspensionDistance,
+            forceApppointDistance = wheels[0].collider.forceAppPointDistance,
+            spring = wheels[0].collider.suspensionSpring.spring,
+            damper = wheels[0].collider.suspensionSpring.damper,
+            targetPosition = wheels[0].collider.suspensionSpring.targetPosition,
+            extremumSlip = wheels[0].collider.forwardFriction.extremumSlip,
+            extremumValue = wheels[0].collider.forwardFriction.extremumValue,
+            asymptoteSlip = wheels[0].collider.forwardFriction.asymptoteSlip,
+            asymptoteValue = wheels[0].collider.forwardFriction.asymptoteValue,
+            stiffness = wheels[0].collider.forwardFriction.stiffness
+        };
+        var rearWheelSetting = new WheelColliderSetting{
+            mass = wheels[1].collider.mass,
+            wheelDampingRate = wheels[1].collider.wheelDampingRate,
+            suspensionDistance = wheels[1].collider.suspensionDistance,
+            forceApppointDistance = wheels[1].collider.forceAppPointDistance,
+            spring = wheels[1].collider.suspensionSpring.spring,
+            damper = wheels[1].collider.suspensionSpring.damper,
+            targetPosition = wheels[1].collider.suspensionSpring.targetPosition,
+            extremumSlip = wheels[1].collider.forwardFriction.extremumSlip,
+            extremumValue = wheels[1].collider.forwardFriction.extremumValue,
+            asymptoteSlip = wheels[1].collider.forwardFriction.asymptoteSlip,
+            asymptoteValue = wheels[1].collider.forwardFriction.asymptoteValue,
+            stiffness = wheels[1].collider.forwardFriction.stiffness
+        };
+        wheelSettings[0] = frontWheelSetting;
+        wheelSettings[1] = rearWheelSetting;
+        var bikeEngineSetting = new BikeEngineSetting{
+            engine_max_torque = motorTorque.keys[0].value,
+            engine_max_velocity = maxVelocity,
+            engine_nos_velocity = boostVelocity,
+            engine_jump_power = forceJump,
+            engine_rotate_bike_power = bikeRotatePower,
+            engine_animation_choke = chockSpeedUpdate,
+            engine_decrease_torque = motorTorque.keys[1].value
+        };
+        var rigidbodyTuner = new RigidbodyTuner{
+            mass = Rigidbody.mass,
+            drag = Rigidbody.drag,
+            angularDrag = Rigidbody.angularDrag
+        };
+        var landingTuner = new LandingTunner{
+            maxFall = landingCurve.keys[0].time,
+            maxSpeed = landingCurve.keys[0].value,
+            minFall = landingCurve.keys[1].time,
+            minSpeed = landingCurve.keys[1].value,
+            active = landingActive
+        };
+        var mappingData = new BikeSettingMappingData{
+            landing = landingTuner,
+            rigidbody = rigidbodyTuner,
+            engineSetting = bikeEngineSetting,
+            wheelColliderSettings = wheelSettings
+        };
+        print(Depug.Log("SEting data ***********************************************",Color.white));
+        OnUpdateBikeSettingData.OnNext(mappingData);
+    }
     
     void AddControlEventListener(){
+        GameHUD.OnSwitchChoke.Subscribe(_=>{
+            visualizeChock = !visualizeChock;
+            if(visualizeChock)
+                SetupBikePhysic();
+            else
+                SetupBikeAnimation();
+        }).AddTo(this);
         GameCallback.OnGameReady.Subscribe(raceCountdown =>{
             isReady = raceCountdown.RaceStart;
         }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
+                maxVelocity = boostVelocity;
                 Rigidbody.AddForce(transform.forward* Rigidbody.mass*lower_gear_force,ForceMode.Impulse);
+                DOTween.To(()=> maxVelocity, x=> maxVelocity = x, normalVelocity, lower_gear_force_time_limit).SetEase(ease).SetAutoKill();
             }).AddTo(this);
         CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
             if(tuple.Item1 != gameObject.GetInstanceID())return;
@@ -177,6 +274,186 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             finishEvent.Send();
         }).AddTo(this);
     }
+    void AddBikeSettingListener(){
+        //
+        UI_UpdateWheel.OnUpdateLandingMaxFall.Subscribe(_=>{
+            SetupLandingCurve(_,landingCurve.keys[0].value,landingCurve.keys[1].time,landingCurve.keys[1].value);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateLandingMaxSpeed.Subscribe(_=>{
+            SetupLandingCurve(landingCurve.keys[0].time,_,landingCurve.keys[1].time,landingCurve.keys[1].value);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateLandingMinFall.Subscribe(_=>{
+            SetupLandingCurve(landingCurve.keys[0].time,landingCurve.keys[0].value,_,landingCurve.keys[1].value);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateLandingMinSpeed.Subscribe(_=>{
+            SetupLandingCurve(landingCurve.keys[0].time,landingCurve.keys[0].value,landingCurve.keys[1].time,_);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateLandingActive.Subscribe(_=>{
+            landingActive = _;
+        }).AddTo(this);
+        //rigidbody
+        UI_UpdateWheel.OnUpdateRigidbodyMass.Subscribe(_=>{
+            Rigidbody.mass = _;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRigidbodyDrag.Subscribe(_=>{
+            Rigidbody.drag = _;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRigidbodyAngularDarg.Subscribe(_=>{
+            Rigidbody.angularDrag = _;
+        }).AddTo(this);
+        //engine
+        UI_UpdateWheel.OnUpdateMaxTorque.Subscribe(_ =>{
+            var curve = new AnimationCurve(new Keyframe(0, _), new Keyframe(maxVelocity,motorTorque.keys[1].value));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            motorTorque = curve;
+            curve = new AnimationCurve(new Keyframe(0, _*1.5f), new Keyframe(boostVelocity,0));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            boostTorque = curve;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateMaxVelocity.Subscribe(_ =>{
+            maxVelocity = normalVelocity =_;
+            var curve = new AnimationCurve(new Keyframe(0, motorTorque.keys[0].value), new Keyframe(maxVelocity, motorTorque.keys[1].value));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            motorTorque = curve;
+        }).AddTo(this);
+        UI_UpdateWheel.OnupdateDecreaseTorque.Subscribe(_ =>{
+           var curve = new AnimationCurve(new Keyframe(0, motorTorque.keys[0].value), new Keyframe(maxVelocity,_));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            motorTorque = curve;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateNosVelocity.Subscribe(_ =>{
+            boostVelocity = _;
+            var curve = new AnimationCurve(new Keyframe(0, boostTorque.keys[0].value), new Keyframe(boostVelocity,0));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            boostTorque = curve;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateJumpPower.Subscribe(_ =>{
+            forceJump = _;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRotateBikePower.Subscribe(_ =>{
+            bikeRotatePower = _;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateAnimationChoke.Subscribe(_ =>{
+            chockSpeedUpdate = _;
+        }).AddTo(this);
+        
+        //wheel
+        UI_UpdateWheel.OnUpdateWheelMass.Subscribe(_ =>{
+           wheels[_.Item1].collider.mass = _.Item2; 
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelDampingRate.Subscribe(_ =>{
+           wheels[_.Item1].collider.wheelDampingRate = _.Item2;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelSuspensionDistance.Subscribe(_ =>{
+           wheels[_.Item1].collider.suspensionDistance = _.Item2;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelForceApppointDistance.Subscribe(_ =>{
+           wheels[_.Item1].collider.forceAppPointDistance = _.Item2;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelSpring.Subscribe(_ =>{
+            wheels[_.Item1].collider.suspensionSpring = SetUpSuspensionSpring(_.Item2,wheels[_.Item1].collider.suspensionSpring.damper,wheels[_.Item1].collider.suspensionSpring.targetPosition);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelDamper.Subscribe(_ =>{
+           wheels[_.Item1].collider.suspensionSpring = SetUpSuspensionSpring(wheels[_.Item1].collider.suspensionSpring.spring,_.Item2,wheels[_.Item1].collider.suspensionSpring.targetPosition);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelTargetPosition.Subscribe(_ =>{
+           wheels[_.Item1].collider.suspensionSpring = SetUpSuspensionSpring(wheels[_.Item1].collider.suspensionSpring.spring,wheels[_.Item1].collider.suspensionSpring.damper,_.Item2);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelExtremumSlip.Subscribe(_ =>{
+            var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(_.Item2,forwardFriction.extremumValue,forwardFriction.asymptoteSlip,forwardFriction.asymptoteValue,forwardFriction.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelExtremumValue.Subscribe(_ =>{
+           var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(forwardFriction.extremumSlip,_.Item2,forwardFriction.asymptoteSlip,forwardFriction.asymptoteValue,forwardFriction.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelAsymptoteSlip.Subscribe(_ =>{
+           var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(forwardFriction.extremumSlip,forwardFriction.extremumValue,_.Item2,forwardFriction.asymptoteValue,forwardFriction.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelAsymptoteValue.Subscribe(_ =>{
+           var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(forwardFriction.extremumSlip,forwardFriction.extremumValue,forwardFriction.asymptoteSlip,_.Item2,forwardFriction.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateWheelStiffness.Subscribe(_ =>{
+           var forwardFriction = wheels[_.Item1].collider.forwardFriction;
+           forwardFriction = SetupForwardFriction(forwardFriction.extremumSlip,forwardFriction.extremumValue,forwardFriction.asymptoteSlip,forwardFriction.asymptoteValue,_.Item2);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateLandingSetting.Subscribe(_=>{
+            SetupLandingCurve(_.maxFall,_.maxSpeed,_.minFall,_.minSpeed);
+            landingActive = _.active;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRigidbodySetting.Subscribe(_ =>{
+            Rigidbody.mass = _.mass;
+            Rigidbody.drag = _.drag;
+            Rigidbody.angularDrag = _.angularDrag;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateBikeEngineSetting.Subscribe(_ =>{
+            var curve = new AnimationCurve(new Keyframe(0, _.engine_max_torque), new Keyframe(_.engine_max_velocity,motorTorque.keys[1].value));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            motorTorque = curve;
+            maxVelocity = _.engine_max_velocity;
+            normalVelocity = maxVelocity;
+            //
+            boostVelocity = _.engine_nos_velocity;
+            curve = new AnimationCurve(new Keyframe(0, _.engine_max_torque*1.5f), new Keyframe(boostVelocity,0));
+            curve.preWrapMode = WrapMode.PingPong;
+            curve.postWrapMode = WrapMode.PingPong;
+            boostTorque = curve;
+            //
+            forceJump = _.engine_jump_power;
+            bikeRotatePower = _.engine_rotate_bike_power;
+            chockSpeedUpdate = _.engine_animation_choke;
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateFrontWheelSetting.Subscribe(_ =>{
+            wheels[0].collider.mass = _.mass;
+            wheels[0].collider.wheelDampingRate = _.wheelDampingRate;
+            wheels[0].collider.suspensionDistance = _.suspensionDistance;
+            wheels[0].collider.forceAppPointDistance = _.forceApppointDistance;
+            wheels[0].collider.suspensionSpring = SetUpSuspensionSpring(_.spring,_.damper,_.targetPosition);
+            wheels[0].collider.forwardFriction = SetupForwardFriction(_.extremumSlip,_.extremumValue,_.asymptoteSlip,_.asymptoteValue,_.stiffness);
+        }).AddTo(this);
+        UI_UpdateWheel.OnUpdateRearWheelSetting.Subscribe(_ =>{
+            wheels[1].collider.mass = _.mass;
+            wheels[1].collider.wheelDampingRate = _.wheelDampingRate;
+            wheels[1].collider.suspensionDistance = _.suspensionDistance;
+            wheels[1].collider.forceAppPointDistance = _.forceApppointDistance;
+            wheels[1].collider.suspensionSpring = SetUpSuspensionSpring(_.spring,_.damper,_.targetPosition);
+            wheels[1].collider.forwardFriction = SetupForwardFriction(_.extremumSlip,_.extremumValue,_.asymptoteSlip,_.asymptoteValue,_.stiffness);
+        }).AddTo(this);
+    }
+
+    //update spring on UI_UpdateWheel
+    JointSpring SetUpSuspensionSpring(float springValue,float damperValue,float targetPositionValue){
+        JointSpring jointSpring = new JointSpring();
+        jointSpring.spring = springValue;
+        jointSpring.damper = damperValue;
+        jointSpring.targetPosition = targetPositionValue;
+        return jointSpring;
+    }
+    WheelFrictionCurve SetupForwardFriction(float _extremumSlip,float _extremumValue,float _asymptoteSlip,float _asymptoteValue,float _stiffness){
+        WheelFrictionCurve frictionCurve = new WheelFrictionCurve();
+        frictionCurve.extremumSlip = _extremumSlip;
+        frictionCurve.extremumValue = _extremumValue;
+        frictionCurve.asymptoteSlip = _asymptoteSlip;
+        frictionCurve.asymptoteValue = _asymptoteValue;
+        frictionCurve.stiffness = _stiffness;
+        return frictionCurve;
+    }
+    void SetupBikePhysic(){
+        rearWheelJoint.transform.SetParent(carParent);
+        rearLookAt.enabled = true;
+    }
+    void SetupBikeAnimation(){
+        rearWheelJoint.transform.SetParent(swingarmParent);
+        rearLookAt.enabled = false;
+    }
     void ExplodeBump(){
         print(Depug.Log("Explode Bump ",Color.red));
           crash = true;
@@ -195,41 +472,92 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             OnPlayerCrash.OnNext(crash);
             OnCrash();
     }
-    void Update(){
+    void FixedUpdate(){
         UpdateWheelRotation();
         CheckGround();
+        SetPlayerAnimator();
+        SetBikeAnimator();
         if(!isControll || !isReady)return;
         PollKey();
         //UpdateWheel();
         BoostChecker();
         BoostUpdate();
-        SetPlayerAnimator();
-        SetBikeAnimator();
+       
         UpdatePlayerRoll();
         CheckSpeed();
+        Landing();
+    }
+    void Landing(){
+        if(!landingActive)return;
+        // if(Rigidbody.velocity.y < downLimit){
+        //     Rigidbody.velocity = new Vector3(Rigidbody.velocity.x,downLimit,Rigidbody.velocity.z);
+        // }
+
+        // Bit shift the index of the layer (8) to get a bit mask
+        LayerMask layermask = LayerMask.GetMask("Road");
+
+        // This would cast rays only against colliders in layer 8.
+        // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+        //layerMask = ~layerMask;
+        RaycastHit hit;
+        // Does the ray intersect any objects excluding the player layer
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit,5, layermask))
+        {
+            var landingUp = landingCurve.Evaluate(Rigidbody.velocity.y);
+            Rigidbody.velocity += new Vector3(0,landingUp,0);
+        }
+        else
+        {
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) *5 , Color.white);
+           // Debug.Log("Did not Hit");
+        }
     }
     void CheckSpeed(){
         if(isControll)
             OnShowSpeed.OnNext((int)speed);
+
+        var wheelIndex = 0;
+        foreach(WheelComponent component in wheels)
+        {
+            myMotorTorque[wheelIndex] = component.collider.motorTorque;
+            myBrakeTorque[wheelIndex] = component.collider.brakeTorque;
+            wheelIndex ++;
+        }
     }
     
     
     #region  CrashEvent
     void OnCrash(){
+        Debug.Log("Bolt Crash !!!!!");
+        animator.applyRootMotion = false;
         animator.enabled = false;
+        Rigidbody.drag = 10;
+        //animator.gameObject.transform.SetParent(animator.gameObject.transform.parent.parent);
         objectDetecter.gameObject.SetActive(false);
         StartCoroutine(DelayRespawn());
+        //StartCoroutine(DelayApplyRootMotion());
     }
+
+    IEnumerator DelayApplyRootMotion()
+    {
+        yield return new WaitForSeconds(0.5f);
+        bikeSetting.bikerMan.transform.localPosition = new Vector3(0,bikerStartPosition.y,0);
+        
+    }
+
     IEnumerator DelayRespawn(){
         yield return new WaitForSeconds(1);
         RestartPosition();
+        yield return new WaitForSeconds(0.5f);
+        bikeSetting.bikerMan.transform.localPosition = new Vector3(0,bikerStartPosition.y,0);
+        StopAllCoroutines();
     }
     void RestartPosition(){
         Debug.Log("restartPosition");
         if(!isControll)return;
         if(MapManager.Instance.isDeadzone)
             respawnPosition = new Vector3(MapManager.Instance.respawnPosition.x,MapManager.Instance.respawnPosition.y,startPosition.z);
-        StopAllCoroutines();
+        Rigidbody.drag = 0.05f;
         transform.DOKill();
         bikeSetting.MainBody.DOKill();
         bikeSetting.MainBody.transform.DORotate(new Vector3(0,90,0),0);
@@ -237,13 +565,16 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         transform.rotation = Quaternion.Euler(0,90,0);
         GetComponent<CenterOfMass>().Reset();
         crash = false;
-        
         objectDetecter.gameObject.SetActive(true);
-        OnReset.OnNext(default);
+        //bikeSetting.bikerMan.transform.SetParent(this.gameObject.transform);
+        bikeSetting.bikerMan.transform.localPosition = new Vector3(0,bikerStartPosition.y,0);
         animator.enabled = true;
-        animator.gameObject.transform.localPosition = bikerStartPosition;
-        OnPlayerCrash.OnNext(crash);
+        animator.applyRootMotion = true;
+        animator.ApplyBuiltinRootMotion();
+        OnReset.OnNext(default);
+        //OnPlayerCrash.OnNext(crash);
         StopMotor();
+        
     }
     void StopMotor(){
         
@@ -276,10 +607,23 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         animator.SetFloat("speed",speed);
 
     }
+    float frontWheel = -0.35f;
     void SetBikeAnimator(){
         if(bike_animator == null)return;
         bike_animator.SetFloat("direction",direction);
         bike_animator.SetFloat("speed",speed);
+        if(visualizeChock){
+            bike_animator.SetLayerWeight(1,0);
+        }else{
+            bike_animator.SetLayerWeight(1,1);
+        }
+        if(isGround[0]){
+            DOTween.To(()=> frontWheel, x=> frontWheel = x, 0.2f,animationTime).SetEase(Ease.InQuad).SetAutoKill();
+        }else
+        {
+            DOTween.To(()=> frontWheel, x=> frontWheel = x, 0.5f,animationTime).SetEase(Ease.InQuad).SetAutoKill();
+        }
+        bike_animator.SetFloat("frontwheel",frontWheel);
     }
 
     #endregion 
@@ -293,6 +637,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         //
         //Depug.Log("-----------------Attached------------",Color.yellow);
         Debug.Log("-----------------Attached------------");
+        //visualizeChock = true;
+        //SetupBikePhysic();
         playerProfileToken = entity.AttachToken as PlayerProfileToken;
         if(entity.Source != null){
             Debug.Log(entity.Source.ConnectToken);
@@ -312,7 +658,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         
         boostSystem = GetComponent<BoostSystem>();
 
-        
+        //Send Bike Data to ui;      
+          
     }
     
     public override void ControlGained(){
@@ -321,12 +668,25 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         bikeMiddleWare.ragdollCollider.enabled = true;
         GetComponent<Rigidbody>().isKinematic = false;
         OnControllGained.OnNext(true);
-        OnCameraLookup.OnNext(bikeSetting.bikerMan);
-        VirtualPlayerCamera.Instantiate();
-        VirtualPlayerCamera.instance.FollowTarget(bikeSetting.bikerMan);
-        VirtualPlayerCamera.instance.LookupTarget(bikeSetting.bikerMan);
-        SetUpPlayerData();
+        OnCameraLookup.OnNext(bikeSetting.MainBody);
+        LoadVirtualCamera();
+       
+        
         AddControlEventListener();
+        AddBikeSettingListener();
+        SetUpPlayerData();
+    }
+    async void LoadVirtualCamera(){
+
+        // var virtualCam = await AddressableManager.Instance.LoadObject<GameObject>("Bike/VirtualPlayerCamera.prefab");
+        // Instantiate(virtualCam);
+        // Debug.Log("A "+virtualCam.GetComponent<VirtualPlayerCamera>());
+        // Debug.Log("this.transform "+this.transform);
+        // virtualCam.GetComponent<VirtualPlayerCamera>().FollowTarget(this.transform);
+        // virtualCam.GetComponent<VirtualPlayerCamera>().LookupTarget(this.transform);
+        VirtualPlayerCamera.Instantiate();
+        VirtualPlayerCamera.instance.FollowTarget(bikeSetting.MainBody);
+        VirtualPlayerCamera.instance.LookupTarget(bikeSetting.MainBody);
     }
     void SetUpPlayerData(){
         //state.PlayerEquiped.Data
@@ -350,6 +710,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             print(Depug.Log("e_ texture "+item.Value.texture_name,Color.blue));
             print(Depug.Log("---------------------------------------- "+item.Value.texture_name,Color.blue));
         }
+         SetupBikeUIData();
     }
     //if playerequipment has been changed , go process in bikemiddleware
     public void SetUpPlayerEquipment(){
@@ -451,70 +812,65 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     //เดิมชื่อ UpdateWheel
     public override void SimulateOwner(){
         var indexWhell = 0;
+        if(Rigidbody.velocity.magnitude > maxVelocity){
+            Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, maxVelocity);
+        }
         speed = transform.InverseTransformDirection(Rigidbody.velocity).z * 3.6f;
         foreach(WheelComponent component in wheels){
             //WheelHit hit;
-            if(speed > currentSpeedLimit && !isBoosting){
-                speed = currentSpeedLimit;
-            }
-            
-            if(component.drive && grounded&&!brake){
-                // if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
-                //     var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
-                //     component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
-                // }else{
-                //     component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
-                // }
-                var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
-                component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
-                 //component.collider.motorTorque = accel *  motorTorque.Evaluate(speed) * diffGearing / 1;
-            }
-            if(component.drive){
-                if(accel == 0)
-                    ReleaseTorque();       
-            }else{
-                if(accel != 0)
-                    ReleaseBrake();
-            }   
-            
+           // Debug.Log("modelwheel "+component.modelWheel);
             if(jump && isGround.Any(g => g == true)){
                 Rigidbody.AddForce((grounded ? new Vector3(0,1.5f,0f) : new Vector3(0,0.5f,0.5f))* Rigidbody.mass*forceJump);
             }
-
-            if(brake){
-                //if(!component.drive)
+           if(brake){
+                //Rigidbody.velocity = new Vector3(1,Rigidbody.velocity.y,Rigidbody.velocity.z);
                 component.collider.brakeTorque = bikeSetting.brakePower;
+                indexWhell++;
+                continue;
+                // Debug.Log("BrakeTorque "+component.collider.brakeTorque);
+                // Debug.Log("MotorTorque "+component.collider.motorTorque);
+                // Debug.Log("---------------");
             }else
             {
-                if(!isGround[indexWhell])
-                    component.collider.brakeTorque = airBrake;
-                else
-                    component.collider.brakeTorque = 0;
+
+                if(component.drive){
+                    if(accel == 0){
+                        ReleaseTorque();   
+                        indexWhell ++;
+                        continue;
+                    }else{
+                        ReleaseBrake();
+                    }
+                }else{
+                    if(accel != 0){
+                        ReleaseBrake();
+                    }
+                } 
             }
+            if(speed > currentSpeedLimit && !isBoosting){
+                speed = currentSpeedLimit;
+            }
+            if(component.drive &&!brake){
+                if(Mathf.Abs(speed) < 4 || Mathf.Sign(speed) == Mathf.Sign(accel)){
+                    var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                    component.collider.motorTorque = accel * torqueSpeed * diffGearing / 1;
+                }else{
+                    component.collider.brakeTorque = Mathf.Abs(accel) * bikeSetting.brakePower;
+                }
+                // var torqueSpeed = isBoosting ? boostTorque.Evaluate(speed) : motorTorque.Evaluate(speed);
+                //      component.collider.motorTorque = accel * torqueSpeed * diffGearing / 1;
+            }
+             
+            
+           
+
+            
             
             indexWhell++;
-            // Quaternion quaternion;
-            // Vector3 position;
-            // component.collider.GetWorldPose(out position,out quaternion);
-            // component.rotation = Mathf.Repeat(component.rotation + BoltNetwork.FrameDeltaTime * component.collider.rpm * 360.0f / 60.0f, 360.0f);
-            // component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
-            // Vector3 lp = component.axle.localPosition;
-            // if(component.collider.GetGroundHit(out hit)){
-            //     isGround[indexWhell] = true;
-            //     lp.y -= Vector3.Dot(component.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
-            //     lp.y = Mathf.Clamp(lp.y,component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y +  bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-            // }else{
-            //     isGround[indexWhell] = false;
-            // }
-
-            // component.axle.localPosition = lp;
-            // lp.y -= Vector3.Dot(component.wheel.position - hit.point, transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
-            // lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-            // indexWhell++;
-            
         }
-        Rigidbody.AddForce(-transform.forward * speed * downforce);
+        //Rigidbody.AddForce(-transform.up*speed,ForceMode.Force);
     }
+    
     void UpdateWheelRotation(){
         var indexWhell = 0;
          foreach(WheelComponent component in wheels){
@@ -529,33 +885,63 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
             //Debug.Log(component.rotation);
             Vector3 lp = component.axle.localPosition;
-            isGround[indexWhell] = component.collider.GetGroundHit(out hit);
 
-            if(isGround[indexWhell])
-                lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius)*0.8f;
+             if(isGround[indexWhell] == false && component.collider.GetGroundHit(out hit)){
+                 bike_animator.SetTrigger("OnGround");
+             }
+
+            isGround[indexWhell] = component.collider.GetGroundHit(out hit);
+           
+            if(isGround[indexWhell]){
+                lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+                dotProduct[indexWhell] = Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+            }
+
+
+              //  lp.y -= Vector3.Dot(component.wheel.position - component.startPos,transform.TransformDirection(0,1,0)) - (component.collider.radius)*chockSpeedUpdate;
             //Debug.Log("LP "+ lp.y);
-            lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            //lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+            var newPosition = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+           
+           // DOTween.To(()=> lp.y, x=> lp.y = x, newPosition, 1f).SetEase(ease).SetAutoKill();
+            
+            //Debug.Log("min "+ (component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
+            //Debug.Log("max "+ (component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
+            suspensions[indexWhell] = lp;
             if(visualizeChock)
-                component.axle.localPosition = lp;
+                //component.axle.localPosition = lp;
+                component.axle.localPosition = Vector3.Lerp(component.axle.localPosition,lp,Time.fixedDeltaTime*chockSpeedUpdate);
+                //component.axle.DOLocalMove(lp,animationTime).SetEase(ease).SetAutoKill();
             else
             {
                 if(indexWhell == 0){
-                    bike_animator.SetFloat("frontwheel",lp.y);
+                   if(isGround[indexWhell]){
+                      frontWheel = lp.y;
+                   }
                 }else{
-                    bike_animator.SetFloat("rearwheel",lp.y);
+                    //bike_animator.SetFloat("rearwheel",lp.y);
                 }
             }
             
             indexWhell++;
-         }
+        }
+        //Rigidbody.AddForce(transform.up*speed,ForceMode.Force);
+        //DownForce = Rigidbody.velocity;
     }
     void ReleaseTorque(){
         wheels[0].collider.motorTorque = 0;
         wheels[1].collider.motorTorque = 0;
-        wheels[0].collider.brakeTorque = 1000;
-        wheels[1].collider.brakeTorque = 1000;
+        wheels[0].collider.brakeTorque = 0;
+        wheels[1].collider.brakeTorque = 0;
+       // Rigidbody.velocity = new Vector3(3,Rigidbody.velocity.y,Rigidbody.velocity.z);
     }
     void ReleaseBrake(){
+        wheels[0].collider.brakeTorque = 0;
+        wheels[1].collider.brakeTorque = 0;
+    }
+    void ForceTorque(){
+        wheels[0].collider.motorTorque = motorTorque.keys[0].value;
+        wheels[1].collider.motorTorque = motorTorque.keys[1].value;
         wheels[0].collider.brakeTorque = 0;
         wheels[1].collider.brakeTorque = 0;
     }
@@ -588,6 +974,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         if(motorControl.isBoost&& boostLimit >0 && !isBoosting && !isBoostDelay){
                 
                 isBoosting = true;
+                maxVelocity = boostVelocity;
                 boostLimit -- ;    
                 currentSpeedLimit = boostSpeedLimit;
                 OnBoostChanged.OnNext(boostLimit);
@@ -596,8 +983,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                     boostSystem.StartBoostEffect(boostTimeLimit);
                 //myRigidbody.AddExplosionForce(explosionPower,explosionTransform.position,explosionRadius,1,ForceMode.Impulse);
                 if(grounded){
-                    Rigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
+                    //Rigidbody.AddForce(transform.forward*boostForce,ForceMode.VelocityChange);
+                    accel = 1;
+                    ForceTorque();
+                    Rigidbody.AddForce(transform.forward* Rigidbody.mass*boostForce,ForceMode.Impulse);
+                    DOTween.To(()=> maxVelocity, x=> maxVelocity = x, normalVelocity, boostTimeLimit).SetEase(ease).SetAutoKill();
                 }
+               
             }
     }
     void BoostUpdate(){
@@ -617,6 +1009,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                     isBoostDelay = false;
                 }).AddTo(this);
                 currentSpeedLimit = speedLimit;
+                maxVelocity = normalVelocity;
                 currentBoostTime = 0;
                 wheels[1].collider.brakeTorque = 0;
                 wheels[0].collider.brakeTorque = 0;
@@ -629,7 +1022,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 
 
     #region Bike Setup
-    private WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting)
+    private WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting,GameObject skidmark,bool addSphereCollider = true)
     {
 
         WheelComponent result = new WheelComponent();
@@ -685,10 +1078,22 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         //result.collider.gameObject.AddComponent<enableWheelPhysicMaterial>();
         
 
-
-        //result.sphereCollider = wheel.gameObject.AddComponent<SphereCollider>();
-        //result.sphereCollider.radius = 28;
+        if(addSphereCollider){
+            result.sphereCollider = result.collider.gameObject.AddComponent<SphereCollider>();
+            result.sphereCollider.radius = 0.2f;
+            result.sphereCollider.material = physicMaterial;
+        }
+        var wheelSkid = result.collider.gameObject.AddComponent<WheelSkid>();
+        wheelSkid.rb = Rigidbody;
+        wheelSkid.skidmarksController = skidmarkController;
+        wheelSkid.animationSkid = skidmark;
         return result;
+    }
+    void SetupLandingCurve(float maxFall,float maxSpeed,float minFall,float minSpeed){
+         var curve = new AnimationCurve(new Keyframe(maxFall, maxSpeed), new Keyframe(minFall,minSpeed));
+            curve.preWrapMode = WrapMode.ClampForever;
+            curve.postWrapMode = WrapMode.ClampForever;
+            landingCurve = curve;
     }
     #endregion
 
@@ -702,3 +1107,4 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 public enum BikeStatus{
     Normal,Slow,Speed
 }
+

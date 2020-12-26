@@ -87,6 +87,7 @@ public static class MapKeys{
 public static class FilePath{
     public const string GAME_LEVEL_DATA = "GameLevel/GameLevelData.txt";
     public const string GAME_EQUIPMENT_DATA = "Equipment/EquipmentData.txt";
+    public const string BIKE_TUNER_PRESET_DATA = "BikePreset/BikeTunerPreset.txt";
 }
 public static class SpreadSheetKeys{
     public const string GAME_CONFIG = "14azNtExST2X1bgVgnHPl1Mfs05FW-8C2JA_egyunDig";

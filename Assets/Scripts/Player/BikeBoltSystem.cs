@@ -532,7 +532,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             isGround[indexWhell] = component.collider.GetGroundHit(out hit);
 
             if(isGround[indexWhell])
-                lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+                lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius)*0.8f;
             //Debug.Log("LP "+ lp.y);
             lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
             if(visualizeChock)

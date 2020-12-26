@@ -67,13 +67,13 @@ public class PlayFabController : MonoSingleton<PlayFabController>
     }
     #if UNITY_ANDROID
     void LoginPlayfabWithGoogleAccount(){
-        var request = new LoginWithGoogleAccountRequest{
-                            TitleId = PlayFabSettings.TitleId,
-                            ServerAuthCode = GPGSAuthentication.platform.GetServerAuthCode(),
-                            PlayerSecret = GPGSAuthentication.Instance.playerSecrect,
-                            CreateAccount = true
-                        };        
-        PlayFabClientAPI.LoginWithGoogleAccount(request,RequestPhotonToken,OnPlayFabError);
+        // var request = new LoginWithGoogleAccountRequest{
+        //                     TitleId = PlayFabSettings.TitleId,
+        //                     ServerAuthCode = GPGSAuthentication.platform.GetServerAuthCode(),
+        //                     PlayerSecret = GPGSAuthentication.Instance.playerSecrect,
+        //                     CreateAccount = true
+        //                 };        
+        // PlayFabClientAPI.LoginWithGoogleAccount(request,RequestPhotonToken,OnPlayFabError);
     }
     #endif
     void LoginPlayfabWithFBAccount(Facebook.Unity.AccessToken token){

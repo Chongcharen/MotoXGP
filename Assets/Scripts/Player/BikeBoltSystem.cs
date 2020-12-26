@@ -668,14 +668,25 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         bikeMiddleWare.ragdollCollider.enabled = true;
         GetComponent<Rigidbody>().isKinematic = false;
         OnControllGained.OnNext(true);
-        OnCameraLookup.OnNext(bikeSetting.bikerMan);
-        VirtualPlayerCamera.Instantiate();
-        VirtualPlayerCamera.instance.FollowTarget(bikeSetting.bikerMan);
-        VirtualPlayerCamera.instance.LookupTarget(bikeSetting.bikerMan);
+        OnCameraLookup.OnNext(bikeSetting.MainBody);
+        LoadVirtualCamera();
+       
         
         AddControlEventListener();
         AddBikeSettingListener();
         SetUpPlayerData();
+    }
+    async void LoadVirtualCamera(){
+
+        // var virtualCam = await AddressableManager.Instance.LoadObject<GameObject>("Bike/VirtualPlayerCamera.prefab");
+        // Instantiate(virtualCam);
+        // Debug.Log("A "+virtualCam.GetComponent<VirtualPlayerCamera>());
+        // Debug.Log("this.transform "+this.transform);
+        // virtualCam.GetComponent<VirtualPlayerCamera>().FollowTarget(this.transform);
+        // virtualCam.GetComponent<VirtualPlayerCamera>().LookupTarget(this.transform);
+        VirtualPlayerCamera.Instantiate();
+        VirtualPlayerCamera.instance.FollowTarget(bikeSetting.MainBody);
+        VirtualPlayerCamera.instance.LookupTarget(bikeSetting.MainBody);
     }
     void SetUpPlayerData(){
         //state.PlayerEquiped.Data

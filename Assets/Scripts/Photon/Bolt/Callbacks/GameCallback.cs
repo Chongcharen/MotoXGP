@@ -53,7 +53,7 @@ public class GameCallback : GlobalEventListener
             var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_113024,playerData,positionPlayer,Quaternion.Euler(0,90,0));
             entity.TakeControl();
             entity.GetComponent<BikeBoltSystem>().runningTrack = player.index;
-           // LoadBikePlayer();
+            //LoadBikePlayer();
         }
     }
     public async void LoadBikePlayer(){
@@ -69,6 +69,7 @@ public class GameCallback : GlobalEventListener
             print(Depug.Log("------------------------------------ "+player,Color.blue));
             var positionPlayer = MapManager.Instance.spawnPointsPosition[player.index];
          var bikePlayer = await AddressableManager.Instance.LoadObject<GameObject>("Bike/BikePlayer_113024.prefab");
+         Debug.Log("Bike player ? "+bikePlayer);
          var entity = BoltNetwork.Instantiate(bikePlayer,playerData,positionPlayer,Quaternion.Euler(0,90,0));
              entity.TakeControl();
              entity.GetComponent<BikeBoltSystem>().runningTrack = player.index;

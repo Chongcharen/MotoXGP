@@ -15,6 +15,8 @@ public class GameHUD : MonoBehaviourPunCallbacks
     public static Subject<Unit> OnResetPosition = new Subject<Unit>();
     public static Subject<Unit> OnRestartPosition = new Subject<Unit>();
     public static Subject<Unit> OnLowerGear = new Subject<Unit>();
+    public static Subject<Unit> OnSwitchChoke = new Subject<Unit>();
+    [SerializeField]Button b_switch_choke;
     [SerializeField]Button b_reset,b_restart,b_mic;
     [SerializeField]Button b_accel;
     [SerializeField]Button b_back;
@@ -22,6 +24,7 @@ public class GameHUD : MonoBehaviourPunCallbacks
     [SerializeField]Image[] images_wifi;
     [Header("Nos")]
     [SerializeField]Image image_nos;
+    [SerializeField]Image image_glownos;
     [SerializeField]Image image_timeNod;
 
     [Header("lower gear")]
@@ -46,6 +49,9 @@ public class GameHUD : MonoBehaviourPunCallbacks
         // b_reset.OnClickAsObservable().Subscribe(_=>{
         //     OnResetPosition.OnNext(default);
         // });
+        // b_switch_choke.OnClickAsObservable().Subscribe(_=>{
+        //     OnSwitchChoke.OnNext(default);
+        // }).AddTo(this);
         gear_count.ObserveEveryValueChanged(g => g.Value).Subscribe(_=>{
             if(_<3){
                 img_lower_gear[_].DOFillAmount(1,gear_cooldown).SetAutoKill();
@@ -82,6 +88,20 @@ public class GameHUD : MonoBehaviourPunCallbacks
         AbikeChopSystem.OnShowSpeed.Subscribe(_=>{
             speed_txt.text = ((int)_).ToString();
         }).AddTo(this);
+        BikeBoltSystem.OnBoostTime.Subscribe(_=>{
+            MakeAnimationBoosted(_);
+        }).AddTo(this);
+        BikeBoltSystem.OnBoostChanged.Subscribe(_=>{
+            nos_txt.text = _.ToString();
+        }).AddTo(this);
+        BikeBoltSystem.OnBoostDelay.Subscribe(_=>{
+            //image_nos.DOFillAmount(0,0).SetAutoKill();
+            //image_nos.DOFillAmount(1,_).SetAutoKill();
+            image_glownos.DOFillAmount(1,_).SetAutoKill().OnComplete(()=>{
+                image_timeNod.DOFillAmount(1,0);
+            });
+            
+        }).AddTo(this);
     }
     private void Update() {
         if(PhotonNetwork.GetPing() <= 60){
@@ -98,11 +118,16 @@ public class GameHUD : MonoBehaviourPunCallbacks
     }
 
     void MakeAnimationBoosted(float time){
-        image_timeNod.DOFillAmount(1,time).OnComplete(()=>{
-            image_timeNod.DOFillAmount(0,.5f);
+        image_timeNod.DOFillAmount(0,time).OnComplete(()=>{
+            //image_timeNod.DOFillAmount(0,.5f);
+        });
+        image_glownos.DOFillAmount(0,0);
+        image_glownos.DOFillAmount(0,time).OnComplete(()=>{
+            
         });
         if(image_nos != null){
-            image_nos.transform.DOShakePosition(time,10,10,180);
+            // image_nos.transform.DOShakePosition(time,10,10,180);
+            // image_glownos.transform.DOShakePosition(time,10,10,180);
         }
     }
     void SetPing(Color firstColor,Color secondColor,Color thirthColor){

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 using UnityEngine;
@@ -49,6 +50,25 @@ public class UI_Room : UIDisplay
         PlayerInRoom_Prefab.OnDestroyed.Subscribe(player =>{
             RemovePlayer(player);
         }).AddTo(this);
+        LobbyClientCallback.OnDisConnect.Subscribe(_=>{
+            
+            // Debug.Log("isrunning "+BoltNetwork.IsRunning);
+            // Debug.Log("IsConnected "+BoltNetwork.IsConnected);
+            // Debug.Log("IsClient "+BoltNetwork.IsClient);
+            
+            //BoltLobbyNetwork.Instance.Shutdown(ConnectionType.Disconnect);
+            
+            // BoltLobbyNetwork.Instance.Connect();
+            UI_Manager.OpenUI(UIName.LOBBY);
+            GameUtil.ClearContent(contentTransform);
+            //Popup_Loading.Launch();
+            WaitForStartClient();
+        }).AddTo(this);
+        
+    }
+    async void WaitForStartClient(){
+        await Task.Delay(20); 
+        BoltLobbyNetwork.Instance.Connect();
     }
     /*
         sample Node =>   RoomHashtable

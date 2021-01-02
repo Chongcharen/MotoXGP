@@ -9,6 +9,8 @@ public class LobbyClientCallback : GlobalEventListener
 {
     public static Subject<Unit> OnJoinSession = new Subject<Unit>();
     public static Subject<Unit> OnBoltStart = new Subject<Unit>();
+
+    public static Subject<Unit> OnDisConnect = new Subject<Unit>();
      public override void BoltStartBegin(){
         //register protocolToken 
         print(Depug.Log("BoltStartBegin RegisterTokenClass",Color.blue));
@@ -90,6 +92,7 @@ public class LobbyClientCallback : GlobalEventListener
     
     public override void Disconnected(BoltConnection connection){
         print(Depug.Log("On disconnected "+connection,Color.green));
+        OnDisConnect.OnNext(default);
     }
     
     

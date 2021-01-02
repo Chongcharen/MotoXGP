@@ -29,9 +29,10 @@ public class UI_GameResult : MonoBehaviour
             //PhotonNetworkConsole.Instance.LeaveRoom();
             //BoltMatchmaking.CurrentSession.
             
-            if(BoltLobbyNetwork.Instance.connectionType == ConnectionType.ToCreateServer)
-                BoltLobbyNetwork.Instance.connectionType = ConnectionType.Disconnect;
-            BoltLauncher.Shutdown();
+            //if(BoltLobbyNetwork.Instance.connectionType == ConnectionType.ToCreateServer)
+            //BoltLobbyNetwork.Instance.connectionType = ConnectionType.Disconnect;
+            //BoltLauncher.Shutdown(ConnectionType.Disconnect);
+            BoltLobbyNetwork.Instance.Shutdown(ConnectionType.Disconnect);
             ObjectPool.Instance.Dispose();
             //SceneManager.LoadScene(SceneName.LOBBY);
             SceneDownloadAsset.LoadScene(SceneName.LOBBY);

@@ -65,6 +65,22 @@ public class @InputControl : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Accel"",
+                    ""type"": ""Button"",
+                    ""id"": ""64c3c4db-328f-4b08-997e-fa63c0d219df"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Back"",
+                    ""type"": ""Button"",
+                    ""id"": ""b8afc0af-cd77-4c9e-bd79-7ea666d6804e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -93,7 +109,7 @@ public class @InputControl : IInputActionCollection, IDisposable
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""e01c2285-9115-4a96-b8ea-8729db8056e9"",
-                    ""path"": ""2DVector(mode=1)"",
+                    ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -107,7 +123,7 @@ public class @InputControl : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -118,7 +134,7 @@ public class @InputControl : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -129,7 +145,7 @@ public class @InputControl : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -140,7 +156,7 @@ public class @InputControl : IInputActionCollection, IDisposable
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -177,6 +193,28 @@ public class @InputControl : IInputActionCollection, IDisposable
                     ""action"": ""VoiceActive"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5d1de453-b481-401e-8974-7140f8c0f522"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Accel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a67b3b63-b2dc-43f6-90a4-5293df679caa"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Back"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -208,6 +246,8 @@ public class @InputControl : IInputActionCollection, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Boost = m_Player.FindAction("Boost", throwIfNotFound: true);
         m_Player_VoiceActive = m_Player.FindAction("VoiceActive", throwIfNotFound: true);
+        m_Player_Accel = m_Player.FindAction("Accel", throwIfNotFound: true);
+        m_Player_Back = m_Player.FindAction("Back", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -263,6 +303,8 @@ public class @InputControl : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Boost;
     private readonly InputAction m_Player_VoiceActive;
+    private readonly InputAction m_Player_Accel;
+    private readonly InputAction m_Player_Back;
     public struct PlayerActions
     {
         private @InputControl m_Wrapper;
@@ -273,6 +315,8 @@ public class @InputControl : IInputActionCollection, IDisposable
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Boost => m_Wrapper.m_Player_Boost;
         public InputAction @VoiceActive => m_Wrapper.m_Player_VoiceActive;
+        public InputAction @Accel => m_Wrapper.m_Player_Accel;
+        public InputAction @Back => m_Wrapper.m_Player_Back;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -300,6 +344,12 @@ public class @InputControl : IInputActionCollection, IDisposable
                 @VoiceActive.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVoiceActive;
                 @VoiceActive.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVoiceActive;
                 @VoiceActive.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVoiceActive;
+                @Accel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccel;
+                @Accel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccel;
+                @Accel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAccel;
+                @Back.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBack;
+                @Back.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBack;
+                @Back.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBack;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -322,6 +372,12 @@ public class @InputControl : IInputActionCollection, IDisposable
                 @VoiceActive.started += instance.OnVoiceActive;
                 @VoiceActive.performed += instance.OnVoiceActive;
                 @VoiceActive.canceled += instance.OnVoiceActive;
+                @Accel.started += instance.OnAccel;
+                @Accel.performed += instance.OnAccel;
+                @Accel.canceled += instance.OnAccel;
+                @Back.started += instance.OnBack;
+                @Back.performed += instance.OnBack;
+                @Back.canceled += instance.OnBack;
             }
         }
     }
@@ -343,5 +399,7 @@ public class @InputControl : IInputActionCollection, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnBoost(InputAction.CallbackContext context);
         void OnVoiceActive(InputAction.CallbackContext context);
+        void OnAccel(InputAction.CallbackContext context);
+        void OnBack(InputAction.CallbackContext context);
     }
 }

@@ -1,14 +1,34 @@
 fileFormatVersion: 2
-guid: a89cd82ed6f57354fa133ee905957a68
+guid: 747eec5c822994b5aa6d3d0cb95dd069
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CloudBg_Mat_01
+    second: {fileID: 2100000, guid: c4c06c4257bc1bd46a7e7cef1333269f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Light_Mat_01
+    second: {fileID: 2100000, guid: 023a01e24c4eed046b2760aa632652b2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MountainBg_Mat_01
+    second: {fileID: 2100000, guid: 513d363eadc06cf4a9ee088c46993dc9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TreeBg_Mat_01
+    second: {fileID: 2100000, guid: b3137c20113517c4caf118e0b6d5a615, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
-    materialSearch: 1
-    materialLocation: 0
+    materialSearch: 2
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -43,6 +63,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1

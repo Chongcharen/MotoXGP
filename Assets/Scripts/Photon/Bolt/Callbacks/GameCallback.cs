@@ -50,10 +50,29 @@ public class GameCallback : GlobalEventListener
             Debug.Log("index "+player.index);
             print(Depug.Log("------------------------------------ "+player,Color.blue));
             var positionPlayer = MapManager.Instance.spawnPointsPosition[player.index];
-            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_113021,playerData,positionPlayer,Quaternion.Euler(0,90,0));
+            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_113024,playerData,positionPlayer,Quaternion.Euler(0,90,0));
             entity.TakeControl();
             entity.GetComponent<BikeBoltSystem>().runningTrack = player.index;
+            //LoadBikePlayer();
         }
+    }
+    public async void LoadBikePlayer(){
+         print(Depug.Log("SceneLoadLocalDone SErver... ",Color.green));
+            var player = BikePlayerRegistry.GetBikePlayer(BoltNetwork.Server);
+            print(Depug.Log("player "+player,Color.green));
+            var playerData = new PlayerProfileToken();
+            playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
+            playerData.RandomBikeData();
+            playerData.playerBikeData.runningTrack = player.index;
+            print(Depug.Log("spawnpoint position "+MapManager.Instance.spawnPointsPosition.Count(),Color.blue));
+            Debug.Log("index "+player.index);
+            print(Depug.Log("------------------------------------ "+player,Color.blue));
+            var positionPlayer = MapManager.Instance.spawnPointsPosition[player.index];
+         var bikePlayer = await AddressableManager.Instance.LoadObject<GameObject>("Bike/BikePlayer_113024.prefab");
+         Debug.Log("Bike player ? "+bikePlayer);
+         var entity = BoltNetwork.Instantiate(bikePlayer,playerData,positionPlayer,Quaternion.Euler(0,90,0));
+             entity.TakeControl();
+             entity.GetComponent<BikeBoltSystem>().runningTrack = player.index;
     }
     public override void SceneLoadRemoteDone(BoltConnection connection){
         if(!BoltNetwork.IsServer)return;
@@ -70,7 +89,7 @@ public class GameCallback : GlobalEventListener
             playerData.RandomBikeData();
             playerData.playerBikeData.runningTrack = evnt.TrankIndex;
         var positionPlayer = MapManager.Instance.spawnPointsPosition[evnt.TrankIndex];
-        var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_100720,playerData,positionPlayer,Quaternion.Euler(0,90,0));
+        var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_113024,playerData,positionPlayer,Quaternion.Euler(0,90,0));
             entity.TakeControl();
     }
     public override void OnEvent(PlayerPositionRequest evnt){

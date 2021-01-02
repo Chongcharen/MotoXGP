@@ -37,7 +37,7 @@ public class BoltLobbyNetwork : GlobalEventListener
     }
     public override void BoltStartBegin(){
         //register protocolToken 
-        print(Depug.Log("BoltStartBegin RegisterTokenClass",Color.blue));
+        print(Depug.Log("BoltStartBegin RegisterTokenClass",Color.white));
         BoltNetwork.RegisterTokenClass<ProtocolRoomProperty>();
         BoltNetwork.RegisterTokenClass<Bolt.Photon.PhotonRoomProperties>();
         BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
@@ -72,6 +72,8 @@ public class BoltLobbyNetwork : GlobalEventListener
         Debug.Log("model "+playerData.playerProfileModel);
         Debug.Log("filter "+filter);
         //BoltMatchmaking.JoinRandomSession(filter,playerData);
+        Debug.Log("isrunning "+BoltNetwork.IsRunning);
+        Debug.Log("isconnected "+BoltNetwork.IsConnected);
         BoltMatchmaking.JoinRandomSession(filter,playerData);
         CallPopupForWaiting("ระบบกำลัง ค้นหาห้อง โปรดรอสักครู่");
     }
@@ -272,10 +274,13 @@ public class BoltLobbyNetwork : GlobalEventListener
     }
     public override void BoltShutdownBegin(AddCallback registerDoneCallback, UdpConnectionDisconnectReason disconnectReason){
         Debug.Log("BoltShutdownBegin    ************** "+disconnectReason);
+        Debug.Log("ConnectionType "+connectionType);
         if(connectionType == ConnectionType.ToCreateServer){
             BoltLauncher.StartServer(); 
         }else{
-            BoltLauncher.StartClient();
+            Debug.Log("StartClient");
+            //BoltLauncher.StartClient();
+            Connect();
         }
          OnSessionEndProgress.OnNext(default);
     }

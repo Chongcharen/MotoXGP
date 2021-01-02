@@ -13,6 +13,7 @@ public class RagdollCollider : MonoBehaviour
     void Start()
     {
         SetRagdoll();
+        DeactivateRagdoll();
         //EnableKinematic(false);
         CrashDetecter.OnCrash.Subscribe(_=>{
             //  foreach(Collider coll in colliders){
@@ -30,17 +31,19 @@ public class RagdollCollider : MonoBehaviour
 
         CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
             if(tuple.Item1 != rootObject.GetInstanceID())return;
-            foreach(Collider coll in colliders){
-                if(coll == null)continue;
-                var rigidbody = coll.GetComponent<Rigidbody>();
-                rigidbody.mass = 50;
-                rigidbody.drag = 1f;
-                rigidbody.angularDrag = 0.05f;
-                rigidbody.velocity = Vector3.zero;
-                rigidbody.angularVelocity = Vector3.zero;
-                rigidbody.sleepThreshold = 0;
-                rigidbody.constraints = RigidbodyConstraints.FreezePositionZ|RigidbodyConstraints.FreezeRotationY;
-             }
+             Debug.Log("Ragdoll collider  Crash !!!!!");
+            ActivateRagdoll();
+            // foreach(Collider coll in colliders){
+            //     if(coll == null)continue;
+            //     // var rigidbody = coll.GetComponent<Rigidbody>();
+            //     // rigidbody.mass = 1000f;
+            //     // rigidbody.drag = 1f;
+            //     // rigidbody.angularDrag = 0.05f;
+            //     // rigidbody.velocity = Vector3.zero;
+            //     // rigidbody.angularVelocity = Vector3.zero;
+            //     // rigidbody.sleepThreshold = 0;
+            //     //rigidbody.constraints = RigidbodyConstraints.FreezePositionZ|RigidbodyConstraints.FreezeRotationY;
+            //  }
         });
         // AbikeChopSystem.OnReset.Subscribe(_=>{
         //     foreach(Collider coll in colliders){
@@ -59,22 +62,25 @@ public class RagdollCollider : MonoBehaviour
         //         EnabledRagDolls(true);
         //      }
         // });
+        
         BikeBoltSystem.OnReset.Subscribe(_=>{
-            foreach(Collider coll in colliders){
-                if(coll == null)continue;
-                EnabledRagDolls(false);
+            // foreach(Collider coll in colliders){
+            //     if(coll == null)continue;
+                
+            //     EnabledRagDolls(false);
 
-                var rigidbody = coll.GetComponent<Rigidbody>();
-                rigidbody.mass = 0;
-                rigidbody.drag = 0;
-                rigidbody.angularDrag = 0;
-                rigidbody.velocity = Vector3.zero;
-                rigidbody.angularVelocity = Vector3.zero;
-                rigidbody.sleepThreshold = 0.005f;
-                rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
-                rigidbody.WakeUp();
-                EnabledRagDolls(true);
-             }
+            //     var rigidbody = coll.GetComponent<Rigidbody>();
+            //     rigidbody.mass = 0;
+            //     rigidbody.drag = 0;
+            //     rigidbody.angularDrag = 0;
+            //     rigidbody.velocity = Vector3.zero;
+            //     rigidbody.angularVelocity = Vector3.zero;
+            //     rigidbody.sleepThreshold = 0.005f;
+            //     rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
+            //     rigidbody.WakeUp();
+            //     EnabledRagDolls(true);
+            //  }
+            DeactivateRagdoll();
         });
         BikeBoltSystem.OnControllGained.Subscribe(_=>{
             EnableKinematic(_);
@@ -85,14 +91,45 @@ public class RagdollCollider : MonoBehaviour
         foreach(Collider coll in colliders){
             if(coll == null)continue;
             //coll.enabled = false;
-            coll.material = material;
+            // coll.material = material;
+            // var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
+            // rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+            // rigidbody.mass = 0;
+            // rigidbody.drag = 0;
+            // rigidbody.angularDrag = 0;
+            // rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
+            var rigid = new Rigidbody();
+            rigid = coll.gameObject.GetComponent<Rigidbody>();
+            Rigidbodies.Add(rigid);
+        }
+    }
+    public void SetLowMassRagdoll(){
+        var index = 0;
+        foreach (Collider coll in colliders)
+        {
             var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
-            rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
             rigidbody.mass = 0;
-            rigidbody.drag = 0;
-            rigidbody.angularDrag = 0;
-            rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
-            Rigidbodies.Add(rigidbody);
+        }
+    }
+   
+    public void ActivateRagdoll(){
+         var index = 0;
+        foreach (Collider coll in colliders)
+        {
+            var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
+            rigidbody = Rigidbodies[index];
+            rigidbody.drag = 0.5f;
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
+            index ++; 
+        }
+    }
+
+    public void DeactivateRagdoll(){
+        foreach (Collider coll in colliders)
+        {
+            var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
+            rigidbody.mass = 0;
         }
     }
     public void EnabledRagDolls(bool active){

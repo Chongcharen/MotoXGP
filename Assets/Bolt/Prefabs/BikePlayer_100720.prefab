@@ -13453,11 +13453,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 555cbdaf32ec09247806701f87b6e2e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myMotorTorque:
+  - 0
+  - 0
+  myBrakeTorque:
+  - 0
+  - 0
+  dotProduct:
+  - 0
+  - 0
   animationTime: 0
   idleAnimationTime: 0
+  chockSpeedUpdate: 1
   ease: 0
+  DownForce: {x: 0, y: 0, z: 0}
+  suspensions:
+  - {x: -4.3037578e+29, y: 6.6e-43, z: 6}
+  - {x: 4.5, y: -1.3497e-41, z: 6.61e-43}
+  physicMaterial: {fileID: 0}
+  maxVelocity: 20
+  boostVelocity: 40
+  normalVelocity: 20
+  downLimit: -5
+  skidmarkController: {fileID: 0}
+  animationSkid: []
+  carParent: {fileID: 0}
+  swingarmParent: {fileID: 0}
+  rearWheelJoint: {fileID: 0}
+  rearLookAt: {fileID: 0}
   BikeStatus: 0
   startPosition: {x: 0, y: 0, z: 0}
+  bikerStartPosition: {x: 0, y: 0, z: 0}
   bodyCollider: {fileID: 5581475483805622445}
   objectDetecter: {fileID: 5581475483877303438}
   visualizeWheel: 0
@@ -13617,11 +13643,46 @@ MonoBehaviour:
   currentSpeedLimit: 0
   speedLimit: 65
   boostSpeedLimit: 120
+  landingCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 200
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 50
+      value: 300
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 200
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  landingActive: 1
   boostForce: 10
   brakeForce: 5000
   boostTimeLimit: 3
   boostDelay: 2
   lower_gear_force: 5
+  lower_gear_force_time_limit: 0.2
   airBrake: 250
   downforce: 1
   diffGearing: 4
@@ -13669,6 +13730,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMass: {x: 0, y: 0, z: 0}
   tensor: {x: 0, y: 0, z: 0}
+  inertiaTensorRotation: {x: 0, y: 0, z: 0}
   objectCenter: {fileID: 5581475482762325752}
   objectOfMass: {fileID: 5581475483276048658}
   massPoint: {fileID: 5581475482499772521}
@@ -13836,7 +13898,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sceneGuid: 
   _serializerGuid: e7d343ea-6b94-4aa4-9f84-225903d9f0da
-  _prefabId: 3
+  _prefabId: 6
   _updateRate: 1
   _autoFreezeProxyFrames: 0
   _clientPredicted: 1

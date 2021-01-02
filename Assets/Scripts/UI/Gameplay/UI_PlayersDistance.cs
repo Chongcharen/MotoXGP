@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
@@ -13,6 +14,7 @@ using PlayFab.ClientModels;
 using Bolt;
 public class UI_PlayersDistance : MonoBehaviour
 {
+    public static Subject<Tuple<BoltEntity,Color>> OnPlayerColor = new Subject<Tuple<BoltEntity, Color>>();
     // Start is called before the first frame update
     [SerializeField]GameObject root;
     [SerializeField]Transform transformParent;
@@ -22,8 +24,8 @@ public class UI_PlayersDistance : MonoBehaviour
     [SerializeField]Color[] colorRank;
     [SerializeField]Image[] bgImageRank;
     [SerializeField]Text[] textRank;
-    Dictionary<BoltEntity,PlayerSliderPrefab> dic_playerSlider;
-    Dictionary<BoltEntity,PlayerDistanceData> dic_playerDistance;
+    Dictionary<BoltEntity,PlayerSliderPrefab> dic_playerSlider = new Dictionary<BoltEntity, PlayerSliderPrefab>();
+    Dictionary<BoltEntity,PlayerDistanceData> dic_playerDistance = new Dictionary<BoltEntity, PlayerDistanceData>();
 
     PlayerDistanceData myDistanceData,nextPlayerDistanceData;
     PlayerSliderPrefab mySliderPrefab;
@@ -32,10 +34,17 @@ public class UI_PlayersDistance : MonoBehaviour
     float startPoint,finishPoint;
     //List<PlayerDistanceData> playerDistanceList = new List<PlayerDistanceData>();
     string localUserId;
+    private void Awake() {
+        
+         BikeBoltSystem.OnEntityAttached.Subscribe(entity =>{
+            RegisterPlayer(entity);
+        }).AddTo(this);
+        BikeBoltSystem.OnEntityAttached.Subscribe(entity =>{
+            RegisterPlayer(entity);
+        }).AddTo(this);
+    }
     void Start(){
         print(Depug.Log("PlayerDistance Start ",Color.white));
-        dic_playerSlider = new Dictionary<BoltEntity, PlayerSliderPrefab>();
-        dic_playerDistance = new Dictionary<BoltEntity, PlayerDistanceData>();
         startPoint = MapManager.Instance.startPoint;
         finishPoint = MapManager.Instance.finishPoint;
 
@@ -59,12 +68,13 @@ public class UI_PlayersDistance : MonoBehaviour
         // PhotonCustomTransformView.OnPlayerMovement.Subscribe(tupleValue =>{
         //         SetDistance(tupleValue.Item1,tupleValue.Item2);
         //     }).AddTo(this);
-        GameCallback.OnEntityAttached.Subscribe(entity =>{
-            RegisterPlayer(entity);
-        });
-        GameCallback.OnEntityDetached.Subscribe(entity =>{
-            UnregisterPlayer(entity);
-        });
+        // GameCallback.OnEntityAttached.Subscribe(entity =>{
+        //     RegisterPlayer(entity);
+        // });
+        // GameCallback.OnEntityDetached.Subscribe(entity =>{
+        //     UnregisterPlayer(entity);
+        // });
+       
     }
     void CreateSlider(){
         // Debug.Log("createSlider ");
@@ -129,6 +139,8 @@ public class UI_PlayersDistance : MonoBehaviour
         // print(Depug.Log("stripstringkey = "+PhotonNetwork.CurrentRoom.CustomProperties.StripToStringKeys(),Color.red));
     }
     public void RegisterPlayer(BoltEntity entity){
+        print(Depug.Log("RegisterPlayer "+entity,Color.green));
+        if(dic_playerSlider.ContainsKey(entity))return;
         var token = entity.AttachToken as PlayerProfileToken;
         var data = token.playerProfileModel;
         var slider = Instantiate(playerSliderPrefab,Vector3.zero,Quaternion.identity,transformParent);
@@ -137,6 +149,9 @@ public class UI_PlayersDistance : MonoBehaviour
             PlayerSliderPrefab sliderPrefab = slider.GetComponent<PlayerSliderPrefab>();
             sliderPrefab.GetSlider().minValue = startPoint;
             sliderPrefab.GetSlider().maxValue = finishPoint;
+            print(Depug.Log("startpoint "+startPoint,Color.green));
+            print(Depug.Log("startpoint "+finishPoint,Color.green));
+            print(Depug.Log("runningTrack "+token.playerBikeData.runningTrack,Color.green));
             //Debug.Assert(!dic_playerSlider.ContainsKey(playerIndex.Key.ToString()));
             // if(dic_playerSlider.ContainsKey(data.PlayerId){
             //     Debug.Log("Destroy dic_playerslider");
@@ -150,6 +165,14 @@ public class UI_PlayersDistance : MonoBehaviour
                 mySliderPrefab = sliderPrefab;
             }
             sliderPrefab.SetUpData(colorRank[token.playerBikeData.runningTrack]);
+
+            var distanceData = new PlayerDistanceData();
+            distanceData.playerName = data.DisplayName;
+            distanceData.playerIndex = token.playerBikeData.runningTrack;
+            distanceData.userID = data.PlayerId;
+            dic_playerDistance.Add(entity,distanceData);
+
+            OnPlayerColor.OnNext(Tuple.Create(entity,colorRank[token.playerBikeData.runningTrack]));
     }
     void UnregisterPlayer(BoltEntity entity){
         if(dic_playerSlider.ContainsKey(entity)){
@@ -187,6 +210,7 @@ public class UI_PlayersDistance : MonoBehaviour
         foreach (var item in dic_playerSlider)
         {
             item.Value.SetValue(item.Key.transform.position.x);
+            dic_playerDistance[item.Key].distance = item.Key.transform.position.x;
         }
     }
     void SetPlayerRanking(){
@@ -255,4 +279,5 @@ public class UI_PlayersDistance : MonoBehaviour
     }
 
 }
+
 

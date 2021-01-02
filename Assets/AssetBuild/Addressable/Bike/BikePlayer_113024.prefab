@@ -1684,8 +1684,8 @@ RectTransform:
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_Children:
   - {fileID: 2448251224643073362}
-  m_Father: {fileID: 5581475483877303437}
-  m_RootOrder: 3
+  m_Father: {fileID: 5581475483137713481}
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3553,7 +3553,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 1.0332968, z: 0.5856665}
+  m_Size: {x: 0.5, y: 1, z: 0.5856665}
   m_Center: {x: -3.1279137e-16, y: 0.63, z: 0.08451072}
 --- !u!114 &5581475482343839140
 MonoBehaviour:
@@ -3623,7 +3623,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.23584345, y: 0.31299126, z: 0.12396237}
+  m_Size: {x: 0.23584345, y: 0.65, z: 0.12396237}
   m_Center: {x: 0.0058781058, y: -0.20535702, z: 0.45920837}
 --- !u!114 &5581475482384807962
 MonoBehaviour:
@@ -4152,6 +4152,7 @@ Transform:
   - {fileID: 6857191458039726859}
   - {fileID: 5581475483340702385}
   - {fileID: 5581475483877303437}
+  - {fileID: 3953555778495648452}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
@@ -4168,7 +4169,7 @@ Rigidbody:
   m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 1
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 104
   m_CollisionDetection: 3
 --- !u!114 &5301074537287395687
@@ -4200,9 +4201,12 @@ MonoBehaviour:
   suspensions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
+  wheelStartPosition:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
   physicMaterial: {fileID: 13400000, guid: 2e8569514c4d74e1db0fda96af3dab1b, type: 2}
   maxVelocity: 17
-  boostVelocity: 35
+  boostVelocity: 20
   normalVelocity: 17
   downLimit: -6
   skidmarkController: {fileID: -3898723075881818588}
@@ -4232,7 +4236,7 @@ MonoBehaviour:
     wheelSettings:
     - Radius: 0.37
       Weight: 5
-      SuspensionDistance: 0.5
+      SuspensionDistance: 0.4
       ForceAppointDistance: 0.3
       DampingRate: 0.3
       WheelCenter: {x: 0, y: 0.2, z: 0}
@@ -4251,10 +4255,10 @@ MonoBehaviour:
       SuspensionSpring:
         spring: 1000
         damper: 100
-        targetposition: 0.7
+        targetposition: 0.75
     - Radius: 0.37
       Weight: 5
-      SuspensionDistance: 0.5
+      SuspensionDistance: 0.4
       ForceAppointDistance: 0.3
       DampingRate: 0.3
       WheelCenter: {x: 0, y: 0.2, z: 0}
@@ -4273,7 +4277,7 @@ MonoBehaviour:
       SuspensionSpring:
         spring: 1000
         damper: 100
-        targetposition: 0.7
+        targetposition: 0.75
   bikeSetting:
     showNormalGizmos: 0
     hitGround: []
@@ -4335,7 +4339,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1520
+      value: 1250
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -4343,7 +4347,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 17
+      time: 20
       value: 0
       inSlope: 0
       outSlope: 0
@@ -4382,12 +4386,12 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   landingActive: 0
-  boostForce: 35
+  boostForce: 22
   brakeForce: 5000
-  boostTimeLimit: 2
-  boostDelay: 2
-  lower_gear_force: 45
-  lower_gear_force_time_limit: 0.25
+  boostTimeLimit: 4
+  boostDelay: 10
+  lower_gear_force: 22
+  lower_gear_force_time_limit: 0.5
   airBrake: 250
   downforce: 1
   diffGearing: 4
@@ -4575,6 +4579,8 @@ MonoBehaviour:
   trailRenderer: {fileID: 4892792786067146560}
   motionBlur: {fileID: 0}
   particle: {fileID: 6906772181670078826}
+  nosColor: {r: 0, g: 0.9915106, b: 1, a: 1}
+  lower_gear_color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &4378422161117782494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4896,7 +4902,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5581475483805622446}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 2e8569514c4d74e1db0fda96af3dab1b, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -4917,7 +4923,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5581475483877303437
 Transform:
   m_ObjectHideFlags: 0
@@ -4932,7 +4938,6 @@ Transform:
   - {fileID: 5581475482343839141}
   - {fileID: 5581475484061764434}
   - {fileID: 5581475482384807963}
-  - {fileID: 3953555778495648452}
   m_Father: {fileID: 5581475483137713481}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5072,7 +5077,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.23584345, y: 0.64959115, z: 0.13621548}
+  m_Size: {x: 0.23584345, y: 0.94, z: 0.13621548}
   m_Center: {x: 0.0058781025, y: -0.13593291, z: 0.46533492}
 --- !u!114 &5581475484061764433
 MonoBehaviour:
@@ -10602,7 +10607,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: fsdfsdfdsfdsfdsf
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1a23697c516eadb4fae20224d4bb2a1c, type: 2}
   m_sharedMaterial: {fileID: -501184866122709520, guid: 1a23697c516eadb4fae20224d4bb2a1c,
@@ -12335,15 +12340,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60bcc4bc2faf5454fb671b34f6085604, type: 3}
---- !u!1 &7580744500086092608 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2287267082120792699, guid: 60bcc4bc2faf5454fb671b34f6085604,
-    type: 3}
-  m_PrefabInstance: {fileID: 8541700939506104635}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7097644811142883834 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1510344037619552449, guid: 60bcc4bc2faf5454fb671b34f6085604,
+    type: 3}
+  m_PrefabInstance: {fileID: 8541700939506104635}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7580744500086092608 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2287267082120792699, guid: 60bcc4bc2faf5454fb671b34f6085604,
     type: 3}
   m_PrefabInstance: {fileID: 8541700939506104635}
   m_PrefabAsset: {fileID: 0}

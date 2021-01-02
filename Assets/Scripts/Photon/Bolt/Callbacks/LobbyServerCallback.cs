@@ -48,8 +48,11 @@ public class LobbyServerCallback : GlobalEventListener{
         }
     }
     public override void Connected(BoltConnection connection){
+        print(Depug.Log("LSC Connected "+connection,Color.blue));
+        
         if(!BoltNetwork.IsServer)return;
         var bikePlayerObject = BikePlayerRegistry.CreateClientPlayer(connection);
+        print(Depug.Log("LSC bikePlayerObject is Cleint "+bikePlayerObject.IsClient,Color.blue));
         if(bikePlayerObject.IsClient){
             var entity = BoltNetwork.Instantiate(BoltPrefabs.RoomPlayerInfo);
             entity.AssignControl(bikePlayerObject.connection);
@@ -71,6 +74,7 @@ public class LobbyServerCallback : GlobalEventListener{
         if(BoltNetwork.IsServer){
             BikePlayerRegistry.Dispose();
         }
+        BoltLauncher.StartClient();
         print(Depug.Log("-BikePlayerRegistry count- "+BikePlayerRegistry.AllPlayers.Count(),Color.red));
     }
 

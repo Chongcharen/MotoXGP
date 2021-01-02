@@ -118,7 +118,9 @@ public class RagdollCollider : MonoBehaviour
         {
             var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
             rigidbody = Rigidbodies[index];
-            rigidbody.drag = 10;
+            rigidbody.drag = 0.5f;
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
             index ++; 
         }
     }

@@ -25,6 +25,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public DG.Tweening.Ease ease;
     public Vector3 DownForce;
     public Vector3[] suspensions = new Vector3[2];
+
+    public Vector3[] wheelStartPosition = new Vector3[2];
+
     public PhysicMaterial physicMaterial;
     public float maxVelocity =20;
     public float boostVelocity = 40;
@@ -40,6 +43,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     public GameObject rearWheelJoint;
     public RearLookAt rearLookAt;
     //
+    public static Subject<BoltEntity> OnEntityAttached = new Subject<BoltEntity>();
+    public static Subject<BoltEntity> OnEntityDetached = new Subject<BoltEntity>();
+    public static Subject<Unit> OnChangeScreenBoost = new Subject<Unit>();
     public static Subject<int> OnBoostChanged = new Subject<int>();
     public static Subject<float> OnBoostTime = new Subject<float>();
     public static Subject<float> OnBoostDelay = new Subject<float>();
@@ -97,7 +103,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     BoostSystem boostSystem;
     bool isBoosting = false;
     bool isBoostDelay = false;
-    int boostLimit = 1000;
+    int boostLimit = 18;
     float currentBoostTime = 0;
     public int BoostLimit{
         get{
@@ -169,7 +175,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         wheels = new WheelComponent[2];
         wheels[0] = SetWheelComponent(bikeWheelSetting.wheels.wheelFront,bikeWheelSetting.wheels.modelWheelFront,bikeWheelSetting.wheels.AxleFront,true,0,bikeWheelSetting.wheels.AxleFront.localPosition.y,bikeWheelSetting.wheelSettings[0],animationSkid[0],false);
         wheels[1] = SetWheelComponent(bikeWheelSetting.wheels.wheelBack,bikeWheelSetting.wheels.modelWheelBack,bikeWheelSetting.wheels.AxleBack,true,0,bikeWheelSetting.wheels.AxleBack.localPosition.y,bikeWheelSetting.wheelSettings[1],animationSkid[1]);
-
+        
     }
     void SetupBikeUIData(){
         var wheelSettings = new WheelColliderSetting[2];
@@ -246,9 +252,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             isReady = raceCountdown.RaceStart;
         }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
+                if(!grounded)return;
                 maxVelocity = boostVelocity;
+                if(boostSystem != null)
+                    boostSystem.StartBoostEffect(lower_gear_force_time_limit,false);
                 Rigidbody.AddForce(transform.forward* Rigidbody.mass*lower_gear_force,ForceMode.Impulse);
                 DOTween.To(()=> maxVelocity, x=> maxVelocity = x, normalVelocity, lower_gear_force_time_limit).SetEase(ease).SetAutoKill();
+                OnChangeScreenBoost.OnNext(default);
             }).AddTo(this);
         CrashDetecter.OnPlayerCrash.Subscribe(tuple =>{
             if(tuple.Item1 != gameObject.GetInstanceID())return;
@@ -531,7 +541,9 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         Debug.Log("Bolt Crash !!!!!");
         animator.applyRootMotion = false;
         animator.enabled = false;
-        Rigidbody.drag = 10;
+        Rigidbody.drag = 2;
+        Rigidbody.velocity = Vector3.zero;
+        Rigidbody.angularVelocity = Vector3.zero;
         //animator.gameObject.transform.SetParent(animator.gameObject.transform.parent.parent);
         objectDetecter.gameObject.SetActive(false);
         StartCoroutine(DelayRespawn());
@@ -549,14 +561,16 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         yield return new WaitForSeconds(1);
         RestartPosition();
         yield return new WaitForSeconds(0.5f);
-        bikeSetting.bikerMan.transform.localPosition = new Vector3(0,bikerStartPosition.y,0);
+        //bikeSetting.bikerMan.transform.localPosition = new Vector3(0,bikerStartPosition.y,0);
         StopAllCoroutines();
+        bikeSetting.bikerMan.transform.localPosition = new Vector3(0,bikerStartPosition.y,0);
     }
     void RestartPosition(){
         Debug.Log("restartPosition");
         if(!isControll)return;
         if(MapManager.Instance.isDeadzone)
             respawnPosition = new Vector3(MapManager.Instance.respawnPosition.x,MapManager.Instance.respawnPosition.y,startPosition.z);
+        
         Rigidbody.drag = 0.05f;
         transform.DOKill();
         bikeSetting.MainBody.DOKill();
@@ -566,6 +580,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         GetComponent<CenterOfMass>().Reset();
         crash = false;
         objectDetecter.gameObject.SetActive(true);
+        foreach (WheelComponent wheel in wheels)
+        {
+            wheel.axle.localPosition = wheel.startPos;
+        }
         //bikeSetting.bikerMan.transform.SetParent(this.gameObject.transform);
         bikeSetting.bikerMan.transform.localPosition = new Vector3(0,bikerStartPosition.y,0);
         animator.enabled = true;
@@ -639,12 +657,20 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         Debug.Log("-----------------Attached------------");
         //visualizeChock = true;
         //SetupBikePhysic();
+        UI_PlayersDistance.OnPlayerColor.Subscribe(_=>{
+            if(_.Item1 == entity){
+                playerName_txt.color = _.Item2;
+            }
+        }).AddTo(this);
         playerProfileToken = entity.AttachToken as PlayerProfileToken;
+        
         if(entity.Source != null){
             Debug.Log(entity.Source.ConnectToken);
         }
+        playerName_txt.text = playerProfileToken.playerProfileModel.DisplayName;
+        print(Depug.Log("DisplayName "+playerProfileToken.playerProfileModel.DisplayName,Color.white));
         state.SetTransforms(state.Transform, transform);
-        state.AddCallback("Name",()=>playerName_txt.text = state.Name);
+        //state.AddCallback("Name",()=>playerName_txt.text = state.Name);
         state.AddCallback("PlayerEquiped",()=> SetUpPlayerEquipment());
         state.AddCallback("BikeEquiped",()=> SetUpBikeEquipment());
         //state.AddCallback("PlayerEquiped")
@@ -657,11 +683,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         currentSpeedLimit = speedLimit;
         
         boostSystem = GetComponent<BoostSystem>();
-
+        OnEntityAttached.OnNext(entity);
         //Send Bike Data to ui;      
           
     }
-    
+    public override void Detached(){
+        OnEntityDetached.OnNext(entity);
+    }
     public override void ControlGained(){
         isControll = true;
         objectDetecter.SetActive(true);
@@ -700,7 +728,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 
         state.PlayerEquiped = playerEquipmentToken;
         state.BikeEquiped = bikeEquipmentToken;
-        state.Name = playerProfileToken.playerProfileModel.DisplayName;
+        //state.Name = playerProfileToken.playerProfileModel.DisplayName;
         //state.SetAnimator(animator);
         print(Depug.Log("Setup PlayerData ",Color.blue));
         print(Depug.Log("Display name "+state.Name,Color.blue));
@@ -885,13 +913,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
             //Debug.Log(component.rotation);
             Vector3 lp = component.axle.localPosition;
-
              if(isGround[indexWhell] == false && component.collider.GetGroundHit(out hit)){
                  bike_animator.SetTrigger("OnGround");
              }
-
             isGround[indexWhell] = component.collider.GetGroundHit(out hit);
-           
             if(isGround[indexWhell]){
                 lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
                 dotProduct[indexWhell] = Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
@@ -988,6 +1013,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
                     ForceTorque();
                     Rigidbody.AddForce(transform.forward* Rigidbody.mass*boostForce,ForceMode.Impulse);
                     DOTween.To(()=> maxVelocity, x=> maxVelocity = x, normalVelocity, boostTimeLimit).SetEase(ease).SetAutoKill();
+                    OnChangeScreenBoost.OnNext(default);
                 }
                
             }

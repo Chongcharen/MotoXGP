@@ -495,6 +495,7 @@ public class ABikeSystem : MonoBehaviour
         result.pos_y = pos_y;
         result.maxSteer = maxSteer;
         result.startPos = axle.transform.localPosition;
+
         if(!drive){
             // var spring = new JointSpring();
             // spring.spring = 35000;
@@ -564,6 +565,8 @@ public class ABikeSystem : MonoBehaviour
         public WheelCollider collider;
         public SphereCollider sphereCollider;
         public Vector3 startPos;
+
+        public Vector3 wheelPosition;
         public float rotation = 0.0f;
         public float maxSteer;
         public bool drive;

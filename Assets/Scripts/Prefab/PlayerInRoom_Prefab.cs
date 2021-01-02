@@ -31,6 +31,8 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
         // });
     }
     public override void Attached(){
+        print(Depug.Log("PlayerinRoom Attached ",Color.green));
+        print(Depug.Log("state . name "+state.Name,Color.green));
         state.AddCallback("Name",()=>playername_text.text = state.Name);
         state.AddCallback("Avatar",()=>avatarURL = state.Avatar);
         state.AddCallback("Color",()=> playerColor = state.Color);

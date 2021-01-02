@@ -11,6 +11,10 @@ public class VirtualPlayerCamera : BoltSingletonPrefab<VirtualPlayerCamera>
     CinemachineVirtualCamera virtualCamera;
     CinemachineTransposer CinemachineTransposer;
     CinemachineComposer CinemachineComposer;
+    public float screenXoffset = 0.3f;
+    public float screenXNOSOffset = 0.5f;
+    public float changeScreenToNOSTimer = 0.2f;
+    public float changeScreenToDefaultTimer = 0.2f;
     void Awake(){
         virtualCamera = GetComponent<CinemachineVirtualCamera>();
         CinemachineTransposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
@@ -28,6 +32,9 @@ public class VirtualPlayerCamera : BoltSingletonPrefab<VirtualPlayerCamera>
         	// DOTween.To(doGetter, dOSetter,sideX+boostChangeSideX, 0.5f);
 			StartCoroutine("closetime",timeChange);
 		}).AddTo(this);
+        BikeBoltSystem.OnChangeScreenBoost.Subscribe(_=>{
+            StartCoroutine(ChangeScreenToNos());
+        }).AddTo(this);
     }
     IEnumerator closetime(float time){
         //CinemachineTransposer.DOComplete()
@@ -40,6 +47,14 @@ public class VirtualPlayerCamera : BoltSingletonPrefab<VirtualPlayerCamera>
 		//DG.Tweening.DOTween.To(()=>CinemachineComposer.m_ScreenX,value => CinemachineComposer.m_ScreenX = value,0.35f,0.2f);
         //isBoost = false;
 	}
+    public void ChangeScreen(){
+        StartCoroutine(ChangeScreenToNos());
+    }
+    IEnumerator ChangeScreenToNos(){
+        DG.Tweening.DOTween.To(()=>CinemachineComposer.m_ScreenX,value => CinemachineComposer.m_ScreenX = value,screenXNOSOffset,changeScreenToNOSTimer);
+        yield return new WaitForSeconds(changeScreenToNOSTimer);
+        DG.Tweening.DOTween.To(()=>CinemachineComposer.m_ScreenX,value => CinemachineComposer.m_ScreenX = value,screenXoffset,changeScreenToDefaultTimer);
+    }
     public void LookupTarget(Transform transform){
         virtualCamera.LookAt = transform;
     }

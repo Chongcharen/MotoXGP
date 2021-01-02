@@ -34,7 +34,14 @@ public class UI_Login : UIDisplay
         id = UIName.LOGIN;
         UI_Manager.RegisterUI(this);
         if(PlayFabController.Instance.IsLogin){
-            OpenLobbyWithDelay(2);
+            if(!BoltNetwork.IsConnected){
+                BoltLobbyNetwork.Instance.Connect();
+            }else
+            {
+                OpenLobbyWithDelay(2);
+            }
+            
+           Popup_Loading.Launch();
         }else{
             fader.enabled = false;
         }

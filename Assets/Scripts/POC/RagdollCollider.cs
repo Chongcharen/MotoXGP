@@ -128,6 +128,8 @@ public class RagdollCollider : MonoBehaviour
     public void DeactivateRagdoll(){
         foreach (Collider coll in colliders)
         {
+            if(coll == null)continue;
+            if(coll.gameObject == null)continue;
             var rigidbody = coll.gameObject.GetComponent<Rigidbody>();
             rigidbody.mass = 0;
         }
@@ -142,5 +144,8 @@ public class RagdollCollider : MonoBehaviour
         //Rigidbodies.cas
        // Rigidbodies.ForEach(r =>r.isKinematic = active);
     }
-
+    private void OnDestroy()
+    {
+        
+    }
 }

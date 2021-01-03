@@ -31,17 +31,26 @@ public class UI_Login : UIDisplay
     }
     void Start(){
         Debug.Log("BoltNetwork.IsConnected "+BoltNetwork.IsConnected);
+        Debug.Log("BoltNetwork.IsRunning "+BoltNetwork.IsRunning);
+        Debug.Log("PlayFabController.Instance.IsLogin "+PlayFabController.Instance.IsLogin);
         id = UIName.LOGIN;
         UI_Manager.RegisterUI(this);
         if(PlayFabController.Instance.IsLogin){
-            if(!BoltNetwork.IsConnected){
-                BoltLobbyNetwork.Instance.Connect();
-            }else
-            {
+            // if(!BoltNetwork.IsConnected){
+            //     BoltLobbyNetwork.Instance.Connect();
+            // }else
+            // {
+            //     OpenLobbyWithDelay(2);
+            // }
+            if(BoltNetwork.IsRunning){
                 OpenLobbyWithDelay(2);
+            }else{
+                if(!BoltNetwork.IsConnected){
+                    Popup_Loading.Launch();
+                }
             }
             
-           Popup_Loading.Launch();
+           
         }else{
             fader.enabled = false;
         }

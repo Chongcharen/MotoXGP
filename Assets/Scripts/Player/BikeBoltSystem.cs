@@ -1048,7 +1048,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
 
 
     #region Bike Setup
-    private WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting,GameObject skidmark,bool addSphereCollider = true)
+    WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting,GameObject skidmark,bool addSphereCollider = true)
     {
 
         WheelComponent result = new WheelComponent();
@@ -1105,6 +1105,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         
 
         if(addSphereCollider){
+
             result.sphereCollider = result.collider.gameObject.AddComponent<SphereCollider>();
             result.sphereCollider.radius = 0.2f;
             result.sphereCollider.material = physicMaterial;
@@ -1113,6 +1114,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         wheelSkid.rb = Rigidbody;
         wheelSkid.skidmarksController = skidmarkController;
         wheelSkid.animationSkid = skidmark;
+        Rigidbody.velocity = Vector3.zero;
         return result;
     }
     void SetupLandingCurve(float maxFall,float maxSpeed,float minFall,float minSpeed){

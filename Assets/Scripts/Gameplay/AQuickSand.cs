@@ -17,7 +17,7 @@ public class AQuickSand : MonoBehaviour
         AbikeChopSystem.OnPlayerCrash.Subscribe(_=>{
             //platformTranform.position = positionTemp;
             if(rigidbody != null){
-                rigidbody.drag = 0.01f;
+                rigidbody.drag = 0.5f;
                 rigidbody = null;
             }
         }).AddTo(this);

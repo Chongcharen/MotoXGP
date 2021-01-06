@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Bolt;
 using UniRx;
-[BoltGlobalBehaviour(SceneName.LOBBY,SceneName.PLAYER_CUSTOM)]
+[BoltGlobalBehaviour( @SceneName.LOBBY,@SceneName.PLAYER_CUSTOM)]
 public class LobbyClientCallback : GlobalEventListener
 {
     public static Subject<Unit> OnJoinSession = new Subject<Unit>();
@@ -53,22 +53,25 @@ public class LobbyClientCallback : GlobalEventListener
             //2
             EntityAttachedEventHandler(entity);
 
-            var photonPlayer = entity.gameObject.GetComponent<PlayerInRoom_Prefab>();
+            // var photonPlayer = entity.gameObject.GetComponent<PlayerInRoom_Prefab>();
             Debug.Log("Entity controled "+entity.IsControlled);
             Debug.Log("Entity IsOwner "+entity.IsOwner);
             Debug.Log("Entity IsControllerOrOwner "+entity.IsControllerOrOwner);
-            print(Depug.Log("Entity controled"+entity.IsControlled,Color.green));
-            if (photonPlayer)
-            {
-                if (entity.IsControlled)
-                {
-                    photonPlayer.SetupPlayer();
-                }
-                else
-                {
-                    photonPlayer.SetupOtherPlayer();
-                }
-            }
+            Debug.Log("Entity AttachToken "+entity.AttachToken);
+            Debug.Log("Entity ControlGainedToken "+entity.ControlGainedToken);
+            Debug.Log("Entity ControlLostToken "+entity.ControlLostToken);
+            // print(Depug.Log("Entity controled"+entity.IsControlled,Color.green));
+            // if (photonPlayer)
+            // {
+            //     if (entity.IsControlled)
+            //     {
+            //         photonPlayer.SetupPlayer();
+            //     }
+            //     else
+            //     {
+            //         photonPlayer.SetupOtherPlayer();
+            //     }
+            // }
     }
     private void EntityAttachedEventHandler(BoltEntity entity)
         {
@@ -91,8 +94,8 @@ public class LobbyClientCallback : GlobalEventListener
     }
     
     public override void Disconnected(BoltConnection connection){
-        print(Depug.Log("On disconnected "+connection,Color.green));
-        OnDisConnect.OnNext(default);
+       // print(Depug.Log("On disconnected "+connection,Color.green));
+        //OnDisConnect.OnNext(default);
     }
     
     

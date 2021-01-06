@@ -19,9 +19,12 @@ public class Popup_JoinGameRoom : Popup
             txt_header.text = parameter[PopupKeys.PARAMETER_POPUP_HEADER].ToString();
         if(parameter.ContainsKey(PopupKeys.PARAMETER_MESSAGE))
             txt_detail.text = parameter[PopupKeys.PARAMETER_MESSAGE].ToString();
-        // LobbyClientCallback.OnJoinSession.Subscribe(_=>{
-        //     Dispose();
-        // }).AddTo(this);
+        LobbyClientCallback.OnJoinSession.Subscribe(_=>{
+            Dispose();
+        }).AddTo(this);
+        LobbyServerCallback.OnJoinSession.Subscribe(_=>{
+            Dispose();
+        }).AddTo(this);
         BoltLobbyNetwork.OnSessionEndProgress.Subscribe(_=>{
             Dispose();
         }).AddTo(this);

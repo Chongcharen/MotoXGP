@@ -48,7 +48,7 @@ public class BoltLobbyNetwork : GlobalEventListener
     public void Connect(){
         Debug.Log("Connect-++++++++++++++++++++");
         var parameter = new Dictionary<string,object>();
-        parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Connect Server");
+        parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Network Connect");
         parameter.Add(PopupKeys.PARAMETER_MESSAGE,"Connect Client");
         //Popup_BoltConnect.Launch(parameter);
         BoltLauncher.StartClient();
@@ -113,8 +113,9 @@ public class BoltLobbyNetwork : GlobalEventListener
             connectionType = BoltNetwork.IsClient ? ConnectionType.Client : ConnectionType.Server;
             OnBoltConnected.OnNext(default);
         }else if(connectionType == ConnectionType.ToCreateServer){
-            if(BoltNetwork.IsServer)
+            if(BoltNetwork.IsServer){
                 CreateSession();
+            }
         }
     }
     //Create Room
@@ -159,7 +160,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
         playerData.RandomBikeData();
         // token เป็น playerdata แล้ว join ห้องเดียวกันไมไ่ด้ งง
-        
+        print(Depug.Log("Server ConnectToken "+BoltNetwork.Server,Color.blue));
         BoltMatchmaking.CreateSession(
             sessionID: matchName,token:customToken,null,customToken
         );
@@ -240,6 +241,9 @@ public class BoltLobbyNetwork : GlobalEventListener
     //         var lobbyPlayer = entity.gameObject.GetComponent<PlayerInRoom_Prefab>();
     //         PageManager.Instance.UI_Room.AddPlayer(lobbyPlayer);
     //     }
+    public void LeaveRoomRequest(){
+        
+    }
     public void Shutdown(ConnectionType toType){
         connectionType = ConnectionType.Disconnect;
         BoltLauncher.Shutdown();
@@ -275,6 +279,11 @@ public class BoltLobbyNetwork : GlobalEventListener
     public override void BoltShutdownBegin(AddCallback registerDoneCallback, UdpConnectionDisconnectReason disconnectReason){
         Debug.Log("BoltShutdownBegin    ************** "+disconnectReason);
         Debug.Log("ConnectionType "+connectionType);
+        var parameter = new Dictionary<string,object>();
+        parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Connectting Network");
+        parameter.Add(PopupKeys.PARAMETER_MESSAGE,"Connect Nectwork Launcher");
+        Popup_BoltConnect.Launch(parameter);
+
         if(connectionType == ConnectionType.ToCreateServer){
             BoltLauncher.StartServer(); 
         }else{

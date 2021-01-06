@@ -6,10 +6,11 @@ using System.Linq;
 using UdpKit;
 using UniRx;
 
-[BoltGlobalBehaviour(SceneName.LOBBY,SceneName.PLAYER_CUSTOM)]
+[BoltGlobalBehaviour(BoltNetworkModes.Server, @SceneName.LOBBY,@SceneName.PLAYER_CUSTOM)]
 public class LobbyServerCallback : GlobalEventListener{
 
     public static Subject<Unit> OnBoltStart = new Subject<Unit>();
+    public static Subject<BoltEntity> OnJoinSession = new Subject<BoltEntity>();
     void Awake(){
         print(Depug.Log("CreateServerPlayer ",Color.white));
         //BikePlayerRegistry.CreateServerPlayer();
@@ -31,14 +32,24 @@ public class LobbyServerCallback : GlobalEventListener{
         /// test protocol token only
         /// 
         if(!BoltNetwork.IsServer)return;
-        BikePlayerRegistry.CreateClientPlayer(BoltNetwork.Server);
+        var bikePlayerObject = BikePlayerRegistry.CreateClientPlayer(BoltNetwork.Server);
         Debug.Log("Server UdpSocket "+BoltNetwork.UdpSocket);
         Debug.Log("Server UserToken "+BoltNetwork.UdpSocket.UserToken);
         Debug.Log("AllPlayers ----> "+BikePlayerRegistry.AllPlayers.Count());
         Debug.Log("AllPlayerReadys ----> "+BikePlayerRegistry.playersReady.Count);
+        Debug.Log("AcceptToken "+bikePlayerObject.connection);
+        Debug.Log("ConnectToken "+bikePlayerObject.connection);
+        Debug.Log("BoltNetwork.Server "+BoltNetwork.Server);
+        Debug.Log("BoltNetwork.Server.connectionID "+BoltNetwork.Server);
+        //BoltLobbyNetwork.Instance.JoinSession(session);
         var entity = BoltNetwork.Instantiate(BoltPrefabs.RoomPlayerInfo);//1
         entity.TakeControl();
-        
+        var playerInroom = entity.gameObject.GetComponent<PlayerInRoom_Prefab>();
+            playerInroom.SetupProfileModel(PlayFabController.Instance.playerProfileModel.Value);
+            playerInroom.SetupPlayer(!BoltNetwork.IsServer);
+            playerInroom.SetupBikePlayerObject(bikePlayerObject);
+            //playerInroom.SetupPlayer(entity,bikePlayerObject.IsClient);
+
         print(Depug.Log("All players "+BikePlayerRegistry.AllPlayers.Count(),Color.blue));
         if(BoltNetwork.IsServer){
             var logEvent = LogEvent.Create(GlobalTargets.Everyone);
@@ -51,12 +62,20 @@ public class LobbyServerCallback : GlobalEventListener{
         print(Depug.Log("LSC Connected "+connection,Color.blue));
         
         if(!BoltNetwork.IsServer)return;
-        var bikePlayerObject = BikePlayerRegistry.CreateClientPlayer(connection);
-        print(Depug.Log("LSC bikePlayerObject is Cleint "+bikePlayerObject.IsClient,Color.blue));
-        if(bikePlayerObject.IsClient){
-            var entity = BoltNetwork.Instantiate(BoltPrefabs.RoomPlayerInfo);
-            entity.AssignControl(bikePlayerObject.connection);
-        }
+        // var bikePlayerObject = BikePlayerRegistry.CreateClientPlayer(connection);
+        // print(Depug.Log("LSC bikePlayerObject is Cleint "+bikePlayerObject.IsClient,Color.blue));
+        // print(Depug.Log("AcceptToken "+connection.AcceptToken,Color.blue));
+        // print(Depug.Log("ConnectToken "+connection.ConnectToken,Color.blue));
+        // print(Depug.Log("bikePlayerObject AcceptToken"+bikePlayerObject.connection.AcceptToken,Color.blue));
+        // print(Depug.Log("bikePlayerObject "+bikePlayerObject.connection.ConnectToken,Color.blue));
+        // if(bikePlayerObject.IsClient){
+        //     // var entity = BoltNetwork.Instantiate(BoltPrefabs.RoomPlayerInfo);
+        //     // entity.AssignControl(bikePlayerObject.connection);
+        //     // var playerInroom = entity.gameObject.GetComponent<PlayerInRoom_Prefab>();
+        //     // var token = bikePlayerObject.connection.ConnectToken as PlayerProfileToken;
+        //     // playerInroom.SetupProfileModel(token.playerProfileModel);
+        //     // playerInroom.SetupPlayer(bikePlayerObject.IsClient);
+        // }
     }
     public override void ConnectRequest(UdpEndPoint endpoint, IProtocolToken token)
         {
@@ -66,7 +85,22 @@ public class LobbyServerCallback : GlobalEventListener{
         print(Depug.Log("SceneLoadLocalDone ",Color.white));
     }
     public override void SceneLoadRemoteDone(BoltConnection connection, IProtocolToken token){
-        print(Depug.Log("SceneLoadRemoteDone "+connection.ConnectionId,Color.white));
+        print(Depug.Log("SceneLoadRemoteDone connection ID : "+connection.ConnectionId,Color.white));
+         var bikePlayerObject = BikePlayerRegistry.CreateClientPlayer(connection);
+        print(Depug.Log("LSC bikePlayerObject is Cleint "+bikePlayerObject.IsClient,Color.blue));
+        print(Depug.Log("AcceptToken "+connection.AcceptToken,Color.blue));
+        print(Depug.Log("ConnectToken "+connection.ConnectToken,Color.blue));
+        print(Depug.Log("bikePlayerObject AcceptToken"+bikePlayerObject.connection.AcceptToken,Color.blue));
+        print(Depug.Log("bikePlayerObject "+bikePlayerObject.connection.ConnectToken,Color.blue));
+        if(bikePlayerObject.IsClient){
+            var entity = BoltNetwork.Instantiate(BoltPrefabs.RoomPlayerInfo);
+            entity.AssignControl(bikePlayerObject.connection);
+            var playerInroom = entity.gameObject.GetComponent<PlayerInRoom_Prefab>();
+            var playerProfileToken = bikePlayerObject.connection.ConnectToken as PlayerProfileToken;
+            playerInroom.SetupProfileModel(playerProfileToken.playerProfileModel);
+            playerInroom.SetupPlayer(bikePlayerObject.IsClient);
+            playerInroom.SetupBikePlayerObject(bikePlayerObject);
+        }
     }
    
     public override void BoltShutdownBegin(AddCallback registerDoneCallback, UdpKit.UdpConnectionDisconnectReason disconnectReason){
@@ -79,7 +113,10 @@ public class LobbyServerCallback : GlobalEventListener{
     }
 
     public override void Disconnected(BoltConnection connection){
+        
+        print(Depug.Log("---Someone Disconnected----"+connection.ConnectionId,Color.red));
         print(Depug.Log("---Someone Disconnected----"+connection.ConnectionId,Color.red));
         BikePlayerRegistry.RemovePlayer(connection);
+        
     }
 }

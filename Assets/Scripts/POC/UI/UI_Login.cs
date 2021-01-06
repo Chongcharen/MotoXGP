@@ -43,6 +43,13 @@ public class UI_Login : UIDisplay
             //     OpenLobbyWithDelay(2);
             // }
             if(BoltNetwork.IsRunning){
+                // if(BoltNetwork.IsConnected){
+                //     OpenLobbyWithDelay(2);
+                // }
+                // else{
+                //    Popup_Loading.Launch();
+                //    //BoltLobbyNetwork.Instance.Connect();
+                // }
                 OpenLobbyWithDelay(2);
             }else{
                 if(!BoltNetwork.IsConnected){

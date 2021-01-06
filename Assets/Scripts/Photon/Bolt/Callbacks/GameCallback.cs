@@ -35,7 +35,6 @@ public class GameCallback : GlobalEventListener
         //     Debug.Log("*************************************** "+p);
         //     //UpdatePlayerRanking(json);
         // }).AddTo(this);
-        
     }
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){
         if(BoltNetwork.IsServer){

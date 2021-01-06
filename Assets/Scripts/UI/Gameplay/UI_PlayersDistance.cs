@@ -209,6 +209,7 @@ public class UI_PlayersDistance : MonoBehaviour
         SetPlayerRanking();
         foreach (var item in dic_playerSlider)
         {
+            if(item.Key == null)continue;
             item.Value.SetValue(item.Key.transform.position.x);
             dic_playerDistance[item.Key].distance = item.Key.transform.position.x;
         }

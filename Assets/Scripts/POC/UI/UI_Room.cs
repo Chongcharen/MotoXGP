@@ -46,19 +46,13 @@ public class UI_Room : UIDisplay
         root.ObserveEveryValueChanged(r =>r.gameObject.activeSelf).Subscribe(active =>{
             Debug.Log("UI_Room Active "+active);
             b_playGame.gameObject.SetActive(BoltNetwork.IsServer);
+            if(!active)
+                GameUtil.ClearContent(contentTransform);
         }).AddTo(this);
         PlayerInRoom_Prefab.OnDestroyed.Subscribe(player =>{
             RemovePlayer(player);
         }).AddTo(this);
         LobbyClientCallback.OnDisConnect.Subscribe(_=>{
-            
-            // Debug.Log("isrunning "+BoltNetwork.IsRunning);
-            // Debug.Log("IsConnected "+BoltNetwork.IsConnected);
-            // Debug.Log("IsClient "+BoltNetwork.IsClient);
-            
-            //BoltLobbyNetwork.Instance.Shutdown(ConnectionType.Disconnect);
-            
-            // BoltLobbyNetwork.Instance.Connect();
             UI_Manager.OpenUI(UIName.LOBBY);
             GameUtil.ClearContent(contentTransform);
             //Popup_Loading.Launch();

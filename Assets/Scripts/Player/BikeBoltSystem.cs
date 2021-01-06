@@ -253,6 +253,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
                 if(!grounded)return;
+                if(!isReady)return;
                 maxVelocity = boostVelocity;
                 if(boostSystem != null)
                     boostSystem.StartBoostEffect(lower_gear_force_time_limit,false);
@@ -927,11 +928,13 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             //Debug.Log("LP "+ lp.y);
             //lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
             var newPosition = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-           
            // DOTween.To(()=> lp.y, x=> lp.y = x, newPosition, 1f).SetEase(ease).SetAutoKill();
             
             //Debug.Log("min "+ (component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
             //Debug.Log("max "+ (component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
+            if(lp.y <-0.54f){
+                lp.y = -0.54f;
+            }
             suspensions[indexWhell] = lp;
             if(visualizeChock)
                 //component.axle.localPosition = lp;
@@ -1045,7 +1048,21 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     #endregion
     
-
+    public void SetBikeStatus(BikeStatus newStatus){
+        BikeStatus = newStatus;
+        switch (BikeStatus) 
+        {
+        case BikeStatus.Normal:
+            Rigidbody.drag = 0.05f;
+            break;
+        case BikeStatus.Sand:
+            Rigidbody.drag = 2.5f;
+            break;
+        case BikeStatus.Water:
+            Rigidbody.drag = 1.5f;
+            break;
+        }
+    }
 
     #region Bike Setup
     WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting,GameObject skidmark,bool addSphereCollider = true)
@@ -1133,6 +1150,6 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
 }
 public enum BikeStatus{
-    Normal,Slow,Speed
+    Normal,Sand,Water,Speed
 }
 

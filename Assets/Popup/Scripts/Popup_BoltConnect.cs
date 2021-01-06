@@ -31,6 +31,9 @@ public class Popup_BoltConnect : Popup
         LobbyClientCallback.OnBoltStart.Subscribe(_ =>{
             Dispose();
         }).AddTo(this);
+        BoltLobbyNetwork.OnBoltConnected.Subscribe(_=>{
+            Dispose();
+        }).AddTo(this);
     }
 
     public override void OnDestroy()

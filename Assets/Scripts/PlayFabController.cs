@@ -118,10 +118,7 @@ public class PlayFabController : MonoSingleton<PlayFabController>
         if(result.NewlyCreated)
             UpdateProfileWithNewPlayer();
         else
-            GetPhotonAuthenticationToken();
-        
-        
-        
+            UpdateProfile();
     }
     void GetPhotonAuthenticationToken(){
         Debug.Log("GetPhotonAuthenticationToken");
@@ -321,5 +318,33 @@ public class PlayFabController : MonoSingleton<PlayFabController>
         ExitGames.Client.Photon.Hashtable playerProfilemodel_hashtable = new ExitGames.Client.Photon.Hashtable();
         playerProfilemodel_hashtable.Add(PlayerPropertiesKey.PLAYFAB_PROFILE,playerProfileModel.Value.ToJson());
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerProfilemodel_hashtable);
+    }
+    void UpdateProfile(){
+        var displayName = string.Empty;
+        var imageUrl = string.Empty;
+        if(loginMode == LoginMode.Facebook){
+            //UpdateDisplayName(FacebookManager.Instance.profileData.name);
+            displayName = FacebookManager.Instance.profileData.name;
+            imageUrl = FacebookManager.Instance.profileData.picture.data.url;
+        }else if(loginMode == LoginMode.Google){
+           // GPGSAuthentication.platform.Authenticate()
+           displayName = "Google_"+PlayFabId;//GPGSAuthentication.Instance.localUser.userName;
+           imageUrl = "";//GPGSAuthentication.Instance.localUser.image.
+        }else if(loginMode == LoginMode.Guest){
+            displayName = "Guest_"+PlayFabId;
+            imageUrl = "";
+        }
+        PlayFabClientAPI.UpdateAvatarUrl(new UpdateAvatarUrlRequest{
+            ImageUrl = imageUrl
+        },result =>{
+             Debug.Log("avatar url change to " + result.ToJson());
+        },error => Debug.LogError(error.GenerateErrorReport()));
+
+        PlayFabClientAPI.UpdateUserTitleDisplayName( new UpdateUserTitleDisplayNameRequest {
+            DisplayName = displayName
+        }, result => {
+            Debug.Log("The player's display name is now: " + result.DisplayName);
+            GetPhotonAuthenticationToken();
+        }, error => Debug.LogError(error.GenerateErrorReport()));
     }
 }

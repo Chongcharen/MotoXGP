@@ -26,7 +26,8 @@ public class AQuickSand : MonoBehaviour
         if(other.gameObject.name == "PlayerCollider"){
             rigidbody = other.gameObject.transform.parent.GetComponent<Rigidbody>();
             Debug.Log("rigidbody "+rigidbody);
-            rigidbody.drag = rigidbodyDrag;
+            other.gameObject.transform.parent.GetComponent<BikeBoltSystem>().SetBikeStatus(BikeStatus.Sand);
+           // rigidbody.drag = rigidbodyDrag;
         }
     }
     void OnTriggerExit(Collider other){
@@ -35,6 +36,7 @@ public class AQuickSand : MonoBehaviour
                 rigidbody.drag = 0.01f;
                 rigidbody = null;
              }
+             other.gameObject.transform.parent.GetComponent<BikeBoltSystem>().SetBikeStatus(BikeStatus.Normal);
              platformTranform.position = positionTemp;
          }
     }

@@ -12,14 +12,14 @@ public static class BikePlayerRegistry
     static BikePlayerObject CreatePlayer(BoltConnection connection){
       BikePlayerObject player = new BikePlayerObject();
       player.connection = (connection == null) ? BoltNetwork.Server : connection;
+      player.index = players.Count;
       players.Add(player);
+      
 
         //Server Only
 
         //Client
       if(player.connection != null){
-        
-        player.index = players.Count;
         player.connection.UserData = player;
         playersReady.Add(connection.ConnectionId,false);
       }

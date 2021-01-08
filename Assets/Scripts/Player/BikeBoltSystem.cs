@@ -250,6 +250,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         }).AddTo(this);
         GameCallback.OnGameReady.Subscribe(raceCountdown =>{
             isReady = raceCountdown.RaceStart;
+            GetComponent<PlayerGlowing>().CloseRimlight();
         }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
                 if(!grounded)return;
@@ -287,6 +288,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     void AddBikeSettingListener(){
         //
+        GetComponent<PlayerGlowing>().ShowRimlight();
         UI_UpdateWheel.OnUpdateLandingMaxFall.Subscribe(_=>{
             SetupLandingCurve(_,landingCurve.keys[0].value,landingCurve.keys[1].time,landingCurve.keys[1].value);
         }).AddTo(this);
@@ -1056,10 +1058,10 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             Rigidbody.drag = 0.05f;
             break;
         case BikeStatus.Sand:
-            Rigidbody.drag = 2.5f;
+            Rigidbody.drag = 4.5f;
             break;
         case BikeStatus.Water:
-            Rigidbody.drag = 1.5f;
+            Rigidbody.drag = 2.5f;
             break;
         }
     }
@@ -1131,6 +1133,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         wheelSkid.rb = Rigidbody;
         wheelSkid.skidmarksController = skidmarkController;
         wheelSkid.animationSkid = skidmark;
+        wheelSkid.ps = skidmark.GetComponent<ParticleSystem>();
         Rigidbody.velocity = Vector3.zero;
         return result;
     }

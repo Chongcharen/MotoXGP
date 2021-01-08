@@ -11,6 +11,8 @@ public class AQuickSand : MonoBehaviour
     public float rigidbodyDrag = 2;
     public float platformSpeed = 0.001f;
     public float sandDownSpeed = 1;
+    public float limit = 0.5f;
+    float sndDownLimit = 0;
     public float speed;
     void Awake(){
         positionTemp = platformTranform.position;
@@ -52,7 +54,7 @@ public class AQuickSand : MonoBehaviour
             if(platformTranform.position.y >= positionTemp.y)return;
             platformTranform.position += new Vector3(0,platformSpeed,0);
         }else{
-            if(platformTranform.position.y < platformTranform.position.y-2)return;
+            if(platformTranform.position.y < positionTemp.y - limit)return;
             platformTranform.position += new Vector3(0,-platformSpeed,0);
         }
         //if(platformTranform.position.y > positionTemp.y || platformTranform.position.y < -2)return;

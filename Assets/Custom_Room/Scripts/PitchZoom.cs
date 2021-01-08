@@ -53,7 +53,7 @@ public class PitchZoom : MonoBehaviour
             Swipe();
         #else
             if(Input.touchCount >1){
-                //UpdateZoom();
+                UpdateZoom();
             }else
             {
                 previousDistance = 0;
@@ -93,7 +93,7 @@ public class PitchZoom : MonoBehaviour
         currentDistance = (touchZero - touchOne).magnitude;
         var differentDistance = (currentDistance - previousDistance)*Time.fixedDeltaTime*zoomSpeed;
         if(previousDistance != 0)
-            CinemachineTransposer.m_FollowOffset.z = Mathf.Clamp(CinemachineTransposer.m_FollowOffset.z+differentDistance,temp.z+rangeOffsetZ.x,temp.z+rangeOffsetZ.y);
+            CinemachineTransposer.m_FollowOffset.z = Mathf.Clamp(CinemachineTransposer.m_FollowOffset.z-differentDistance,temp.z+rangeOffsetZ.x,temp.z+rangeOffsetZ.y);
         previousDistance = currentDistance;
     }
     void UpdateZoomWithEditor(){
@@ -114,7 +114,6 @@ public class PitchZoom : MonoBehaviour
         
         mouseXSpeed = Input.GetAxis("Mouse X") * Time.fixedDeltaTime*dragSpeed;
         mouseYSpeed = Input.GetAxis("Mouse Y") * Time.fixedDeltaTime*dragSpeed;
-        //Debug.Log("X "+mouseXSpeed);
         CinemachineTransposer.m_FollowOffset.x = Mathf.Clamp(CinemachineTransposer.m_FollowOffset.x+mouseXSpeed,temp.x+rangeOffsetX.x,temp.x+rangeOffsetX.y);
         CinemachineTransposer.m_FollowOffset.y = Mathf.Clamp(CinemachineTransposer.m_FollowOffset.y+mouseYSpeed,temp.y+rangeOffsetY.x,temp.y+rangeOffsetY.y);
         //CinemachineTransposer.m_FollowOffset.z = Mathf.Clamp(pitchOffsetZ,temp.x-rangeOffsetZ.x,temp.x+rangeOffsetZ.y);

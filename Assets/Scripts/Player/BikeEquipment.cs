@@ -11,7 +11,7 @@ public class BikeEquipment : MonoBehaviour
         if(startLoadEquipment)
             LoadEquipmentFromSave();
         EquipmentIconPrefab.OnEquipmentChanged.Subscribe(async tracked =>{
-            if(tracked.id <= 4 )return;
+            if(tracked.id < 5 )return;
             var textureQuality = useTextureHD ? "HD/" :"SD/";
             var model = await AddressableManager.Instance.LoadObject<Mesh>(GameDataManager.Instance.gameConfigData.dataPath.equipment_models+tracked.model_name);
             var texture = await AddressableManager.Instance.LoadObject<Texture>(GameDataManager.Instance.gameConfigData.dataPath.equipment_textures+textureQuality+tracked.texture_name);

@@ -43,6 +43,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
         BoltNetwork.RegisterTokenClass<PlayerProfileToken>();
         BoltNetwork.RegisterTokenClass<BikeEquipmentToken>();
+
     }
 
     public void Connect(){
@@ -68,6 +69,8 @@ public class BoltLobbyNetwork : GlobalEventListener
         //playerData.playerBikeData.playerFinishTime = 99999999;
         playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
         playerData.RandomBikeData();
+        //playerData.playerBikeData.bikeCustomize = SaveMockupData.GetBikeEquipment;
+
         Debug.Log("playerdata "+playerData.playerBikeData);
         Debug.Log("model "+playerData.playerProfileModel);
         Debug.Log("filter "+filter);
@@ -109,6 +112,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         print(Depug.Log("StreamDataAborted "+streamID,Color.blue));
     }
     public override void BoltStartDone(){
+        
         if(connectionType == ConnectionType.Disconnect){
             connectionType = BoltNetwork.IsClient ? ConnectionType.Client : ConnectionType.Server;
             OnBoltConnected.OnNext(default);
@@ -155,14 +159,15 @@ public class BoltLobbyNetwork : GlobalEventListener
         // var playerCustom = new ProtocolPlayerCustomize(); // connectionToken 
         // playerCustom.bike_body_id = 2;
         // playerCustom.bike_texture_id = 3;
-        var playerData = new PlayerProfileToken();
+        var playerDataToken = new PlayerProfileToken();
         //playerData.playerBikeData.playerFinishTime = 99999999;
-        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
-        playerData.RandomBikeData();
+        playerDataToken.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
+        playerDataToken.RandomBikeData();
+       // playerDataToken.playerBikeData.bikeEquipmentData = SaveMockupData.GetBikeEquipment;
         // token เป็น playerdata แล้ว join ห้องเดียวกันไมไ่ด้ งง
-        print(Depug.Log("Server ConnectToken "+BoltNetwork.Server,Color.blue));
+        print(Depug.Log("Server ConnectToken "+playerDataToken,Color.blue));
         BoltMatchmaking.CreateSession(
-            sessionID: matchName,token:customToken,null,customToken
+            sessionID:matchName,token:customToken,sceneToLoad:null,sceneToken:playerDataToken
         );
         CallPopupForWaiting("ระบบกำลัง สร้างห้อง โปรดรอสักครู่");
     }
@@ -198,6 +203,7 @@ public class BoltLobbyNetwork : GlobalEventListener
 
         PhotonSession photonSession = BoltMatchmaking.CurrentSession as PhotonSession;
         photonSession.Properties["t"] = "Bavaria";
+        
         foreach (var ss in photonSession.Properties) {
             Debug.LogFormat("Key : {0} , Value : {1}",ss.Key,ss.Value);
            // GUIDebug.Log("Key : "+ss.Key+" , Value : "+ss.Value);

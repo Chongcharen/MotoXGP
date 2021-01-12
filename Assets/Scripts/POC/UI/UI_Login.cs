@@ -98,6 +98,7 @@ public class UI_Login : UIDisplay
             //BoltLobbyNetwork.Instance.Connect();
         }).AddTo(this);
         AddressableManager.OnDownloadDependenciesCompleted.Subscribe(_=>{
+            Debug.Log("OnDownloadDependenciesCompleted");
             BoltLobbyNetwork.Instance.Connect();
         }).AddTo(this);
         PlayFabController.OnLogout.Subscribe(_=>{

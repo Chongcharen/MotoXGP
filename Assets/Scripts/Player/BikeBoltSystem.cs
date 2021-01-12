@@ -916,26 +916,29 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
             //Debug.Log(component.rotation);
             Vector3 lp = component.axle.localPosition;
-             if(isGround[indexWhell] == false && component.collider.GetGroundHit(out hit)){
-                 bike_animator.SetTrigger("OnGround");
-             }
+            var shokeDistance = component.collider.suspensionSpring.targetPosition + component.collider.center.y - component.collider.suspensionDistance;
+            //  if(isGround[indexWhell] == false && component.collider.GetGroundHit(out hit)){
+            //      bike_animator.SetTrigger("OnGround");
+            //  }
             isGround[indexWhell] = component.collider.GetGroundHit(out hit);
             if(isGround[indexWhell]){
                 lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
                 dotProduct[indexWhell] = Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+            }else{
+                //lp.y = Mathf.Lerp(lp.y,-shokeDistance,Time.fixedDeltaTime * 10);
             }
 
 
               //  lp.y -= Vector3.Dot(component.wheel.position - component.startPos,transform.TransformDirection(0,1,0)) - (component.collider.radius)*chockSpeedUpdate;
             //Debug.Log("LP "+ lp.y);
             //lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-            var newPosition = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-           // DOTween.To(()=> lp.y, x=> lp.y = x, newPosition, 1f).SetEase(ease).SetAutoKill();
-            
+          //  var newPosition = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+           // DOTween.To(()=> lp.y, x=> lp.y = x, newPosition, 0.3f).SetEase(ease).SetAutoKill();
+           
             //Debug.Log("min "+ (component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
             //Debug.Log("max "+ (component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
-            if(lp.y <-0.54f){
-                lp.y = -0.54f;
+            if(lp.y < -shokeDistance){
+              //  lp.y = -shokeDistance;
             }
             suspensions[indexWhell] = lp;
             if(visualizeChock)

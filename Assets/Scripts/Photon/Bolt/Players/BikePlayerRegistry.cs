@@ -9,8 +9,9 @@ public static class BikePlayerRegistry
     public static Dictionary<uint,bool> playersReady = new Dictionary<uint, bool>();
 
     //public static Dictionary<>
-    static BikePlayerObject CreatePlayer(BoltConnection connection){
+    static BikePlayerObject CreatePlayer(BoltConnection connection,PlayerProfileToken token){
       BikePlayerObject player = new BikePlayerObject();
+      player.profileToken = token;
       player.connection = (connection == null) ? BoltNetwork.Server : connection;
       player.index = players.Count;
       players.Add(player);
@@ -50,15 +51,15 @@ public static class BikePlayerRegistry
     }
 
     // utility function which creates a server player
-    public static BikePlayerObject CreateServerPlayer()
+    public static BikePlayerObject CreateServerPlayer(PlayerProfileToken token)
     {
-        return CreatePlayer(null);
+        return CreatePlayer(null,token);
     }
 
     // utility that creates a client player object.
-    public static BikePlayerObject CreateClientPlayer(BoltConnection connection)
+    public static BikePlayerObject CreateClientPlayer(BoltConnection connection,PlayerProfileToken token)
     {
-        return CreatePlayer(connection);
+        return CreatePlayer(connection,token);
     }
 
     // utility function which lets us pass in a

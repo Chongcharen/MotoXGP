@@ -76,6 +76,7 @@ public class AddressableManager : MonoBehaviour
        };
     }
     async Task UpdateCatalog(AsyncOperationHandle<List<string>> catalogString){
+        Debug.Log("UpdateCatalog "+catalogString);
         var handle = await Addressables.UpdateCatalogs(catalogString.Result).Task;
         resourceLocators = handle;
         OnUpdateCatalogComplete.OnNext(default);

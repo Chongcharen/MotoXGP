@@ -34,6 +34,9 @@ public class UI_Gameplay : MonoBehaviour
         BikeBoltSystem.OnShowSpeed.Subscribe(speed =>{
             speed_txt.text = speed.ToString();
         }).AddTo(this);
+        BikeBoltEngineSystem.OnShowSpeed.Subscribe(speed =>{
+            speed_txt.text = speed.ToString();
+        }).AddTo(this);
     }
 
     private void Update() {

@@ -138,6 +138,7 @@ public class PlayerBikeData{
     public int bikeTextureId;
     public int runningTrack;
     public long playerFinishTime;
+    public BikeEquipmentData bikeEquipmentData;
 }
 [System.Serializable]
 public class PartEquipmentData{
@@ -149,8 +150,21 @@ public class PartEquipmentData{
     public bool locked;
 }
 [System.Serializable]
+public class PartBikeEquipmentData : PartEquipmentData{
+    public int engine_id;
+    public int nos_id;
+    public int control_id;
+    public int wheel_id;
+    public int explode_id;
+    public int status_id;
+}
+[System.Serializable]
 public class EquipmentData{
     public Dictionary<string,List<PartEquipmentData>> data;
+}
+[System.Serializable]
+public class BikeEquipmentData{
+    public Dictionary<string,List<PartBikeEquipmentData>> data;
 }
 [System.Serializable]
 public struct EquipmentTrack{

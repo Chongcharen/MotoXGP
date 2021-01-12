@@ -52,6 +52,7 @@ public static class SaveMockupData
         var json = JsonConvert.SerializeObject(playerCustomizeData);
         var bikeJson = JsonConvert.SerializeObject(bikeCustomizeData);
         Debug.Log("json save = "+json);
+        Debug.Log("Bike Json "+bikeJson);
         PlayerPrefs.SetString("playercustom",json);
         PlayerPrefs.SetString("bikecustom",bikeJson);
 
@@ -88,7 +89,7 @@ public static class SaveMockupData
     static void NewBikeCustomData(){
         bikeCustomizeData = new BikeCustomizeData();
         bikeCustomizeData.bikeEquipmentMapper = new Dictionary<string, BikeEquipedData>();
-        var bikeDefault = GameDataManager.Instance.equipmentData.data[EquipmentKeys.BIKE_BODY_1][0];
+        var bikeDefault = GameDataManager.Instance.bikeEquipmentData.data[EquipmentKeys.BIKE_BODY_1][0];
         bikeCustomizeData.bikeEquipmentMapper.Add(EquipmentKeys.BIKE_BODY_1,new BikeEquipedData{model_name = bikeDefault.model_name,texture_name = bikeDefault.texture_name});
     }
     

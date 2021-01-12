@@ -102,6 +102,20 @@ public class GameHUD : MonoBehaviourPunCallbacks
             });
             
         }).AddTo(this);
+
+
+        BikeBoltEngineSystem.OnBoostTime.Subscribe(_=>{
+            MakeAnimationBoosted(_);
+        }).AddTo(this);
+        BikeBoltEngineSystem.OnBoostChanged.Subscribe(_=>{
+            nos_txt.text = _.ToString();
+        }).AddTo(this);
+        BikeBoltEngineSystem.OnBoostDelay.Subscribe(_=>{
+            image_glownos.DOFillAmount(1,_).SetAutoKill().OnComplete(()=>{
+                image_timeNod.DOFillAmount(1,0);
+            });
+            
+        }).AddTo(this);
     }
     private void Update() {
         if(PhotonNetwork.GetPing() <= 60){

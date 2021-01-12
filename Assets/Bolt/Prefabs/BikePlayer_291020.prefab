@@ -10769,6 +10769,10 @@ MonoBehaviour:
   objectDetecter: {fileID: 0}
   direction: 0
   engineData: {fileID: 11400000, guid: ec39c67c82fec0249b4ed5b2d4fa6634, type: 2}
+  nos_system: {fileID: 0}
+  wheel_systems: []
+  control_system: {fileID: 0}
+  explode_system: {fileID: 0}
   bikeWheelSetting:
     wheels:
       wheelFront: {fileID: 0}
@@ -11069,6 +11073,8 @@ MonoBehaviour:
   trailRenderer: {fileID: 4892792786067146560}
   motionBlur: {fileID: 0}
   particle: {fileID: 6906772181670078826}
+  nosColor: {r: 0, g: 0, b: 0, a: 0}
+  lower_gear_color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &4378422161117782494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11097,7 +11103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sceneGuid: 
   _serializerGuid: e7d343ea-6b94-4aa4-9f84-225903d9f0da
-  _prefabId: 17
+  _prefabId: 18
   _updateRate: 1
   _autoFreezeProxyFrames: 0
   _clientPredicted: 1

@@ -35,6 +35,7 @@ public class UI_Equipment : MonoBehaviour
     public TextMeshProUGUI[] txt_bike_index;
     public ToggleGroup equipment_toggle_group;
     int equipmentIndex=-1;
+    int bikeEquipmentIndex = 0;
     bool isClearScreen = false;
     string equipmentKey = "";
 
@@ -82,23 +83,32 @@ public class UI_Equipment : MonoBehaviour
                 }
                 equipment_window.SetActive(_);
                 equipmentIndex = index;
-                var equipmentElement = GameDataManager.Instance.equipmentData.data.ElementAtOrDefault(equipmentIndex);
-                SetupEquipmentWindow(equipmentElement);
+                if(index < 5){
+                    var equipmentElement = GameDataManager.Instance.equipmentData.data.ElementAtOrDefault(equipmentIndex);
+                    SetupEquipmentWindow(equipmentElement);
+                }else
+                {
+                    Debug.Log("bikeEquipmentIndex "+bikeEquipmentIndex);
+                    var bikeEquipmentElement = GameDataManager.Instance.bikeEquipmentData.data.ElementAtOrDefault(bikeEquipmentIndex);
+                    SetupBikeEquipmentWindow(bikeEquipmentElement);
+                }
             }).AddTo(this);
         }
         foreach (var item in toggles_bike)
         {
             item.OnValueChangedAsObservable().Subscribe(_=>{
-                var bikeIndex = Array.IndexOf(toggles_bike,item);
-                bike_status[bikeIndex].SetActive(_);
-                txt_bike_index[bikeIndex].color = _ ? Color.black : Color.white;
+                bikeEquipmentIndex = Array.IndexOf(toggles_bike,item);
+                 Debug.Log("bikeEquipmentIndex Changed.."+bikeEquipmentIndex);
+                bike_status[bikeEquipmentIndex].SetActive(_);
+                txt_bike_index[bikeEquipmentIndex].color = _ ? Color.black : Color.white;
                 if(!_)return;
-                var equipmentElement = GameDataManager.Instance.equipmentData.data.ElementAtOrDefault(equipmentIndex+bikeIndex);
-                SetupEquipmentWindow(equipmentElement);
+                var equipmentElement = GameDataManager.Instance.bikeEquipmentData.data.ElementAtOrDefault(bikeEquipmentIndex);
+                SetupBikeEquipmentWindow(equipmentElement);
             }).AddTo(this);
         }
-
-        async void SetupEquipmentWindow(KeyValuePair<string,List<PartEquipmentData>> equipmentData){
+        bikeEquipmentIndex = 0;
+    }
+    async void SetupEquipmentWindow(KeyValuePair<string,List<PartEquipmentData>> equipmentData){
             ClearEquipmentWindow();
             Debug.Log("equipmentData Key "+equipmentData.Key);
             var atlastKey = AddressableKeys.LABEL_ATLAS+"/equipment_"+equipmentData.Key+".spriteatlas";
@@ -118,6 +128,25 @@ public class UI_Equipment : MonoBehaviour
             }
 
         }
+        async void SetupBikeEquipmentWindow(KeyValuePair<string,List<PartBikeEquipmentData>> bikeEquipmentData){
+             ClearEquipmentWindow();
+            Debug.Log("equipmentData Key "+bikeEquipmentData.Key);
+            var atlastKey = AddressableKeys.LABEL_ATLAS+"/equipment_"+bikeEquipmentData.Key+".spriteatlas";
+            Debug.Log("atlastKey "+atlastKey);
+            var atlasSprite = await AddressableManager.Instance.LoadObject<SpriteAtlas>(atlastKey);
+            if(atlasSprite == null)return;
+            try{
+                if(bikeEquipmentData.Value.Count <= 0)return;
+                foreach (var item in bikeEquipmentData.Value)
+                {
+                    var go = Instantiate(equipment_prefab,equipment_content);
+                    go.transform.localScale = Vector3.one;
+                    go.GetComponent<EquipmentIconPrefab>().Setup(equipmentIndex,atlasSprite,item,equipment_toggle_group);
+                }
+            }catch(Exception e){
+                Debug.Log("Error exception "+e.Message);
+            }
+        }
         void ClearEquipmentWindow(){
             for (int i = 0; i < equipment_content.childCount; i++)
             {
@@ -125,6 +154,4 @@ public class UI_Equipment : MonoBehaviour
             }
             
         }
-    
-    }
 }

@@ -32,7 +32,7 @@ public class PlayFabStorageBuildScript : BuildScriptPackedMode
         Debug.Log("DoBuild profileSettings "+builderInput.AddressableSettings.profileSettings);
         Debug.Log("DoBuild AssetPath "+builderInput.AddressableSettings.AssetPath);
         var buildResult = base.DoBuild<TResult>(builderInput, aaContext);
-        if (aaContext.settings.BuildRemoteCatalog)
+        if (aaContext.Settings.BuildRemoteCatalog)
         {
             PatchSettingsFile(builderInput);
         }

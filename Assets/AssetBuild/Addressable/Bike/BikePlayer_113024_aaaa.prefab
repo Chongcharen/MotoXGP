@@ -4200,6 +4200,9 @@ MonoBehaviour:
   suspensions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
+  wheelStartPosition:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
   physicMaterial: {fileID: 13400000, guid: 2e8569514c4d74e1db0fda96af3dab1b, type: 2}
   maxVelocity: 17
   boostVelocity: 35
@@ -4575,6 +4578,8 @@ MonoBehaviour:
   trailRenderer: {fileID: 4892792786067146560}
   motionBlur: {fileID: 0}
   particle: {fileID: 6906772181670078826}
+  nosColor: {r: 0, g: 0, b: 0, a: 0}
+  lower_gear_color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &4378422161117782494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4603,7 +4608,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sceneGuid: 
   _serializerGuid: e7d343ea-6b94-4aa4-9f84-225903d9f0da
-  _prefabId: 2
+  _prefabId: 3
   _updateRate: 1
   _autoFreezeProxyFrames: 0
   _clientPredicted: 1

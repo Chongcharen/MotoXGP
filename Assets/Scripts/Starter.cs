@@ -91,6 +91,8 @@ public class Starter : MonoBehaviour
         //Depug.Log("spreadsheetDownloadUrl "+spreadsheetDownloadUrl,Color.green);
         EquipmentData equipmentData = new EquipmentData();
         equipmentData.data = new Dictionary<string, List<PartEquipmentData>>();
+        BikeEquipmentData bikeEquipmentData = new BikeEquipmentData();
+        bikeEquipmentData.data = new Dictionary<string, List<PartBikeEquipmentData>>();
         GameDataManager.Instance.SetupEquipmentData(equipmentData);
         helmetData.Start();
         helmetData.downloadComplete += jsonString =>{
@@ -158,84 +160,85 @@ public class Starter : MonoBehaviour
         };
         bike_body1_data.downloadComplete += jsonString =>{
             Debug.Log("bikeData json "+jsonString);
-            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartBikeEquipmentData>>(jsonString);
             for (int i = 0; i < equipmentDataList.Count; i++)
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
-            equipmentData.data.Add(EquipmentKeys.BIKE_BODY_1,equipmentDataList);
+            bikeEquipmentData.data.Add(EquipmentKeys.BIKE_BODY_1,equipmentDataList);
             bike_body1_data.Dispose();
             bike_body2_Data.Start();
             
         };
         bike_body2_Data.downloadComplete += jsonString =>{
             Debug.Log("bike_body2_Data json "+jsonString);
-            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartBikeEquipmentData>>(jsonString);
             for (int i = 0; i < equipmentDataList.Count; i++)
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
-            equipmentData.data.Add(EquipmentKeys.BIKE_BODY_2,equipmentDataList);
+            bikeEquipmentData.data.Add(EquipmentKeys.BIKE_BODY_2,equipmentDataList);
             bike_body2_Data.Dispose();
             bike_body3_Data.Start();
         };
         bike_body3_Data.downloadComplete += jsonString =>{
             Debug.Log("bike_body2_Data json "+jsonString);
-            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartBikeEquipmentData>>(jsonString);
             for (int i = 0; i < equipmentDataList.Count; i++)
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
-            equipmentData.data.Add(EquipmentKeys.BIKE_BODY_3,equipmentDataList);
+            bikeEquipmentData.data.Add(EquipmentKeys.BIKE_BODY_3,equipmentDataList);
             bike_body3_Data.Dispose();
             bike_body4_Data.Start();
 
         };
         bike_body4_Data.downloadComplete += jsonString =>{
             Debug.Log("bike_body2_Data json "+jsonString);
-            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartBikeEquipmentData>>(jsonString);
             for (int i = 0; i < equipmentDataList.Count; i++)
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
-            equipmentData.data.Add(EquipmentKeys.BIKE_BODY_4,equipmentDataList);
+            bikeEquipmentData.data.Add(EquipmentKeys.BIKE_BODY_4,equipmentDataList);
             bike_body4_Data.Dispose();
             bike_body5_Data.Start();
         };
         bike_body5_Data.downloadComplete += jsonString =>{
             Debug.Log("bike_body2_Data json "+jsonString);
-            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartBikeEquipmentData>>(jsonString);
             for (int i = 0; i < equipmentDataList.Count; i++)
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
-            equipmentData.data.Add(EquipmentKeys.BIKE_BODY_5,equipmentDataList);
+            bikeEquipmentData.data.Add(EquipmentKeys.BIKE_BODY_5,equipmentDataList);
             bike_body5_Data.Dispose();
             bike_body6_Data.Start();
         };
         bike_body6_Data.downloadComplete += jsonString =>{
             Debug.Log("bike_body2_Data json "+jsonString);
-            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartBikeEquipmentData>>(jsonString);
             for (int i = 0; i < equipmentDataList.Count; i++)
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
-            equipmentData.data.Add(EquipmentKeys.BIKE_BODY_6,equipmentDataList);
+            bikeEquipmentData.data.Add(EquipmentKeys.BIKE_BODY_6,equipmentDataList);
             bike_body6_Data.Dispose();
             bike_body7_Data.Start();
         };
         bike_body7_Data.downloadComplete += jsonString =>{
             Debug.Log("bike_body2_Data json "+jsonString);
-            var equipmentDataList = JsonConvert.DeserializeObject<List<PartEquipmentData>>(jsonString);
+            var equipmentDataList = JsonConvert.DeserializeObject<List<PartBikeEquipmentData>>(jsonString);
             for (int i = 0; i < equipmentDataList.Count; i++)
             {
                 Debug.Log(equipmentDataList[i].icon_name);
             }
-            equipmentData.data.Add(EquipmentKeys.BIKE_BODY_7,equipmentDataList);
+            bikeEquipmentData.data.Add(EquipmentKeys.BIKE_BODY_7,equipmentDataList);
             bike_body7_Data.Dispose();
 
             var jsonequipment = JsonConvert.SerializeObject(equipmentData);
             GameDataManager.Instance.SetupEquipmentData(equipmentData);
+            GameDataManager.Instance.SetupBikeEquipmentData(bikeEquipmentData);
         };
         
         

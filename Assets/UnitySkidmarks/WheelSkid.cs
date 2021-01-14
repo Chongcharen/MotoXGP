@@ -72,12 +72,20 @@ public class WheelSkid : MonoBehaviour {
 				lastSkid = -1;
 			}
 			//animationSkid.gameObject.SetActive(skidTotal >= SKID_FX_SPEED);
-			ps.enableEmission = (skidTotal >= SKID_FX_SPEED);
+			// if(!ps.isPlaying)
+			// 	ps.Play();
+			// var em = ps.emission;
+			// em.enabled = (skidTotal >= SKID_FX_SPEED);
+
+			if(skidTotal >= SKID_FX_SPEED)
+				ps.Play();
+			else
+				ps.Stop();
 		}
 		else {
 			lastSkid = -1;
 			//animationSkid.gameObject.SetActive(false);
-			ps.enableEmission = false;
+			ps.Stop();
 		}
 		
 	}

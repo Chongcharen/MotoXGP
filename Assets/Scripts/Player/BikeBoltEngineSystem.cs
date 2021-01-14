@@ -55,7 +55,7 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
     [Header("Nos Engine Data")]
     public NosSystemData nos_system;
     [Header("Wheel System Data")]
-    public WheelSystemData[] wheel_systems;
+    public WheelSystemData wheel_system;
     [Header("Control System Data")]
     public ControlSystemData control_system;
     [Header("Explode System Data")]
@@ -92,6 +92,10 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
     [SerializeField]RagdollCollider ragdollCollider;
     [SerializeField]GameObject ragdollObject;
     float accel;
+    public float animationTime;
+    public float idleAnimationTime;
+    public Ease ease;
+    float direction = 0.5f;
     public bool brake = false;
     public bool jump = false;
     public bool isLeft = false;
@@ -111,6 +115,7 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
     public int runningTrack;
     #endregion  
     ProtocolPlayerCustomize playerCustomize;
+    PlayerProfileToken profileToken;
     void Awake(){
         bikeMiddleWare = GetComponent<BikeMiddleware>();
         Rigidbody = GetComponent<Rigidbody>();
@@ -129,11 +134,19 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
 
     }
     
-    
+    public void SetupToken(PlayerProfileToken token){
+        Debug.Log("SetupToken");
+        //profileToken = token;
+    }
     void AddControlEventListener(){
         GameCallback.OnGameReady.Subscribe(raceCountdown =>{
             isReady = raceCountdown.RaceStart;
+            GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<PlayerGlowing>().CloseRimlight();
+            //  wheels[0].collider.GetComponent<WheelSkid>().ps.gameObject.SetActive(true);
+            //  wheels[1].collider.GetComponent<WheelSkid>().ps.gameObject.SetActive(true);
+            // wheels[0].collider.GetComponent<WheelSkid>().ps.Play(true);
+            // wheels[1].collider.GetComponent<WheelSkid>().ps.Play(true);
         }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
                 if(!grounded)return;
@@ -170,6 +183,7 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
         }).AddTo(this);
     }
     void Update(){
+
         UpdateWheelRotation();
         CheckGround();
         SetPlayerAnimator();
@@ -247,12 +261,16 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
     
     #region  Player Animation
     void SetPlayerAnimator(){
-        if(animator != null){
-           // animator.SetFloat("AxisX",axisX);
-           animator.SetBool("isLeft",isLeft);
-           animator.SetBool("isRight",isRight);
-           animator.SetFloat("speed",speed);
-        }
+        if(animator == null)return;
+        if(isLeft)
+            DOTween.To(()=> direction, x=> direction = x, 0f, animationTime).SetEase(ease).SetAutoKill();
+        else if(isRight)
+            DOTween.To(()=> direction, x=> direction = x, 1f,animationTime).SetEase(ease).SetAutoKill();
+        else
+            DOTween.To(()=> direction, x=> direction = x, 0.5f,animationTime*idleAnimationTime).SetEase(Ease.InQuad).SetAutoKill();
+
+        animator.SetFloat("direction",direction);
+        animator.SetFloat("speed",speed);
     }
 
     #endregion 
@@ -260,34 +278,75 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
     
     #region  Bolt Network
     public override void Attached(){
+        
+        UI_PlayersDistance.OnPlayerColor.Subscribe(_=>{
+            if(_.Item1 == entity){
+                playerName_txt.color = _.Item2;
+            }
+        }).AddTo(this);
         PlayerProfileToken token = entity.AttachToken as PlayerProfileToken;
+        Debug.Log("Attached token = "+token);
         if(entity.Source != null){
             Debug.Log(entity.Source.ConnectToken);
         }
         state.SetTransforms(state.Transform, transform);
-
         bikeCustomize.SetUpBike(token.playerBikeData);
+
+        playerName_txt.text = token.playerProfileModel.DisplayName;
+        state.SetTransforms(state.Transform, transform);
+        //state.AddCallback("Name",()=>playerName_txt.text = state.Name);
+        state.AddCallback("PlayerEquiped",()=> SetUpPlayerEquipment());
+        state.AddCallback("BikeEquiped",()=> SetUpBikeEquipment());
+
         startPosition = transform.position;
         respawnPosition = startPosition;
         bikerStartPosition = bikerMan.localPosition;
-        boostSystem = GetComponent<BoostSystem>();
-        //LoadSystemForm data
-        SetupEngine(engine_system);
-        SetupNosSystem(nos_system);
-        wheels = new WheelComponent[2];
-        SetupFrontWheelSystem(wheel_systems[0]);
-        SetupRearWheelSystem(wheel_systems[1]);
-        SetupControl(control_system);
-        SetupExplode(explode_system);
-        SetupStatus(status_system);
+        SetupSystem();
         OnEntityAttached.OnNext(entity);
     }
-    public override void ControlGained(){
 
+    async void SetupSystem(){
+        print(Depug.Log("Setup System ===================> ",Color.white));
+        PlayerProfileToken token = entity.AttachToken as PlayerProfileToken;
+        var bikeEquipmentdata = GameDataManager.Instance.bikeEquipmentData.data.ElementAt(token.playerBikeData.bikeEquipmentData.body_id).Value[token.playerBikeData.bikeEquipmentData.skin_id];
+        print(Depug.Log("bikeEquipmentdata engine_id "+bikeEquipmentdata.engine_id,Color.white));
+        print(Depug.Log("bikeEquipmentdata wheel id "+bikeEquipmentdata.wheel_id,Color.white));
+         print(Depug.Log("bikeEquipmentdata engine_id "+bikeEquipmentdata.engine_id,Color.white));
+         print(Depug.Log("bikeEquipmentdata nos_id "+bikeEquipmentdata.nos_id,Color.white));
+        
+        boostSystem = GetComponent<BoostSystem>();
+        var new_engine_system = await AddressableManager.Instance.LoadObject<BikeEngineData>(AddressableKeys.PATH_BIKE_SYSTEM_ENGINE+bikeEquipmentdata.engine_id+".asset");
+        var new_nos_system = await AddressableManager.Instance.LoadObject<NosSystemData>(AddressableKeys.PATH_BIKE_SYSTEM_NOS+bikeEquipmentdata.nos_id+".asset");
+        var new_wheel_system = await AddressableManager.Instance.LoadObject<WheelSystemData>(AddressableKeys.PATH_BIKE_SYSTEM_WHEEL+bikeEquipmentdata.wheel_id+".asset");
+        var new_control_system = await AddressableManager.Instance.LoadObject<ControlSystemData>(AddressableKeys.PATH_BIKE_SYSTEM_CONTROL+bikeEquipmentdata.control_id+".asset");
+        var new_explode_system = await AddressableManager.Instance.LoadObject<ExplodeSystemData>(AddressableKeys.PATH_BIKE_SYSTEM_EXPLODE+bikeEquipmentdata.explode_id+".asset");
+        var new_status_system = await AddressableManager.Instance.LoadObject<StatusSystemData>(AddressableKeys.PATH_BIKE_SYSTEM_STATUS+bikeEquipmentdata.status_id+".asset");
+        //LoadSystemForm data
+        SetupEngine(new_engine_system);
+        SetupNosSystem(new_nos_system);
+        
+        //SetupFrontWheelSystem(new_wheel_system);
+        //SetupRearWheelSystem(new_wheel_system);
+        SetupWheelSystem(new_wheel_system);
+        SetupControl(new_control_system);
+        SetupExplode(new_explode_system);
+        SetupStatus(new_status_system);
+    }
+    public void SetUpPlayerEquipment(){
+        PlayerEquipmentToken equipmentToken = state.PlayerEquiped as PlayerEquipmentToken;
+        bikeMiddleWare.SetupPlayerEquipment(equipmentToken);
+    }
+    void SetUpBikeEquipment(){
+        print(Depug.Log("SetupBikeEquipment ",Color.red));
+        BikeEquipmentToken bikeEquiupmentToken = state.BikeEquiped as BikeEquipmentToken;
+        bikeMiddleWare.SetupBikeEquipment(bikeEquiupmentToken);
+    }
+    public override void ControlGained(){
+        print(Depug.Log("ControlGained ========>",Color.white));
         isControll = true;
         objectDetecter.SetActive(true);
         bikeMiddleWare.ragdollCollider.enabled = true;
-        GetComponent<Rigidbody>().isKinematic = false;
+        
         OnControllGained.OnNext(true);
         LoadVirtualCamera();
         AddControlEventListener();
@@ -301,6 +360,8 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
 
     #region Setup all Systems
     void SetUpPlayerData(){
+        PlayerProfileToken token = entity.AttachToken as PlayerProfileToken;
+        var bikeEquipmentdata = GameDataManager.Instance.bikeEquipmentData.data.ElementAt(token.playerBikeData.bikeEquipmentData.body_id).Value[token.playerBikeData.bikeEquipmentData.skin_id];
         bodyCollider.gameObject.name = "PlayerCollider";
         var playerEquipmentToken = new PlayerEquipmentToken();
         playerEquipmentToken.playerEquipmentMapper = SaveMockupData.GetEquipment.playerEquipmentMapper;
@@ -311,21 +372,29 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
     }
     
     void SetupEngine(BikeEngineData new_engine_system){
+        Debug.Log("SetupEngine "+new_engine_system);
+        Debug.Log("Speedlimit "+new_engine_system.speedLimit);
         engine_system = new_engine_system;
         currentSpeedLimit = engine_system.speedLimit;
-
     }
     void SetupNosSystem(NosSystemData new_nosSystem){
         nos_system = new_nosSystem;
     }
-    void SetupFrontWheelSystem(WheelSystemData new_wheelSystemData){
-        wheel_systems[0] = new_wheelSystemData;
+    void SetupWheelSystem(WheelSystemData new_wheelSystemData){
+        wheel_system = new_wheelSystemData;
+        wheels = new WheelComponent[2];
         wheels[0] = SetWheelComponent(connectWheel.wheelFront,
                                         connectWheel.modelWheelFront,
                                             connectWheel.AxleFront,false,0,
                                                 connectWheel.AxleFront.localPosition.y,
-                                                   new_wheelSystemData,null);
+                                                   new_wheelSystemData.wheelDatas[0],null);
+        wheels[1] = SetWheelComponent(connectWheel.wheelBack,
+                                        connectWheel.modelWheelBack,
+                                            connectWheel.AxleBack,true,0,
+                                                connectWheel.AxleBack.localPosition.y,
+                                                   new_wheelSystemData.wheelDatas[1],null);
     }
+
     void SetupControl(ControlSystemData new_controlSystem){
         control_system = new_controlSystem;
     }
@@ -335,14 +404,7 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
     void SetupExplode(ExplodeSystemData new_explodeSystem){
         explode_system = new_explodeSystem;
     }
-    void SetupRearWheelSystem(WheelSystemData new_wheelSystemData){
-         wheel_systems[1] = new_wheelSystemData;
-         wheels[1] = SetWheelComponent(connectWheel.wheelBack,
-                                        connectWheel.modelWheelBack,
-                                            connectWheel.AxleBack,true,0,
-                                                connectWheel.AxleBack.localPosition.y,
-                                                   new_wheelSystemData,null);
-    }
+    
 
     void LoadVirtualCamera(){
         VirtualPlayerCamera.Instantiate();
@@ -424,6 +486,7 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
             Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, currentSpeedLimit);
         }
         speed = transform.InverseTransformDirection(Rigidbody.velocity).z * 3.6f;
+        if(wheels == null)return;
         foreach(WheelComponent component in wheels){
             if(jump && isGround.Any(g => g == true)){
                 Rigidbody.AddForce((grounded ? new Vector3(0,1.5f,0f) : new Vector3(0,0.5f,0.5f))* Rigidbody.mass*control_system.forceJump);
@@ -468,6 +531,7 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
 
     void UpdateWheelRotation(){
          var indexWhell = 0;
+         if(wheels == null)return;
          foreach(WheelComponent component in wheels){
             WheelHit hit;
             Quaternion quaternion;
@@ -477,16 +541,18 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
             component.wheel.localRotation = Quaternion.Euler(component.rotation,0,0);
             component.modelWheel.localRotation = Quaternion.Euler(component.rotation,0,0);
             Vector3 lp = component.axle.localPosition;
+            var shokeDistance = component.collider.suspensionSpring.targetPosition + component.collider.center.y - component.collider.suspensionDistance;
             isGround[indexWhell] = component.collider.GetGroundHit(out hit);
             if(isGround[indexWhell]){
                 lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+            }else{
+               // lp.y = Mathf.Lerp(lp.y,component.startPos.y,Time.fixedDeltaTime * 10);
             }
-            var newPosition = Mathf.Clamp(lp.y, component.startPos.y - wheel_systems[indexWhell].SuspensionDistance, component.startPos.y + wheel_systems[indexWhell].SuspensionDistance);
-            if(lp.y <-0.54f){
-                lp.y = -0.54f;
+            if(lp.y < -shokeDistance*2){
+                lp.y = -shokeDistance*2;
             }
 
-            component.axle.localPosition = Vector3.Lerp(component.axle.localPosition,lp,Time.fixedDeltaTime*wheel_systems[indexWhell].shoke_update_speed);
+            component.axle.localPosition = Vector3.Lerp(component.axle.localPosition,lp,Time.fixedDeltaTime*wheel_system.wheelDatas[indexWhell].shoke_update_speed);
             indexWhell++;
         }
     }
@@ -594,7 +660,7 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
     }
 
    #region Bike Setup
-    WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSystemData _wheel_system,GameObject skidmark)
+    WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WhellData wheelData,GameObject skidmark)
     {
 
         WheelComponent result = new WheelComponent();
@@ -617,51 +683,53 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
         result.modelWheel = modelWheel;
         result.axle = axle;
         result.collider = wheelCol.GetComponent<WheelCollider>();
-        result.collider.mass = _wheel_system.Weight;
-        result.collider.radius = _wheel_system.Radius;
-        result.collider.center = _wheel_system.WheelCenter;
-        result.collider.suspensionDistance = _wheel_system.SuspensionDistance;
-        result.collider.forceAppPointDistance = _wheel_system.ForceAppointDistance;
-        result.collider.wheelDampingRate = _wheel_system.DampingRate;
+        result.collider.mass = wheelData.Weight;
+        result.collider.radius = wheelData.Radius;
+        result.collider.center = wheelData.WheelCenter;
+        result.collider.suspensionDistance = wheelData.SuspensionDistance;
+        result.collider.forceAppPointDistance = wheelData.ForceAppointDistance;
+        result.collider.wheelDampingRate = wheelData.DampingRate;
         result.pos_y = pos_y;
         result.maxSteer = maxSteer;
         result.startPos = axle.transform.localPosition;
         
         JointSpring spring = new JointSpring();
-        spring.spring = _wheel_system.SuspensionSpring.spring;//bikeWheels.setting.SuspensionSpring.spring;
-        spring.damper = _wheel_system.SuspensionSpring.damper;//bikeWheels.setting.SuspensionSpring.damper;
-        spring.targetPosition = _wheel_system.SuspensionSpring.targetposition;//bikeWheels.setting.SuspensionSpring.targetposition;
+        spring.spring = wheelData.SuspensionSpring.spring;//bikeWheels.setting.SuspensionSpring.spring;
+        spring.damper = wheelData.SuspensionSpring.damper;//bikeWheels.setting.SuspensionSpring.damper;
+        spring.targetPosition = wheelData.SuspensionSpring.targetposition;//bikeWheels.setting.SuspensionSpring.targetposition;
         result.collider.suspensionSpring = spring;    
         WheelFrictionCurve frictionCurve = new WheelFrictionCurve();
-        frictionCurve.extremumSlip = _wheel_system.ForwardFriction.extremumSlip;//bikeWheels.setting.ForwardFriction.extremumSlip;
-        frictionCurve.extremumValue = _wheel_system.ForwardFriction.extremumValue;//bikeWheels.setting.ForwardFriction.extremumValue;
-        frictionCurve.asymptoteSlip = _wheel_system.ForwardFriction.asymptoteSlip;//bikeWheels.setting.ForwardFriction.asymptoteSlip;
-        frictionCurve.asymptoteValue = _wheel_system.ForwardFriction.asymptoteValue;//bikeWheels.setting.ForwardFriction.asymptoteValue;
-        frictionCurve.stiffness = _wheel_system.ForwardFriction.stiffness;//bikeWheels.setting.ForwardFriction.stiffness;
+        frictionCurve.extremumSlip = wheelData.ForwardFriction.extremumSlip;//bikeWheels.setting.ForwardFriction.extremumSlip;
+        frictionCurve.extremumValue = wheelData.ForwardFriction.extremumValue;//bikeWheels.setting.ForwardFriction.extremumValue;
+        frictionCurve.asymptoteSlip = wheelData.ForwardFriction.asymptoteSlip;//bikeWheels.setting.ForwardFriction.asymptoteSlip;
+        frictionCurve.asymptoteValue = wheelData.ForwardFriction.asymptoteValue;//bikeWheels.setting.ForwardFriction.asymptoteValue;
+        frictionCurve.stiffness = wheelData.ForwardFriction.stiffness;//bikeWheels.setting.ForwardFriction.stiffness;
         result.collider.forwardFriction = frictionCurve;
 
         WheelFrictionCurve sidewayFriction = new WheelFrictionCurve();
-        sidewayFriction.extremumSlip = _wheel_system.SidewaysFriction.extremumSlip;//bikeWheels.setting.SidewaysFriction.extremumSlip;
-        sidewayFriction.extremumValue = _wheel_system.SidewaysFriction.extremumValue;//bikeWheels.setting.SidewaysFriction.extremumValue;
-        sidewayFriction.asymptoteSlip = _wheel_system.SidewaysFriction.asymptoteSlip;//bikeWheels.setting.SidewaysFriction.asymptoteSlip;
-        sidewayFriction.asymptoteValue = _wheel_system.SidewaysFriction.asymptoteValue;//bikeWheels.setting.SidewaysFriction.asymptoteValue;
-        sidewayFriction.stiffness = _wheel_system.SidewaysFriction.stiffness;//bikeWheels.setting.SidewaysFriction.stiffness;
+        sidewayFriction.extremumSlip = wheelData.SidewaysFriction.extremumSlip;//bikeWheels.setting.SidewaysFriction.extremumSlip;
+        sidewayFriction.extremumValue = wheelData.SidewaysFriction.extremumValue;//bikeWheels.setting.SidewaysFriction.extremumValue;
+        sidewayFriction.asymptoteSlip = wheelData.SidewaysFriction.asymptoteSlip;//bikeWheels.setting.SidewaysFriction.asymptoteSlip;
+        sidewayFriction.asymptoteValue = wheelData.SidewaysFriction.asymptoteValue;//bikeWheels.setting.SidewaysFriction.asymptoteValue;
+        sidewayFriction.stiffness = wheelData.SidewaysFriction.stiffness;//bikeWheels.setting.SidewaysFriction.stiffness;
         result.collider.sidewaysFriction = frictionCurve;
         
 
-        if(_wheel_system.addSphereCollider){
-
+        if(wheelData.addSphereCollider){
             result.sphereCollider = result.collider.gameObject.AddComponent<SphereCollider>();
-            result.sphereCollider.radius = 0.2f;
-            result.sphereCollider.material = _wheel_system.physicMaterial;
+            result.sphereCollider.radius = wheelData.sphereRadius;
+            result.sphereCollider.material = wheelData.physicMaterial;
         }
         var wheelSkid = result.collider.gameObject.AddComponent<WheelSkid>();
         wheelSkid.rb = Rigidbody;
         wheelSkid.skidmarksController = GetComponent<Skidmarks>();
-        var wheelParticle = Instantiate(_wheel_system.wheelParticleObject,Vector3.zero,Quaternion.identity,effect_root);
+        var wheelParticle = Instantiate(wheelData.wheelParticleObject,Vector3.zero,Quaternion.identity,effect_root);
         wheelSkid.animationSkid = wheelParticle;
         wheelSkid.ps = wheelParticle.GetComponent<ParticleSystem>();
+        wheelParticle.gameObject.SetActive(false);
+       // wheelSkid.ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         Rigidbody.velocity = Vector3.zero;
+        wheelParticle.SetActive(true);
         return result;
     }
     JointSpring SetUpSuspensionSpring(float springValue,float damperValue,float targetPositionValue){

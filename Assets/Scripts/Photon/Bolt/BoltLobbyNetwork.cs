@@ -65,19 +65,21 @@ public class BoltLobbyNetwork : GlobalEventListener
         // playerCustomize.bike_body_id = 2;
         // playerCustomize.bike_texture_id = 5;
 
-        var playerData = new PlayerProfileToken();
+        var playerDataToken = new PlayerProfileToken();
         //playerData.playerBikeData.playerFinishTime = 99999999;
-        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
-        playerData.RandomBikeData();
-        //playerData.playerBikeData.bikeCustomize = SaveMockupData.GetBikeEquipment;
+        playerDataToken.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
+        playerDataToken.RandomBikeData();
+        playerDataToken.playerBikeData.bikeEquipmentData = SaveMockupData.GetBikeEquipment.bikeEquipmentMapper.ElementAt(0).Value;
 
-        Debug.Log("playerdata "+playerData.playerBikeData);
-        Debug.Log("model "+playerData.playerProfileModel);
+
+
+        Debug.Log("playerdata "+playerDataToken.playerBikeData);
+        Debug.Log("model "+playerDataToken.playerProfileModel);
         Debug.Log("filter "+filter);
         //BoltMatchmaking.JoinRandomSession(filter,playerData);
         Debug.Log("isrunning "+BoltNetwork.IsRunning);
         Debug.Log("isconnected "+BoltNetwork.IsConnected);
-        BoltMatchmaking.JoinRandomSession(filter,playerData);
+        BoltMatchmaking.JoinRandomSession(filter,playerDataToken);
         CallPopupForWaiting("ระบบกำลัง ค้นหาห้อง โปรดรอสักครู่");
     }
     void CallPopupForWaiting(string messageDetail){
@@ -163,6 +165,7 @@ public class BoltLobbyNetwork : GlobalEventListener
         //playerData.playerBikeData.playerFinishTime = 99999999;
         playerDataToken.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
         playerDataToken.RandomBikeData();
+        playerDataToken.playerBikeData.bikeEquipmentData = SaveMockupData.GetBikeEquipment.bikeEquipmentMapper.ElementAt(0).Value;
        // playerDataToken.playerBikeData.bikeEquipmentData = SaveMockupData.GetBikeEquipment;
         // token เป็น playerdata แล้ว join ห้องเดียวกันไมไ่ด้ งง
         print(Depug.Log("Server ConnectToken "+playerDataToken,Color.blue));

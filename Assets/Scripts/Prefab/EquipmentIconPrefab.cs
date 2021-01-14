@@ -96,6 +96,9 @@ public class EquipmentIconPrefab : MonoBehaviour
             track.model_name = data.model_name;
             track.texture_name = data.texture_name;
             OnEquipmentChanged.OnNext(track);
+            if(equipmentType == 1){
+                SaveMockupData.SaveBikeEquipment(data.model_name,data.texture_name,partBikeEquipmentData.body_id,partBikeEquipmentData.id);
+            }
         }).AddTo(this);
     }
 

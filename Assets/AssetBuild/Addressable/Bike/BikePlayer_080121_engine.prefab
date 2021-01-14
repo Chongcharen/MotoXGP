@@ -1080,7 +1080,7 @@ Projector:
   m_FieldOfView: 29.9
   m_AspectRatio: 0.3
   m_Orthographic: 1
-  m_OrthographicSize: 1.04
+  m_OrthographicSize: 2
   m_Material: {fileID: 2100000, guid: c3c1f2b35695a18438fa779df9c36731, type: 2}
   m_IgnoreLayers:
     serializedVersion: 2
@@ -4491,9 +4491,7 @@ MonoBehaviour:
   engine_system: {fileID: 11400000, guid: ec39c67c82fec0249b4ed5b2d4fa6634, type: 2}
   currentSpeedLimit: 0
   nos_system: {fileID: 11400000, guid: 4b32c4fce544a49489b8e06171524138, type: 2}
-  wheel_systems:
-  - {fileID: 11400000, guid: cf5dfe3d963de0b45b4097df6d7a1d1e, type: 2}
-  - {fileID: 11400000, guid: 299fa453240ecb14297be01553fb1344, type: 2}
+  wheel_system: {fileID: 0}
   control_system: {fileID: 11400000, guid: e5d14e2b226b33646b205b4cadbf19fd, type: 2}
   explode_system: {fileID: 11400000, guid: e50c8fd831c5edc47bc2ac6424380213, type: 2}
   status_system: {fileID: 11400000, guid: 266045d74ee5a87438022c21731f2ea1, type: 2}
@@ -4501,6 +4499,9 @@ MonoBehaviour:
   motorControl: {fileID: 3624806902396512118}
   ragdollCollider: {fileID: 7790016359152260760}
   ragdollObject: {fileID: 6080549854155463089}
+  animationTime: 0.15
+  idleAnimationTime: 1.2
+  ease: 22
   brake: 0
   jump: 0
   isLeft: 0
@@ -6247,7 +6248,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe69ad5d1e8544dbc8d9c131892e9cd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinnedMeshRenderers: []
+  skinnedMeshRenderers:
+  - {fileID: 5370958305769890209}
   startLoadEquipment: 1
   useTextureHD: 1
 --- !u!95 &375558676688084193

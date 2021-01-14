@@ -138,7 +138,7 @@ public class PlayerBikeData{
     public int bikeTextureId;
     public int runningTrack;
     public long playerFinishTime;
-    public BikeEquipmentData bikeEquipmentData;
+    public BikeEquipedData bikeEquipmentData;
 }
 [System.Serializable]
 public class PartEquipmentData{
@@ -151,6 +151,7 @@ public class PartEquipmentData{
 }
 [System.Serializable]
 public class PartBikeEquipmentData : PartEquipmentData{
+    public int body_id;
     public int engine_id;
     public int nos_id;
     public int control_id;

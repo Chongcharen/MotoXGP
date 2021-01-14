@@ -4,6 +4,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Wheel System Data",menuName = "Wheel System Data",order = 51)]
 public class WheelSystemData : ScriptableObject
 {
+    public WhellData[] wheelDatas;
+}
+[System.Serializable]
+public class WhellData{
     public float Radius = 0.3f; // the radius of the wheels
     public float Weight = 1000.0f; // the weight of a wheel
     public float SuspensionDistance = 0.2f;
@@ -15,9 +19,9 @@ public class WheelSystemData : ScriptableObject
     public FrictionSetting SidewaysFriction;
     public SuspensionSpringSetting SuspensionSpring;
     [Header("SphereCollider")]
+    public float sphereRadius = 0.2f;
     public bool addSphereCollider = false;
     public PhysicMaterial physicMaterial;
     [Header("Wheel Particle")]
     public GameObject wheelParticleObject;
-
 }

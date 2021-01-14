@@ -40,7 +40,6 @@ public class PlayerGlowing : MonoBehaviour
             var rimlightValue =  mats[i].material.GetFloat("_RimlightShow");
             var materialTarget =  mats[i].material;
             DOTween.To(()=> rimlightValue, x=> rimlightValue = x, 1, 3).OnUpdate(()=>{
-               Debug.Log("Rimlight Changed ..... "+rimlightValue);
                materialTarget.SetFloat("_RimlightShow",rimlightValue);
             }).SetAutoKill();
             //mats[i].material.SetFloat("_RimlightShow",1);

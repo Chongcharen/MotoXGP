@@ -108,8 +108,10 @@ public class LobbyServerCallback : GlobalEventListener{
         //playerData.playerBikeData.playerFinishTime = 99999999;
         playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
         playerData.RandomBikeData();
-        //playerData.playerBikeData.bikeCustomize = SaveMockupData.GetBikeEquipment;
-
+        playerData.playerBikeData.bikeEquipmentData = SaveMockupData.GetBikeEquipment.bikeEquipmentMapper.ElementAt(0).Value;
+        Debug.Log("Player name "+playerData.playerProfileModel.DisplayName);
+        Debug.Log("Body id "+playerData.playerBikeData.bikeEquipmentData.body_id);
+        Debug.Log("Skin id "+playerData.playerBikeData.bikeEquipmentData.skin_id);
 
         if(!BoltNetwork.IsServer)return;
         var bikePlayerObject = BikePlayerRegistry.CreateClientPlayer(BoltNetwork.Server,playerData);
@@ -147,11 +149,10 @@ public class LobbyServerCallback : GlobalEventListener{
             var entity = BoltNetwork.Instantiate(BoltPrefabs.RoomPlayerInfo);
             entity.AssignControl(bikePlayerObject.connection);
             var playerInroom = entity.gameObject.GetComponent<PlayerInRoom_Prefab>();
-            var playerProfileToken = token as PlayerProfileToken;
-            playerInroom.SetupProfileModel(playerProfileToken.playerProfileModel);
+            //var playerProfileToken = token as PlayerProfileToken;
+            playerInroom.SetupProfileModel(profileToken.playerProfileModel);
             playerInroom.SetupPlayer(bikePlayerObject.IsClient);
             playerInroom.SetupBikePlayerObject(bikePlayerObject);
-            
         }
     }
    

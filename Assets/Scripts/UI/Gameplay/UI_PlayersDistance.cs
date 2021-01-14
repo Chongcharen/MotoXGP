@@ -36,10 +36,10 @@ public class UI_PlayersDistance : MonoBehaviour
     string localUserId;
     private void Awake() {
         
-         BikeBoltSystem.OnEntityAttached.Subscribe(entity =>{
+        BikeBoltSystem.OnEntityAttached.Subscribe(entity =>{
             RegisterPlayer(entity);
         }).AddTo(this);
-        BikeBoltSystem.OnEntityAttached.Subscribe(entity =>{
+        BikeBoltEngineSystem.OnEntityAttached.Subscribe(entity =>{
             RegisterPlayer(entity);
         }).AddTo(this);
     }

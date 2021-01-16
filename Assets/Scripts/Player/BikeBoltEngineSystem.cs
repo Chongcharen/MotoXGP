@@ -546,10 +546,10 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
             if(isGround[indexWhell]){
                 lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
             }else{
-               // lp.y = Mathf.Lerp(lp.y,component.startPos.y,Time.fixedDeltaTime * 10);
+                lp.y = Mathf.Lerp(lp.y,component.startPos.y,Time.fixedDeltaTime * 10);
             }
-            if(lp.y < -shokeDistance*2){
-                lp.y = -shokeDistance*2;
+            if(lp.y < -shokeDistance){
+                lp.y = -shokeDistance;
             }
 
             component.axle.localPosition = Vector3.Lerp(component.axle.localPosition,lp,Time.fixedDeltaTime*wheel_system.wheelDatas[indexWhell].shoke_update_speed);
@@ -574,16 +574,17 @@ public class BikeBoltEngineSystem : EntityEventListener<IPlayerBikeState>
     }
 
     void UpdatePlayerRoll(){
+        Rigidbody.maxAngularVelocity = control_system.maxAngularVelocity;
         if(isLeft){
             //direction = -1;
             if(!grounded){
-                 Rigidbody.AddTorque(Vector3.forward*control_system.bikeRotatePower,ForceMode.Acceleration);
+                Rigidbody.AddTorque(Vector3.forward*control_system.bikeRotatePower,ForceMode.VelocityChange);
             }
         }
         if(isRight){
             //direction = 1;
             if(!grounded){
-                Rigidbody.AddTorque(-Vector3.forward*control_system.bikeRotatePower,ForceMode.Acceleration);
+                Rigidbody.AddTorque(-Vector3.forward*control_system.bikeRotatePower,ForceMode.VelocityChange);
             }
         }
     }

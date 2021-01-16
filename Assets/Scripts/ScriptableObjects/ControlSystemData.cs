@@ -5,6 +5,7 @@ using UnityEngine;
 public class ControlSystemData : ScriptableObject
 {
     public float forceJump = 150;
+    public float maxAngularVelocity = 10;
     public float bikeRotatePower = 10;
     public float airDrag = 1.5f;
 }

@@ -43,12 +43,13 @@ public class BoltLobbyNetwork : GlobalEventListener
         BoltNetwork.RegisterTokenClass<ProtocolPlayerCustomize>();
         BoltNetwork.RegisterTokenClass<PlayerProfileToken>();
         BoltNetwork.RegisterTokenClass<BikeEquipmentToken>();
+
     }
 
     public void Connect(){
         Debug.Log("Connect-++++++++++++++++++++");
         var parameter = new Dictionary<string,object>();
-        parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Connect Server");
+        parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Network Connect");
         parameter.Add(PopupKeys.PARAMETER_MESSAGE,"Connect Client");
         //Popup_BoltConnect.Launch(parameter);
         BoltLauncher.StartClient();
@@ -64,17 +65,21 @@ public class BoltLobbyNetwork : GlobalEventListener
         // playerCustomize.bike_body_id = 2;
         // playerCustomize.bike_texture_id = 5;
 
-        var playerData = new PlayerProfileToken();
+        var playerDataToken = new PlayerProfileToken();
         //playerData.playerBikeData.playerFinishTime = 99999999;
-        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
-        playerData.RandomBikeData();
-        Debug.Log("playerdata "+playerData.playerBikeData);
-        Debug.Log("model "+playerData.playerProfileModel);
+        playerDataToken.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
+        playerDataToken.RandomBikeData();
+        playerDataToken.playerBikeData.bikeEquipmentData = SaveMockupData.GetBikeEquipment.bikeEquipmentMapper.ElementAt(0).Value;
+
+
+
+        Debug.Log("playerdata "+playerDataToken.playerBikeData);
+        Debug.Log("model "+playerDataToken.playerProfileModel);
         Debug.Log("filter "+filter);
         //BoltMatchmaking.JoinRandomSession(filter,playerData);
         Debug.Log("isrunning "+BoltNetwork.IsRunning);
         Debug.Log("isconnected "+BoltNetwork.IsConnected);
-        BoltMatchmaking.JoinRandomSession(filter,playerData);
+        BoltMatchmaking.JoinRandomSession(filter,playerDataToken);
         CallPopupForWaiting("ระบบกำลัง ค้นหาห้อง โปรดรอสักครู่");
     }
     void CallPopupForWaiting(string messageDetail){
@@ -109,12 +114,14 @@ public class BoltLobbyNetwork : GlobalEventListener
         print(Depug.Log("StreamDataAborted "+streamID,Color.blue));
     }
     public override void BoltStartDone(){
+        
         if(connectionType == ConnectionType.Disconnect){
             connectionType = BoltNetwork.IsClient ? ConnectionType.Client : ConnectionType.Server;
             OnBoltConnected.OnNext(default);
         }else if(connectionType == ConnectionType.ToCreateServer){
-            if(BoltNetwork.IsServer)
+            if(BoltNetwork.IsServer){
                 CreateSession();
+            }
         }
     }
     //Create Room
@@ -154,14 +161,16 @@ public class BoltLobbyNetwork : GlobalEventListener
         // var playerCustom = new ProtocolPlayerCustomize(); // connectionToken 
         // playerCustom.bike_body_id = 2;
         // playerCustom.bike_texture_id = 3;
-        var playerData = new PlayerProfileToken();
+        var playerDataToken = new PlayerProfileToken();
         //playerData.playerBikeData.playerFinishTime = 99999999;
-        playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
-        playerData.RandomBikeData();
+        playerDataToken.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
+        playerDataToken.RandomBikeData();
+        playerDataToken.playerBikeData.bikeEquipmentData = SaveMockupData.GetBikeEquipment.bikeEquipmentMapper.ElementAt(0).Value;
+       // playerDataToken.playerBikeData.bikeEquipmentData = SaveMockupData.GetBikeEquipment;
         // token เป็น playerdata แล้ว join ห้องเดียวกันไมไ่ด้ งง
-        
+        print(Depug.Log("Server ConnectToken "+playerDataToken,Color.blue));
         BoltMatchmaking.CreateSession(
-            sessionID: matchName,token:customToken,null,customToken
+            sessionID:matchName,token:customToken,sceneToLoad:null,sceneToken:playerDataToken
         );
         CallPopupForWaiting("ระบบกำลัง สร้างห้อง โปรดรอสักครู่");
     }
@@ -197,6 +206,7 @@ public class BoltLobbyNetwork : GlobalEventListener
 
         PhotonSession photonSession = BoltMatchmaking.CurrentSession as PhotonSession;
         photonSession.Properties["t"] = "Bavaria";
+        
         foreach (var ss in photonSession.Properties) {
             Debug.LogFormat("Key : {0} , Value : {1}",ss.Key,ss.Value);
            // GUIDebug.Log("Key : "+ss.Key+" , Value : "+ss.Value);
@@ -240,6 +250,9 @@ public class BoltLobbyNetwork : GlobalEventListener
     //         var lobbyPlayer = entity.gameObject.GetComponent<PlayerInRoom_Prefab>();
     //         PageManager.Instance.UI_Room.AddPlayer(lobbyPlayer);
     //     }
+    public void LeaveRoomRequest(){
+        
+    }
     public void Shutdown(ConnectionType toType){
         connectionType = ConnectionType.Disconnect;
         BoltLauncher.Shutdown();
@@ -275,6 +288,11 @@ public class BoltLobbyNetwork : GlobalEventListener
     public override void BoltShutdownBegin(AddCallback registerDoneCallback, UdpConnectionDisconnectReason disconnectReason){
         Debug.Log("BoltShutdownBegin    ************** "+disconnectReason);
         Debug.Log("ConnectionType "+connectionType);
+        var parameter = new Dictionary<string,object>();
+        parameter.Add(PopupKeys.PARAMETER_POPUP_HEADER,"Connectting Network");
+        parameter.Add(PopupKeys.PARAMETER_MESSAGE,"Connect Nectwork Launcher");
+        Popup_BoltConnect.Launch(parameter);
+
         if(connectionType == ConnectionType.ToCreateServer){
             BoltLauncher.StartServer(); 
         }else{

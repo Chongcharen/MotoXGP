@@ -10,6 +10,8 @@ using UdpKit.Platform.Photon;
 using Bolt.Matchmaking;
 using ExitGames.Client.Photon;
 using Bolt;
+using System;
+using System.Collections;
 
 public class UI_GameResult : MonoBehaviour
 {
@@ -18,6 +20,7 @@ public class UI_GameResult : MonoBehaviour
     [SerializeField]Button b_leaveRoom;
     Dictionary<string,PlayerRankGameplay> playerRanksBinding;
     public List<PlayerIndexProfileData> playerDataSort = new List<PlayerIndexProfileData>();
+    public static Subject<Unit> OnLeaveGamePlay = new Subject<Unit>();
     void Awake(){
         
     }
@@ -33,9 +36,12 @@ public class UI_GameResult : MonoBehaviour
             //BoltLobbyNetwork.Instance.connectionType = ConnectionType.Disconnect;
             //BoltLauncher.Shutdown(ConnectionType.Disconnect);
             BoltLobbyNetwork.Instance.Shutdown(ConnectionType.Disconnect);
+
             ObjectPool.Instance.Dispose();
+            
             //SceneManager.LoadScene(SceneName.LOBBY);
-            SceneDownloadAsset.LoadScene(SceneName.LOBBY);
+            
+            StartCoroutine(WaitAndGotoLobby(1));
         }).AddTo(this);
         
         GameCallback.OnPlayerRanksUpdate.Subscribe(BoltEntities =>{
@@ -45,6 +51,14 @@ public class UI_GameResult : MonoBehaviour
             UpdateJsonPlayerRanking(json);
         }).AddTo(this);
     }
+
+    private IEnumerator WaitAndGotoLobby(float waitTime)
+    {
+        Popup_Loading.Launch();
+        yield return new WaitForSeconds(waitTime);
+        SceneDownloadAsset.LoadScene(SceneName.LOBBY);
+    }
+
     void UpdateJsonPlayerRanking(string jsonData){
         var playerProfilesDic = JsonConvert.DeserializeObject<Dictionary<int,PlayerProfileToken>>(jsonData); 
         playerProfilesDic = playerProfilesDic.OrderBy(p =>p.Value.playerBikeData.playerFinishTime).ToDictionary(k => k.Key,v =>v.Value);

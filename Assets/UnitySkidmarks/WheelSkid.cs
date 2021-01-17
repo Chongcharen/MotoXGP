@@ -17,6 +17,7 @@ public class WheelSkid : MonoBehaviour {
 	WheelHit wheelHitInfo;
 
 	public GameObject animationSkid;
+	public ParticleSystem ps;
 
 	public float SKID_FX_SPEED = 0.00001f; // Min side slip speed in m/s to start showing a skid
 	public float MAX_SKID_INTENSITY = 20.0f; // m/s where skid opacity is at full intensity
@@ -70,11 +71,21 @@ public class WheelSkid : MonoBehaviour {
 			else {
 				lastSkid = -1;
 			}
-			animationSkid.gameObject.SetActive(skidTotal >= SKID_FX_SPEED);
+			//animationSkid.gameObject.SetActive(skidTotal >= SKID_FX_SPEED);
+			// if(!ps.isPlaying)
+			// 	ps.Play();
+			// var em = ps.emission;
+			// em.enabled = (skidTotal >= SKID_FX_SPEED);
+
+			if(skidTotal >= SKID_FX_SPEED)
+				ps.Play();
+			else
+				ps.Stop();
 		}
 		else {
 			lastSkid = -1;
-			animationSkid.gameObject.SetActive(false);
+			//animationSkid.gameObject.SetActive(false);
+			ps.Stop();
 		}
 		
 	}

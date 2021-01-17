@@ -15,8 +15,11 @@ public class EquipmentIconPrefab : MonoBehaviour
     public TextMeshProUGUI price_txt;
     public Image img_icon,img_overlay,img_coin;
     public Toggle toggle;
-    PartEquipmentData data;
+    PartEquipmentData partEquipmentData;
+    PartBikeEquipmentData partBikeEquipmentData;
+    SpriteAtlas atlas;
     int equipmentIndex = -1;
+    int equipmentType = 0;
     private void Start() {
         // EventTrigger trigger = GetComponentInParent<EventTrigger>();
         // EventTrigger.Entry entry = new EventTrigger.Entry();
@@ -27,20 +30,57 @@ public class EquipmentIconPrefab : MonoBehaviour
     }
     public void Setup(int _equipmentIndex,SpriteAtlas atlasSprite,PartEquipmentData _data,ToggleGroup group){
         equipmentIndex = _equipmentIndex;
-        data = _data;
+        partEquipmentData = _data;
         toggle.group = group;
-       // var atlasSprite = await AddressableManager.Instance.LoadObject<SpriteAtlas>(equipmentKey);
-        // Debug.Log($"atlas {atlasSprite}");
-        // Debug.Log("atlasSprite "+atlasSprite);
-        // Debug.Log("data.icon_name "+data.icon_name);
-        img_icon.sprite = atlasSprite.GetSprite(data.icon_name);
+        atlas = atlasSprite;
+        SetupPrefabData();
+    //    // var atlasSprite = await AddressableManager.Instance.LoadObject<SpriteAtlas>(equipmentKey);
+    //     // Debug.Log($"atlas {atlasSprite}");
+    //     // Debug.Log("atlasSprite "+atlasSprite);
+    //     // Debug.Log("data.icon_name "+data.icon_name);
+    //     img_icon.sprite = atlasSprite.GetSprite(partEquipmentData.icon_name);
+        
+    //     toggle.interactable = !partEquipmentData.locked;
+    //     img_icon.color = partEquipmentData.locked ? Color.black : Color.white;
+    //     frameicon.enabled = !partEquipmentData.locked;
+        
+    //     if( _data.price > 0){
+    //         price_txt.text = _data.price.ToString();
+    //         img_overlay.enabled = true;
+    //         img_coin.enabled = true;
+    //     }else{
+    //         img_coin.enabled = false;
+    //         img_overlay.enabled = false;
+    //     }
+    //     toggle.OnValueChangedAsObservable().Subscribe(_ =>{
+    //         if(!_)return;
+    //         var track = new EquipmentTrack();
+    //         track.id = equipmentIndex;
+    //         Debug.Log("tack id"+track.id);
+    //          Debug.Log("tack id"+partEquipmentData.texture_name);
+    //         track.model_name = partEquipmentData.model_name;
+    //         track.texture_name = partEquipmentData.texture_name;
+    //         OnEquipmentChanged.OnNext(track);
+    //     }).AddTo(this);
+    }
+    public void Setup(int _equipmentIndex,SpriteAtlas atlasSprite,PartBikeEquipmentData _data,ToggleGroup group){
+        equipmentType = 1;
+        equipmentIndex = _equipmentIndex;
+        partBikeEquipmentData = _data;
+        toggle.group = group;
+        atlas = atlasSprite;
+        SetupPrefabData();
+    }
+    void SetupPrefabData(){
+        var data = equipmentType == 0 ? partEquipmentData : partBikeEquipmentData;
+        img_icon.sprite = atlas.GetSprite(data.icon_name);
         
         toggle.interactable = !data.locked;
         img_icon.color = data.locked ? Color.black : Color.white;
         frameicon.enabled = !data.locked;
         
-        if( _data.price > 0){
-            price_txt.text = _data.price.ToString();
+        if( data.price > 0){
+            price_txt.text = data.price.ToString();
             img_overlay.enabled = true;
             img_coin.enabled = true;
         }else{
@@ -56,6 +96,9 @@ public class EquipmentIconPrefab : MonoBehaviour
             track.model_name = data.model_name;
             track.texture_name = data.texture_name;
             OnEquipmentChanged.OnNext(track);
+            if(equipmentType == 1){
+                SaveMockupData.SaveBikeEquipment(data.model_name,data.texture_name,partBikeEquipmentData.body_id,partBikeEquipmentData.id);
+            }
         }).AddTo(this);
     }
 

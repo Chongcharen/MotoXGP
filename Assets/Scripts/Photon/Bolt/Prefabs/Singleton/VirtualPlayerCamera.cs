@@ -35,6 +35,9 @@ public class VirtualPlayerCamera : BoltSingletonPrefab<VirtualPlayerCamera>
         BikeBoltSystem.OnChangeScreenBoost.Subscribe(_=>{
             StartCoroutine(ChangeScreenToNos());
         }).AddTo(this);
+        BikeBoltEngineSystem.OnChangeScreenBoost.Subscribe(_=>{
+            StartCoroutine(ChangeScreenToNos());
+        }).AddTo(this);
     }
     IEnumerator closetime(float time){
         //CinemachineTransposer.DOComplete()

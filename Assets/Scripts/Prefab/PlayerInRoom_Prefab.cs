@@ -19,6 +19,7 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
     public string userId;
     public Color playerColor;
     PlayerProfileModel profilemodel;
+    BikePlayerObject bikePlayerObject;
     // properties
     string avatarURL;
     string flag;
@@ -33,8 +34,8 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
     public override void Attached(){
         print(Depug.Log("PlayerinRoom Attached ",Color.green));
         print(Depug.Log("state . name "+state.Name,Color.green));
-        state.AddCallback("Name",()=>playername_text.text = state.Name);
-        state.AddCallback("Avatar",()=>avatarURL = state.Avatar);
+        state.AddCallback("Name",()=>UpdatePlayerName());
+        state.AddCallback("Avatar",()=>UpdateAvatar());
         state.AddCallback("Color",()=> playerColor = state.Color);
         state.AddCallback("Flag",()=> flag = state.Flag);
         // check bike customtoken;
@@ -45,12 +46,22 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
             print(Depug.Log("Get server AcceptToken "+BoltNetwork.Server.AcceptToken,Color.cyan));
             print(Depug.Log("Get server ConnectToken "+BoltNetwork.Server.ConnectToken,Color.cyan));
         }
-
+        
     }
     public override void ControlGained(){
         print(Depug.Log("ControlGained client ?"+BoltNetwork.IsClient,Color.cyan));
-        profilemodel = PlayFabController.Instance.playerProfileModel.Value;
-        SetupPlayer();
+         print(Depug.Log("this AttachToken"+this.entity.AttachToken,Color.cyan));
+          print(Depug.Log("this ControlGainedToken"+this.entity.ControlGainedToken,Color.cyan));
+           print(Depug.Log("this DetachToken"+this.entity.DetachToken,Color.cyan));
+       // profilemodel = PlayFabController.Instance.playerProfileModel.Value;
+       // SetupPlayer();
+    }
+    public void UpdatePlayerName(){
+        Debug.Log("UpdatePlayerName "+state.Name);
+        playername_text.text = state.Name;
+    }
+    public void UpdateAvatar(){
+        avatarURL = state.Avatar;
     }
     public void SetColor(Color _color){
         playerColor = _color;
@@ -76,14 +87,42 @@ public class PlayerInRoom_Prefab : EntityEventListener<IRoomPlayerInfoState>
         print(Depug.Log("Playerinroom prefab Detached",Color.red));
         OnDestroyed.OnNext(this);
     }
-    public void SetupPlayer(){
-        print(Depug.Log("SetupPlayer "+profilemodel.DisplayName,Color.green));
+    // public void SetupPlayer(){
+    //     print(Depug.Log("SetupPlayer "+profilemodel.DisplayName,Color.green));
+    //     state.Name = profilemodel.DisplayName;
+    //     b_kick.gameObject.SetActive(false);
+    // }
+    public void SetupProfileModel(PlayerProfileModel model){
+        profilemodel = model;
+        SetupPlayerAvatar();
+    }
+    public void SetupPlayerAvatar(){
+        Debug.Log("SetupAvatar ");
+        Debug.Log("AvatarURL "+profilemodel.AvatarUrl);
+         StaticCoroutine.DoCoroutine(ImageManager.Instance.LoadImage(profilemodel.AvatarUrl,texture =>{
+                        player_avatar.texture = texture;
+                    }));
+    }
+    public void SetupPlayer(bool IsClient){
+        state.Name = profilemodel.DisplayName + (!IsClient ? " (HOST)" : "");
+         b_kick.gameObject.SetActive(IsClient);
+    }
+    public void SetupPlayer(BoltEntity entity,bool IsClient){
+        var token = this.entity.AttachToken as PlayerProfileToken;
+        Debug.Log("ControlGained Token "+entity.ControlGainedToken);
+        Debug.Log("SetupPlayer Token "+token);
+        Debug.Log(" entity.Source.ConnectToken "+ this.entity.AttachToken);
+        profilemodel = token.playerProfileModel;
         state.Name = profilemodel.DisplayName;
-        b_kick.gameObject.SetActive(false);
+        b_kick.gameObject.SetActive(BoltNetwork.IsClient);
+
     }
-    public void SetupOtherPlayer(){
-        print(Depug.Log("SetupOtherPlayer",Color.blue));
-        //var playerObject = BikePlayerRegistry.GetBikePlayer(entity.Source);
-        b_kick.gameObject.SetActive(BoltNetwork.IsServer);
+    public void SetupBikePlayerObject(BikePlayerObject _bikePlayerObject){
+        bikePlayerObject = _bikePlayerObject;
     }
+    // public void SetupOtherPlayer(){
+    //     print(Depug.Log("SetupOtherPlayer",Color.blue));
+    //     //var playerObject = BikePlayerRegistry.GetBikePlayer(entity.Source);
+    //     b_kick.gameObject.SetActive(BoltNetwork.IsServer);
+    // }
 }

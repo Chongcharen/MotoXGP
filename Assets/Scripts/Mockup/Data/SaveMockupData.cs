@@ -41,7 +41,19 @@ public static class SaveMockupData
         bikeEquipedData.model_name = model_name;
         bikeEquipedData.texture_name = texture_name;
         bikeCustomizeData.bikeEquipmentMapper[key] = bikeEquipedData;
-        UnityEngine.Debug.Log(Depug.Log("equipment saveed! id"+0+"model "+bikeEquipedData.model_name + "texture = "+bikeEquipedData.texture_name,Color.green));
+        UnityEngine.Debug.Log(Depug.Log("equipment  saveed! id"+0+"model "+bikeEquipedData.model_name + "texture = "+bikeEquipedData.texture_name,Color.green));
+        Save();
+    }
+    public static void SaveBikeEquipment(string model_name,string texture_name,int body_id,int skin_id){
+        Debug.Log("SaveBike Equipment body_id "+body_id+"skin "+skin_id);
+        BikeEquipedData bikeEquipedData = new BikeEquipedData{
+            model_name = model_name,
+            texture_name = texture_name,
+            body_id = body_id,
+            skin_id = skin_id
+        };
+        var key = bikeCustomizeData.bikeEquipmentMapper.ElementAt(0).Key;
+        bikeCustomizeData.bikeEquipmentMapper[key] = bikeEquipedData;
         Save();
     }
     static void Save(){
@@ -52,6 +64,7 @@ public static class SaveMockupData
         var json = JsonConvert.SerializeObject(playerCustomizeData);
         var bikeJson = JsonConvert.SerializeObject(bikeCustomizeData);
         Debug.Log("json save = "+json);
+        Debug.Log("Bike Json "+bikeJson);
         PlayerPrefs.SetString("playercustom",json);
         PlayerPrefs.SetString("bikecustom",bikeJson);
 
@@ -86,10 +99,23 @@ public static class SaveMockupData
         playerCustomizeData.playerEquipmentMapper.Add(EquipmentKeys.BOOT,new PlayerEquipedData{model_name = bootDefault.model_name,texture_name = bootDefault.texture_name});
     }
     static void NewBikeCustomData(){
+        // bikeCustomizeData = new BikeCustomizeData();
+        // bikeCustomizeData.bikeEquipmentMapper = new Dictionary<string, BikeEquipedData>();
+       // var bikeDefault = GameDataManager.Instance.bikeEquipmentData.data[EquipmentKeys.BIKE_BODY_1][0];
+       // bikeCustomizeData.bikeEquipmentMapper.Add(EquipmentKeys.BIKE_BODY_1,new BikeEquipedData{model_name = bikeDefault.model_name,texture_name = bikeDefault.texture_name});
+        var partBikeEquipmentData = GameDataManager.Instance.bikeEquipmentData.data[EquipmentKeys.BIKE_BODY_1][0];
+
         bikeCustomizeData = new BikeCustomizeData();
         bikeCustomizeData.bikeEquipmentMapper = new Dictionary<string, BikeEquipedData>();
-        var bikeDefault = GameDataManager.Instance.equipmentData.data[EquipmentKeys.BIKE_BODY_1][0];
-        bikeCustomizeData.bikeEquipmentMapper.Add(EquipmentKeys.BIKE_BODY_1,new BikeEquipedData{model_name = bikeDefault.model_name,texture_name = bikeDefault.texture_name});
+        var bikeDefault = new BikeEquipedData{
+            model_name = partBikeEquipmentData.model_name,
+            texture_name = partBikeEquipmentData.texture_name,
+            body_id = partBikeEquipmentData.body_id,
+            skin_id = partBikeEquipmentData.id
+        };
+        //bikeCustomizeData.bikeEquipmentMapper.Add(EquipmentKeys.BIKE_BODY_1,new BikeEquipedData{model_name = bikeDefault.model_name,texture_name = bikeDefault.texture_name});
+         bikeCustomizeData.bikeEquipmentMapper.Add(EquipmentKeys.BIKE_BODY_1,bikeDefault);
+
     }
     
 }
@@ -109,4 +135,7 @@ public struct PlayerEquipedData{
 public struct BikeEquipedData{
     public string model_name;
     public string texture_name;
+
+    public int body_id;
+    public int skin_id;
 }

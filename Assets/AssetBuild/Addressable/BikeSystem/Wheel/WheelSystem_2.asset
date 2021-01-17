@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e5113e6c5d0e2c40a6da57eba659b6d, type: 3}
+  m_Name: WheelSystem_2
+  m_EditorClassIdentifier: 
+  wheelDatas:
+  - Radius: 0.37
+    Weight: 5
+    SuspensionDistance: 0.4
+    ForceAppointDistance: 0.3
+    DampingRate: 0.3
+    shoke_update_speed: 20
+    WheelCenter: {x: 0, y: 0.2, z: 0}
+    ForwardFriction:
+      extremumSlip: 1
+      extremumValue: 1
+      asymptoteSlip: 3
+      asymptoteValue: 5
+      stiffness: 1.5
+    SidewaysFriction:
+      extremumSlip: 1
+      extremumValue: 1
+      asymptoteSlip: 3
+      asymptoteValue: 5
+      stiffness: 1.5
+    SuspensionSpring:
+      spring: 500
+      damper: 100
+      targetposition: 0.75
+    sphereRadius: 0.2
+    addSphereCollider: 0
+    physicMaterial: {fileID: 13400000, guid: 2e8569514c4d74e1db0fda96af3dab1b, type: 2}
+    wheelParticleObject: {fileID: 6428425056185020464, guid: b6563830d5bd29142aa6cc012f88745d,
+      type: 3}
+  - Radius: 0.37
+    Weight: 5
+    SuspensionDistance: 0.4
+    ForceAppointDistance: 0.3
+    DampingRate: 0.3
+    shoke_update_speed: 20
+    WheelCenter: {x: 0, y: 0.2, z: 0}
+    ForwardFriction:
+      extremumSlip: 1
+      extremumValue: 1
+      asymptoteSlip: 3
+      asymptoteValue: 5
+      stiffness: 1.5
+    SidewaysFriction:
+      extremumSlip: 1
+      extremumValue: 1
+      asymptoteSlip: 3
+      asymptoteValue: 5
+      stiffness: 1.5
+    SuspensionSpring:
+      spring: 500
+      damper: 100
+      targetposition: 0.75
+    sphereRadius: 0.2
+    addSphereCollider: 1
+    physicMaterial: {fileID: 13400000, guid: 2e8569514c4d74e1db0fda96af3dab1b, type: 2}
+    wheelParticleObject: {fileID: 6428425056185020464, guid: b6563830d5bd29142aa6cc012f88745d,
+      type: 3}

@@ -31,17 +31,33 @@ public class UI_Login : UIDisplay
     }
     void Start(){
         Debug.Log("BoltNetwork.IsConnected "+BoltNetwork.IsConnected);
+        Debug.Log("BoltNetwork.IsRunning "+BoltNetwork.IsRunning);
+        Debug.Log("PlayFabController.Instance.IsLogin "+PlayFabController.Instance.IsLogin);
         id = UIName.LOGIN;
         UI_Manager.RegisterUI(this);
         if(PlayFabController.Instance.IsLogin){
-            if(!BoltNetwork.IsConnected){
-                BoltLobbyNetwork.Instance.Connect();
-            }else
-            {
+            // if(!BoltNetwork.IsConnected){
+            //     BoltLobbyNetwork.Instance.Connect();
+            // }else
+            // {
+            //     OpenLobbyWithDelay(2);
+            // }
+            if(BoltNetwork.IsRunning){
+                // if(BoltNetwork.IsConnected){
+                //     OpenLobbyWithDelay(2);
+                // }
+                // else{
+                //    Popup_Loading.Launch();
+                //    //BoltLobbyNetwork.Instance.Connect();
+                // }
                 OpenLobbyWithDelay(2);
+            }else{
+                if(!BoltNetwork.IsConnected){
+                    Popup_Loading.Launch();
+                }
             }
             
-           Popup_Loading.Launch();
+           
         }else{
             fader.enabled = false;
         }
@@ -82,6 +98,7 @@ public class UI_Login : UIDisplay
             //BoltLobbyNetwork.Instance.Connect();
         }).AddTo(this);
         AddressableManager.OnDownloadDependenciesCompleted.Subscribe(_=>{
+            Debug.Log("OnDownloadDependenciesCompleted");
             BoltLobbyNetwork.Instance.Connect();
         }).AddTo(this);
         PlayFabController.OnLogout.Subscribe(_=>{

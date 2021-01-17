@@ -10765,144 +10765,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startPosition: {x: 0, y: 0, z: 0}
+  bike_body: {fileID: 0}
+  bikerMan: {fileID: 0}
   bodyCollider: {fileID: 0}
   objectDetecter: {fileID: 0}
-  direction: 0
-  engineData: {fileID: 11400000, guid: ec39c67c82fec0249b4ed5b2d4fa6634, type: 2}
-  bikeWheelSetting:
-    wheels:
-      wheelFront: {fileID: 0}
-      wheelBack: {fileID: 0}
-      AxleFront: {fileID: 0}
-      AxleBack: {fileID: 0}
-      modelWheelFront: {fileID: 0}
-      modelWheelBack: {fileID: 0}
-    wheelSettings: []
-  bikeSetting:
-    showNormalGizmos: 0
-    hitGround: []
-    bikerMan: {fileID: 0}
-    cameraSwitchView: []
-    MainBody: {fileID: 0}
-    bikeSteer: {fileID: 0}
-    maxWheelie: 40
-    speedWheelie: 30
-    slipBrake: 3
-    springs: 35000
-    dampers: 4000
-    bikePower: 120
-    shiftPower: 150
-    brakePower: 8000
-    shiftCentre: {x: 0, y: -0.6, z: 0}
-    maxSteerAngle: 30
-    maxTurn: 1.5
-    shiftDownRPM: 1500
-    shiftUpRPM: 4000
-    idleRPM: 700
-    stiffness: 1
-    automaticGear: 1
-    gears:
-    - -10
-    - 9
-    - 6
-    - 4.5
-    - 3
-    - 2.5
-    LimitBackwardSpeed: 60
-    LimitForwardSpeed: 220
-  motorTorque:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 200
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 50
-      value: 300
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 200
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  boostTorque:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 200
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 50
-      value: 300
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 200
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  effect_root: {fileID: 0}
+  connectWheel:
+    wheelFront: {fileID: 0}
+    wheelBack: {fileID: 0}
+    AxleFront: {fileID: 0}
+    AxleBack: {fileID: 0}
+    modelWheelFront: {fileID: 0}
+    modelWheelBack: {fileID: 0}
+  engine_system: {fileID: 0}
   currentSpeedLimit: 0
-  speedLimit: 60
-  boostSpeedLimit: 120
-  boostForce: 200
-  brakeForce: 5000
-  boostTimeLimit: 5
-  boostDelay: 2
-  lower_gear_force: 200
-  airBrake: 200
-  downforce: 1
-  diffGearing: 4
-  positionExplode: {x: 0, y: 0, z: 0}
-  explosionForce: 0
-  explosionRadius: 0
-  explosionUpward: 0
-  explosionDuration: 1
-  explosionMode: 0
-  bodyRotationRageX: {x: 0, y: 0}
-  bodyRotationRageY: {x: 0, y: 0}
-  bodyRotationRageZ: {x: 0, y: 0}
-  motorControl: {fileID: 0}
+  nos_system: {fileID: 0}
+  wheel_system: {fileID: 0}
+  control_system: {fileID: 0}
+  explode_system: {fileID: 0}
+  status_system: {fileID: 0}
   animator: {fileID: 0}
+  motorControl: {fileID: 0}
   ragdollCollider: {fileID: 0}
   ragdollObject: {fileID: 0}
-  airDrag: 0.1
-  forceJump: 150
-  bikeRotatePower: 10
+  animationTime: 0
+  idleAnimationTime: 0
+  ease: 0
   brake: 0
   jump: 0
   isLeft: 0
@@ -11069,6 +10957,8 @@ MonoBehaviour:
   trailRenderer: {fileID: 4892792786067146560}
   motionBlur: {fileID: 0}
   particle: {fileID: 6906772181670078826}
+  nosColor: {r: 0, g: 0, b: 0, a: 0}
+  lower_gear_color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &4378422161117782494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11097,7 +10987,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sceneGuid: 
   _serializerGuid: e7d343ea-6b94-4aa4-9f84-225903d9f0da
-  _prefabId: 17
+  _prefabId: 18
   _updateRate: 1
   _autoFreezeProxyFrames: 0
   _clientPredicted: 1

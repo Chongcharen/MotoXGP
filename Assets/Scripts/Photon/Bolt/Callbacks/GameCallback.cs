@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Security.Cryptography.X509Certificates;
+using System.Net.Http.Headers;
+using System.Net;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,68 +31,80 @@ public class GameCallback : GlobalEventListener
             Debug.Log("--------------->33333333333333333json");
            // UpdatePlayerRanking(json);
         }).AddTo(this);
-        GUIDebug.Log("22222222222222222222222222222 Session "+photonSession.Properties[RoomOptionKey.PLAYERS_RANK]);
+       // GUIDebug.Log("22222222222222222222222222222 Session "+photonSession.Properties[RoomOptionKey.PLAYERS_RANK]);
         // photonSession.Properties.ObserveEveryValueChanged(p => p).Subscribe(p =>{
         //     GUIDebug.Log("--------------------->Photon Session Update !!!!!! "+p.ToString());
         //     Debug.Log("*************************************** "+p);
         //     //UpdatePlayerRanking(json);
         // }).AddTo(this);
-        
     }
     public override void SceneLoadLocalDone(string scene, IProtocolToken token){
         if(BoltNetwork.IsServer){
             print(Depug.Log("SceneLoadLocalDone SErver... ",Color.green));
             var player = BikePlayerRegistry.GetBikePlayer(BoltNetwork.Server);
             print(Depug.Log("player "+player,Color.green));
-            var playerData = new PlayerProfileToken();
-            playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
-            playerData.RandomBikeData();
-            playerData.playerBikeData.runningTrack = player.index;
+            print(Depug.Log("player display name "+player.profileToken.playerProfileModel.DisplayName,Color.green));
+            print(Depug.Log("player body_id "+player.profileToken.playerBikeData.bikeEquipmentData.body_id,Color.green));
+             print(Depug.Log("player skin_id "+player.profileToken.playerBikeData.bikeEquipmentData.skin_id,Color.green));
+            // var playerData = new PlayerProfileToken();
+            // playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
+            // playerData.RandomBikeData();
+            // playerData.playerBikeData.runningTrack = player.index;
+
+            player.profileToken.playerBikeData.runningTrack = player.index;
             print(Depug.Log("spawnpoint position "+MapManager.Instance.spawnPointsPosition.Count(),Color.blue));
             Debug.Log("index "+player.index);
             print(Depug.Log("------------------------------------ "+player,Color.blue));
             var positionPlayer = MapManager.Instance.spawnPointsPosition[player.index];
-            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_113024,playerData,positionPlayer,Quaternion.Euler(0,90,0));
+            var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_080121_engine,player.profileToken,positionPlayer,Quaternion.Euler(0,90,0));
             entity.TakeControl();
-            entity.GetComponent<BikeBoltSystem>().runningTrack = player.index;
+            entity.GetComponent<BikeBoltEngineSystem>().runningTrack = player.index;
+            //entity.GetComponent<BikeBoltEngineSystem>().SetupToken(player.profileToken);
             //LoadBikePlayer();
         }
     }
-    public async void LoadBikePlayer(){
-         print(Depug.Log("SceneLoadLocalDone SErver... ",Color.green));
-            var player = BikePlayerRegistry.GetBikePlayer(BoltNetwork.Server);
-            print(Depug.Log("player "+player,Color.green));
-            var playerData = new PlayerProfileToken();
-            playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
-            playerData.RandomBikeData();
-            playerData.playerBikeData.runningTrack = player.index;
-            print(Depug.Log("spawnpoint position "+MapManager.Instance.spawnPointsPosition.Count(),Color.blue));
-            Debug.Log("index "+player.index);
-            print(Depug.Log("------------------------------------ "+player,Color.blue));
-            var positionPlayer = MapManager.Instance.spawnPointsPosition[player.index];
-         var bikePlayer = await AddressableManager.Instance.LoadObject<GameObject>("Bike/BikePlayer_113024.prefab");
-         Debug.Log("Bike player ? "+bikePlayer);
-         var entity = BoltNetwork.Instantiate(bikePlayer,playerData,positionPlayer,Quaternion.Euler(0,90,0));
-             entity.TakeControl();
-             entity.GetComponent<BikeBoltSystem>().runningTrack = player.index;
+    public void LoadBikePlayer(){
+        //  print(Depug.Log("SceneLoadLocalDone SErver... ",Color.green));
+        //     var player = BikePlayerRegistry.GetBikePlayer(BoltNetwork.Server);
+        //     print(Depug.Log("player "+player,Color.green));
+        //  var positionPlayer = MapManager.Instance.spawnPointsPosition[player.index];
+        //  //var bikePlayer = await AddressableManager.Instance.LoadObject<GameObject>("Bike/BikePlayer_113024.prefab");
+        //  //Debug.Log("Bike player ? "+bikePlayer);
+        //  var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_080121_engine,player.profileToken,positionPlayer,Quaternion.Euler(0,90,0));
+        //      entity.TakeControl();
+        //      entity.GetComponent<BikeBoltSystem>().runningTrack = player.index;
     }
-    public override void SceneLoadRemoteDone(BoltConnection connection){
-        if(!BoltNetwork.IsServer)return;
+    // public override void SceneLoadRemoteDone(BoltConnection connection){
+    //     if(!BoltNetwork.IsServer)return;
+    //     var player = BikePlayerRegistry.GetBikePlayer(connection);
+    //     //BikePlayerRegistry
+    //     var raceTrackEvent = RaceTrackEvent.Create(connection);
+    //     raceTrackEvent.TrankIndex = player.index;
+    //     raceTrackEvent.Send();
+    // }
+    public override void SceneLoadRemoteDone(BoltConnection connection, IProtocolToken token)
+    {
+       if(!BoltNetwork.IsServer)return;
         var player = BikePlayerRegistry.GetBikePlayer(connection);
         //BikePlayerRegistry
         var raceTrackEvent = RaceTrackEvent.Create(connection);
         raceTrackEvent.TrankIndex = player.index;
+        raceTrackEvent.PlayerProfileToken = token;
         raceTrackEvent.Send();
     }
     public override void OnEvent(RaceTrackEvent evnt){
         print(Depug.Log("RaceTrackEvent "+evnt.TrankIndex,Color.green));
-        var playerData = new PlayerProfileToken();
-            playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
-            playerData.RandomBikeData();
-            playerData.playerBikeData.runningTrack = evnt.TrankIndex;
+        // var playerData = new PlayerProfileToken();
+        //     playerData.playerProfileModel = PlayFabController.Instance.playerProfileModel.Value;
+        //     playerData.RandomBikeData();
+        //     playerData.playerBikeData.runningTrack = evnt.TrankIndex;
+        //var token = evnt.TrankIndex
+        var token = evnt.PlayerProfileToken as PlayerProfileToken;
+        Debug.Log("Token "+token);
         var positionPlayer = MapManager.Instance.spawnPointsPosition[evnt.TrankIndex];
-        var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_113024,playerData,positionPlayer,Quaternion.Euler(0,90,0));
+        var entity = BoltNetwork.Instantiate(BoltPrefabs.BikePlayer_080121_engine,token,positionPlayer,Quaternion.Euler(0,90,0));
             entity.TakeControl();
+            entity.GetComponent<BikeBoltEngineSystem>().runningTrack = evnt.TrankIndex;
     }
     public override void OnEvent(PlayerPositionRequest evnt){
         

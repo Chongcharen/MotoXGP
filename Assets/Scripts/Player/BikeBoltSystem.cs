@@ -250,9 +250,11 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         }).AddTo(this);
         GameCallback.OnGameReady.Subscribe(raceCountdown =>{
             isReady = raceCountdown.RaceStart;
+            GetComponent<PlayerGlowing>().CloseRimlight();
         }).AddTo(this);
         GameHUD.OnLowerGear.Subscribe(_=>{
                 if(!grounded)return;
+                if(!isReady)return;
                 maxVelocity = boostVelocity;
                 if(boostSystem != null)
                     boostSystem.StartBoostEffect(lower_gear_force_time_limit,false);
@@ -286,6 +288,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     void AddBikeSettingListener(){
         //
+        GetComponent<PlayerGlowing>().ShowRimlight();
         UI_UpdateWheel.OnUpdateLandingMaxFall.Subscribe(_=>{
             SetupLandingCurve(_,landingCurve.keys[0].value,landingCurve.keys[1].time,landingCurve.keys[1].value);
         }).AddTo(this);
@@ -913,25 +916,30 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
             }
             //Debug.Log(component.rotation);
             Vector3 lp = component.axle.localPosition;
-             if(isGround[indexWhell] == false && component.collider.GetGroundHit(out hit)){
-                 bike_animator.SetTrigger("OnGround");
-             }
+            var shokeDistance = component.collider.suspensionSpring.targetPosition + component.collider.center.y - component.collider.suspensionDistance;
+            //  if(isGround[indexWhell] == false && component.collider.GetGroundHit(out hit)){
+            //      bike_animator.SetTrigger("OnGround");
+            //  }
             isGround[indexWhell] = component.collider.GetGroundHit(out hit);
             if(isGround[indexWhell]){
                 lp.y -= Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
                 dotProduct[indexWhell] = Vector3.Dot(component.wheel.position - hit.point , transform.TransformDirection(0, 1, 0)) - (component.collider.radius);
+            }else{
+                //lp.y = Mathf.Lerp(lp.y,-shokeDistance,Time.fixedDeltaTime * 10);
             }
 
 
               //  lp.y -= Vector3.Dot(component.wheel.position - component.startPos,transform.TransformDirection(0,1,0)) - (component.collider.radius)*chockSpeedUpdate;
             //Debug.Log("LP "+ lp.y);
             //lp.y = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
-            var newPosition = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+          //  var newPosition = Mathf.Clamp(lp.y, component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance, component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance);
+           // DOTween.To(()=> lp.y, x=> lp.y = x, newPosition, 0.3f).SetEase(ease).SetAutoKill();
            
-           // DOTween.To(()=> lp.y, x=> lp.y = x, newPosition, 1f).SetEase(ease).SetAutoKill();
-            
             //Debug.Log("min "+ (component.startPos.y - bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
             //Debug.Log("max "+ (component.startPos.y + bikeWheelSetting.wheelSettings[indexWhell].SuspensionDistance));
+            if(lp.y < -shokeDistance){
+              //  lp.y = -shokeDistance;
+            }
             suspensions[indexWhell] = lp;
             if(visualizeChock)
                 //component.axle.localPosition = lp;
@@ -1045,10 +1053,24 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
     #endregion
     
-
+    public void SetBikeStatus(BikeStatus newStatus){
+        BikeStatus = newStatus;
+        switch (BikeStatus) 
+        {
+        case BikeStatus.Normal:
+            Rigidbody.drag = 0.05f;
+            break;
+        case BikeStatus.Sand:
+            Rigidbody.drag = 4.5f;
+            break;
+        case BikeStatus.Water:
+            Rigidbody.drag = 2.5f;
+            break;
+        }
+    }
 
     #region Bike Setup
-    private WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting,GameObject skidmark,bool addSphereCollider = true)
+    WheelComponent SetWheelComponent(Transform wheel,Transform modelWheel, Transform axle, bool drive, float maxSteer, float pos_y,WheelSetting wheelSetting,GameObject skidmark,bool addSphereCollider = true)
     {
 
         WheelComponent result = new WheelComponent();
@@ -1105,6 +1127,7 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         
 
         if(addSphereCollider){
+
             result.sphereCollider = result.collider.gameObject.AddComponent<SphereCollider>();
             result.sphereCollider.radius = 0.2f;
             result.sphereCollider.material = physicMaterial;
@@ -1113,6 +1136,8 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
         wheelSkid.rb = Rigidbody;
         wheelSkid.skidmarksController = skidmarkController;
         wheelSkid.animationSkid = skidmark;
+        wheelSkid.ps = skidmark.GetComponent<ParticleSystem>();
+        Rigidbody.velocity = Vector3.zero;
         return result;
     }
     void SetupLandingCurve(float maxFall,float maxSpeed,float minFall,float minSpeed){
@@ -1131,6 +1156,6 @@ public class BikeBoltSystem : EntityEventListener<IPlayerBikeState>
     }
 }
 public enum BikeStatus{
-    Normal,Slow,Speed
+    Normal,Sand,Water,Speed
 }
 

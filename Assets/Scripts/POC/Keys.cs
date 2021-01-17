@@ -140,6 +140,15 @@ public static class AddressableKeys{
     public const string LABEL_MAP_FOREST = "Map_Forest";
     public const string LABEL_MAP_DESERT = "Map_Desert";
     public const string LABEL_MAP_BEACH = "Map_Beach";
+    //System
+    public const string LABEL_BIKE_SYSTEM = "BikeSystem";
+    public const string PATH_BIKE_SYSTEM_ENGINE = "BikeSystem/Engine/EngineSystem_";
+    public const string PATH_BIKE_SYSTEM_NOS = "BikeSystem/Nos/NosSystem_";
+    public const string PATH_BIKE_SYSTEM_WHEEL = "BikeSystem/Wheel/WheelSystem_";
+    public const string PATH_BIKE_SYSTEM_STATUS = "BikeSystem/Status/StatusSystem_";
+    public const string PATH_BIKE_SYSTEM_CONTROL = "BikeSystem/Control/ControlSystem_";
+    public const string PATH_BIKE_SYSTEM_EXPLODE = "BikeSystem/Explode/ExplodeSystem_";
+
 
 }
 public static class PopupKeys{

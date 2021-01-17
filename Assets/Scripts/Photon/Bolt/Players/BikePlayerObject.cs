@@ -7,6 +7,7 @@ public class BikePlayerObject
 {
     public BoltEntity character;
     public BoltConnection connection;
+    public PlayerProfileToken profileToken;
     
     public int index;
     public bool IsServer

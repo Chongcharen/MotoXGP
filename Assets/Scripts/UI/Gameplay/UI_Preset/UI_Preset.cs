@@ -42,9 +42,9 @@ public class UI_Preset : MonoBehaviour
        
         // datas = JsonConvert.DeserializeObject<List<BikeSettingMappingData>>(presetFile.text);
         // SetupBikePreset();
-         var presetFile = await AddressableManager.Instance.LoadObject<TextAsset>("Text/BikeTunerPreset");
-         datas = JsonConvert.DeserializeObject<List<BikeSettingMappingData>>(presetFile.text);
-         SetupBikePreset();
+         //var presetFile = await AddressableManager.Instance.LoadObject<TextAsset>("Text/BikeTunerPreset");
+         //datas = JsonConvert.DeserializeObject<List<BikeSettingMappingData>>(presetFile.text);
+         //SetupBikePreset();
     }
     void SetupBikePreset(){
         Debug.Log("SetupBikePreset!!!!!!!!!!!!!!!!!!!!!!!");

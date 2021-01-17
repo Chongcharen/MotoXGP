@@ -11,13 +11,13 @@ public class BikeEquipment : MonoBehaviour
         if(startLoadEquipment)
             LoadEquipmentFromSave();
         EquipmentIconPrefab.OnEquipmentChanged.Subscribe(async tracked =>{
-            if(tracked.id <= 4 )return;
+            if(tracked.id < 5 )return;
             var textureQuality = useTextureHD ? "HD/" :"SD/";
             var model = await AddressableManager.Instance.LoadObject<Mesh>(GameDataManager.Instance.gameConfigData.dataPath.equipment_models+tracked.model_name);
             var texture = await AddressableManager.Instance.LoadObject<Texture>(GameDataManager.Instance.gameConfigData.dataPath.equipment_textures+textureQuality+tracked.texture_name);
             skinnedMeshRenderers[0].sharedMesh = model;
             skinnedMeshRenderers[0].material.mainTexture = texture;
-            SaveMockupData.SaveBikeEquipment(0,tracked.model_name,tracked.texture_name);
+            //SaveMockupData.SaveBikeEquipment(0,tracked.model_name,tracked.texture_name);
         }).AddTo(this);
     }
      void LoadEquipmentFromSave(){
@@ -32,6 +32,8 @@ public class BikeEquipment : MonoBehaviour
         foreach (var mapper in data)
         {
             print(Depug.Log("id "+index,Color.red));
+            Debug.Log("body_id "+mapper.Value.body_id);
+            Debug.Log("skin id "+mapper.Value.skin_id);
             var textureQuality = useTextureHD ? "HD/" :"SD/";
             skinnedMeshRenderers[index].sharedMesh = await AddressableManager.Instance.LoadObject<Mesh>(GameDataManager.Instance.gameConfigData.dataPath.equipment_models+mapper.Value.model_name);
             var texture = await AddressableManager.Instance.LoadObject<Texture>(GameDataManager.Instance.gameConfigData.dataPath.equipment_textures+textureQuality+mapper.Value.texture_name);

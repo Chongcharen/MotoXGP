@@ -51,7 +51,7 @@ public class GameCallback : GlobalEventListener
             // playerData.RandomBikeData();
             // playerData.playerBikeData.runningTrack = player.index;
 
-            player.profileToken.playerBikeData.runningTrack = player.index;
+            //player.profileToken.playerBikeData.runningTrack = player.index;
             print(Depug.Log("spawnpoint position "+MapManager.Instance.spawnPointsPosition.Count(),Color.blue));
             Debug.Log("index "+player.index);
             print(Depug.Log("------------------------------------ "+player,Color.blue));

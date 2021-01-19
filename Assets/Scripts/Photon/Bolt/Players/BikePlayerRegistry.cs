@@ -14,6 +14,7 @@ public static class BikePlayerRegistry
       player.profileToken = token;
       player.connection = (connection == null) ? BoltNetwork.Server : connection;
       player.index = players.Count;
+      player.profileToken.playerBikeData.runningTrack = player.index;
       players.Add(player);
       
 
